@@ -6,12 +6,7 @@ Unsure about design at this point. Will write awkward program for now and then r
 when problem is clearer
 """
 
-from functools import cached_property
-from logging import debug
-
 from typing import List
-
-from numpy import PINF
 
 from ingest.PUMS_clean import PUMSCleaner
 

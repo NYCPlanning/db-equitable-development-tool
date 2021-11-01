@@ -1,4 +1,3 @@
-"""This will involve a lot of hard-coding unless I find a better way"""
 from os.path import exists
 import pandas as pd
 import requests 

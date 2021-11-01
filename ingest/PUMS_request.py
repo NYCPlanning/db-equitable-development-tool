@@ -1,7 +1,7 @@
 """To do 
 Short term:
-Clean categorical variables that have 'b' option
 Clean/refactor code
+Implement better logging system
 
 Medium term: 
 Integrate some component on an existing github workflow to this project.
@@ -13,7 +13,6 @@ Start aggregation with replicated weights
 import requests
 import logging
 import pandas as pd
-import pickle
 
 from ingest.PUMS_query_manager import PUMSQueryManager
 from ingest.validate_request import validate_PUMS_column_names

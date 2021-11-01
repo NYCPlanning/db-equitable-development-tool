@@ -40,9 +40,13 @@ def make_GET_request(variable_types, year=2019, limited_PUMA=False):
         logging.error(f'error in processing request: {r.text}')
         print(f'error in processing request: {r.text}')
     p.clean_df(PUMS)
-    print(PUMS.head(5))
-    fn = f'{"_".join(variable_types)}_by_person'
+    fn = construct_pickle_fn(variable_types)
     if limited_PUMA:
         fn +='_limitedPUMA'
     PUMS.to_pickle(f'data/{fn}.pkl')
     return PUMS #For Debug. To-do: remove this line once it's tested
+
+
+def construct_pickle_fn(variable_types):
+    fn = f'{"_".join(variable_types)}_by_person'
+    return fn

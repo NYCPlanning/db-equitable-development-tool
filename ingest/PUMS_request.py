@@ -8,6 +8,7 @@ Integrate some component on an existing github workflow to this project.
 Doing something on commit like linting would be a good place to start
 
 Longer Term: 
+Put age into buckets
 Start aggregation with replicated weights
 """
 import requests

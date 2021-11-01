@@ -27,12 +27,10 @@ class PUMSCleaner():
 
         
     def clean(self, data, variable_name):
-        try:
-            codes = self.recode_df[self.recode_df['variable_name']==variable_name]
-            codes = codes[['C', 'Record Type']]
-            codes.set_index('C', inplace=True)
-            codes.index = codes.index.astype(int)
-            mapper = {variable_name: codes.to_dict()['Record Type']}
-            data.replace(mapper, inplace=True)
-        except:
-            print(f'failed to clean {variable_name}')
+        codes = self.recode_df[self.recode_df['variable_name']==variable_name]
+        codes = codes[['C', 'Record Type']]
+        codes.replace({'C':{'b':0}}, inplace=True)
+        codes.set_index('C', inplace=True)
+        codes.index = codes.index.astype(int)
+        mapper = {variable_name: codes.to_dict()['Record Type']}
+        data.replace(mapper, inplace=True)

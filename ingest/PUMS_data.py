@@ -1,10 +1,17 @@
-from os.path import exists
+"""This class encapsulates url used to fetch PUMS data, variables the data includes,
+data itself, and the code to clean it"""
+
+from typing import List
 import pandas as pd
-import requests 
+from os.path import exists
+import requests
 
-class PUMSCleaner():
+class PUMSData():
 
-    def __init__(self) -> None:
+    def __init__(self, get_url:str, variables: List) -> None:
+        self.url = get_url
+        self.variables = variables
+        self.data: pd.DataFrame = None
         self.recode_df = self.get_recode_df()
 
     
@@ -15,7 +22,6 @@ class PUMSCleaner():
             req = requests.get(url)
             url_content = req.content
             csv_file = open(fp, 'wb')
-
             csv_file.write(url_content)
             csv_file.close()
         recode_df = pd.read_csv(fp).reset_index()
@@ -24,12 +30,17 @@ class PUMSCleaner():
         recode_df.rename(columns={'level_1':'variable_name'}, inplace=True)
         return recode_df
 
+    def clean(self):
+        for v in self.variables:
+            if v[1] =='categorical':
+                self.clean_column(v[0])
         
-    def clean(self, data, variable_name):
-        codes = self.recode_df[self.recode_df['variable_name']==variable_name]
+    def clean_column(self, column_name):
+        codes = self.recode_df[self.recode_df['variable_name']==column_name]
         codes = codes[['C', 'Record Type']]
         codes.replace({'C':{'b':0}}, inplace=True)
         codes.set_index('C', inplace=True)
         codes.index = codes.index.astype(int)
-        mapper = {variable_name: codes.to_dict()['Record Type']}
-        data.replace(mapper, inplace=True)
+        mapper = {column_name: codes.to_dict()['Record Type']}
+        self.data.replace(mapper, inplace=True)
+

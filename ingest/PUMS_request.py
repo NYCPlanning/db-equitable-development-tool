@@ -22,27 +22,28 @@ def make_GET_request(variable_types, year=2019, limited_PUMA=False):
     """Construct and make get request for person-level pums data
 
     :param year:
-    :param variable_type: the category of variables we want. Can be demographic, housing secutiry 
+    :param variable_type: the category of variables we want. Can be demographic, housing secutiry
     :return: data from GET request in pandas dataframe"""
 
-    logging.basicConfig(filename='ingestion.log', encoding='utf-8', level=logging.DEBUG)
+    logging.basicConfig(filename="ingestion.log", encoding="utf-8", level=logging.DEBUG)
     p = PUMSQueryManager(variable_types)
     PUMS = p(year, limited_PUMA)
     r = requests.get(PUMS.url)
-    logging.info(f' status code of get request is {r.status_code}')
-    if r.status_code ==200:
-        PUMS.data = pd.DataFrame(data=r.json()[1:], columns = r.json()[0]).astype(int)
-        logging.info(f' {PUMS.data.shape[0]} PUMA records received from API')
+    logging.info(f" status code of get request is {r.status_code}")
+
+    if r.status_code == 200:
+        PUMS.data = pd.DataFrame(data=r.json()[1:], columns=r.json()[0]).astype(int)
+        logging.info(f" {PUMS.data.shape[0]} PUMA records received from API")
         validate_PUMS_column_names(PUMS.data)
     else:
-        logging.error(f'error in processing request: {r.text}')
+        logging.error(f"error in processing request: {r.text}")
         exit
 
     PUMS.clean()
     fn = construct_pickle_fn(variable_types)
     if limited_PUMA:
-        fn +='_limitedPUMA'
-    PUMS.data.to_pickle(f'data/{fn}.pkl')
+        fn += "_limitedPUMA"
+    PUMS.data.to_pickle(f"data/{fn}.pkl")
 
 
 def construct_pickle_fn(variable_types):

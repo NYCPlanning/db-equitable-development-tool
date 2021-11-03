@@ -2,10 +2,14 @@
 That website provides an interface to construct a query and then see the url to 
 access that query via an input.
 """
-
+import sys
 from typing import List
 
 from ingest.PUMS_data import PUMSData
+from utils.make_logger import create_logger
+
+
+logger = create_logger("query_logger", "logs/ingest-query-creation.log")
 
 
 class PUMSQueryManager:
@@ -33,14 +37,20 @@ class PUMSQueryManager:
         range(3701, 3711),  # Bronx
     ]
 
+    allowed_variable_types = ["demographics"]
+    allowed_years = [2019]
+
     def __init__(self, variable_types: List) -> None:
-        self.variables = (
-            []
-        )  # Janky. To-do: refactor when I have bigger picture design issues worked out
+        self.variables = []
         for var_type in variable_types:
-            self.variables.extend(self.variable_mapper[var_type])
-            # self.categorical_variables.extend(categorical_variable_mapper[var_type])
-            # self.continuous_variables.extend(continous_variable_mapper[var_type])
+            if var_type not in self.allowed_variable_types:
+                logger.error(
+                    f"variable type of {var_type} not one of allowed types \
+                    of {self.allowed_variable_types}"
+                )
+
+            else:
+                self.variables.extend(self.variable_mapper[var_type])
 
     def __call__(self, year: int, limited_PUMA=False) -> PUMSData:
         """Limited PUMA is for testing with single UCGID from each borough.
@@ -62,6 +72,9 @@ class PUMSQueryManager:
         return PUMSData(url, self.variables)
 
     def construct_base_url(self, year):
+        if year not in self.allowed_years:
+            logger.warning("{year} not one of allowed years: {self.allowed_years}")
+            raise "Unallowed year"
         base_url = f"https://api.census.gov/data/{year}/acs/acs5/pums"
         return base_url
 

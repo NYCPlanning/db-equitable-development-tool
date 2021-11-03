@@ -10,6 +10,8 @@ from ingest.PUMS_request import make_GET_request, construct_pickle_fn
 
 
 def load_PUMS(variable_types, limited_PUMA=False):
+    """Future to-do: include re-query parameter that deletes files in data folder
+    and runs ingestion process from scratch"""
     pickle_fn = construct_pickle_fn(variable_types) +'.pkl'
     pickle_path = f'data/{pickle_fn}'
     if exists(pickle_path):

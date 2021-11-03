@@ -10,25 +10,18 @@ from typing import List
 
 from ingest.PUMS_data import PUMSData
 
-categorical_variable_mapper = {
-    'demographics': ['RAC1P', 'HISP', 'NATIVITY', 'LANX', 'ENG']
-    }
-continous_variable_mapper = {
-    'demographics':['AGEP']
-}
-
-variable_mapper = {
-    'demographics': [('RAC1P', 'categorical'), ('HISP', 'categorical'), 
-    ('NATIVITY', 'categorical'), ('LANX', 'categorical'), ('ENG', 'categorical'), 
-    ('AGEP', 'continuous')]
-}
 class PUMSQueryManager:
     """This class is responsible for constructing a query based on a certain group of 
     variables and cleaning the raw data"""
 
+    variable_mapper = {
+        'demographics': [
+        ('RAC1P', 'categorical'), ('HISP', 'categorical'), 
+        ('NATIVITY', 'categorical'), ('LANX', 'categorical'), 
+        ('ENG', 'categorical'), ('AGEP', 'continuous')]
+    }
 
     NYC_PUMA_base = '7950000US360'
-
 
     geographic_id_range = [
         range(4101, 4115), # Queens
@@ -41,7 +34,7 @@ class PUMSQueryManager:
     def __init__(self, variable_types: List) -> None:
         self.variables = [] # Janky. To-do: refactor when I have bigger picture design issues worked out
         for var_type in variable_types:
-            self.variables.extend(variable_mapper[var_type])
+            self.variables.extend(self.variable_mapper[var_type])
             # self.categorical_variables.extend(categorical_variable_mapper[var_type])
             # self.continuous_variables.extend(continous_variable_mapper[var_type])
             

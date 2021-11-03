@@ -1,6 +1,5 @@
 """To do 
 Short term:
-Clean/refactor code
 Implement better logging system
 
 Medium term: 
@@ -38,6 +37,7 @@ def make_GET_request(variable_types, year=2019, limited_PUMA=False):
     else:
         logging.error(f'error in processing request: {r.text}')
         exit
+
     PUMS.clean()
     fn = construct_pickle_fn(variable_types)
     if limited_PUMA:

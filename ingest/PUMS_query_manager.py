@@ -31,13 +31,13 @@ class PUMSQueryManager:
         range(3701, 3711) #Bronx
     ]
 
+
     def __init__(self, variable_types: List) -> None:
         self.variables = [] # Janky. To-do: refactor when I have bigger picture design issues worked out
         for var_type in variable_types:
             self.variables.extend(self.variable_mapper[var_type])
             # self.categorical_variables.extend(categorical_variable_mapper[var_type])
-            # self.continuous_variables.extend(continous_variable_mapper[var_type])
-            
+            # self.continuous_variables.extend(continous_variable_mapper[var_type]) 
 
 
     def __call__(self, year:int, limited_PUMA=False) -> PUMSData:
@@ -55,6 +55,7 @@ class PUMSQueryManager:
         
         base_url = self.construct_base_url(year)
         url= f'{base_url}?get={vars}&ucgid={geo_ids}'
+
         return PUMSData(url, self.variables)
         
     def construct_base_url(self, year):
@@ -63,4 +64,3 @@ class PUMSQueryManager:
 
     def vars_as_params(self, variables: List) -> str:
          return ','.join([v[0] for v in variables])
-    

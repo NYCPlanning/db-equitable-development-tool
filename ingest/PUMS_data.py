@@ -1,5 +1,3 @@
-"""This class encapsulates url used to fetch PUMS data, variables the data includes,
-data itself, and the code to clean it"""
 
 from typing import List
 import pandas as pd
@@ -7,6 +5,8 @@ from os.path import exists
 import requests
 
 class PUMSData():
+    """This class encapsulates url used to fetch PUMS data, variables the data includes,
+    data itself, and the code to clean it"""
 
     def __init__(self, get_url:str, variables: List) -> None:
         self.url = get_url

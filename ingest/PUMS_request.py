@@ -1,8 +1,4 @@
 """To do 
-Short term:
-Clean/refactor code
-Implement better logging system
-
 Medium term: 
 Integrate some component on an existing github workflow to this project.
 Doing something on commit like linting would be a good place to start
@@ -13,7 +9,6 @@ Start aggregation with replicated weights
 """
 import requests
 import pandas as pd
-from ingest.PUMS_data import PUMSData
 
 from ingest.PUMS_query_manager import PUMSQueryManager
 from ingest.validate_response import validate_PUMS_column_names

@@ -19,7 +19,7 @@ from ingest.PUMS_query_manager import PUMSQueryManager
 from ingest.validate_response import validate_PUMS_column_names
 from utils.make_logger import create_logger
 
-logger = create_logger("request_logger", "logs/ingest_GET.log")
+logger = create_logger("request_logger", "logs/PUMS-GET.log")
 
 
 def make_GET_request(variable_types, year=2019, limited_PUMA=False):

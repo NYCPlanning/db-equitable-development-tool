@@ -9,7 +9,7 @@ from ingest.PUMS_data import PUMSData
 from utils.make_logger import create_logger
 
 
-logger = create_logger("query_logger", "logs/ingest-query-creation.log")
+logger = create_logger("query_logger", "logs/PUMS-query-creation.log")
 
 
 class PUMSQueryManager:
@@ -44,11 +44,7 @@ class PUMSQueryManager:
         self.variables = []
         for var_type in variable_types:
             if var_type not in self.allowed_variable_types:
-                logger.error(
-                    f"variable type of {var_type} not one of allowed types \
-                    of {self.allowed_variable_types}"
-                )
-
+                logger.error(f"{var_type} not one of {self.allowed_variable_types}")
             else:
                 self.variables.extend(self.variable_mapper[var_type])
 

@@ -24,7 +24,9 @@ def load_PUMS(variable_types: List, limited_PUMA: bool = False):
     pkl_path = construct_pickle_path(variable_types, limited_PUMA)
 
     if not exists(pkl_path):
-        logger.info("No cached data for this query, making get request")
+        logger.info(
+            f"No cached data for variables {variable_types}, making get request"
+        )
         make_GET_request(variable_types, limited_PUMA=limited_PUMA)
 
     PUMS_data = pd.read_pickle(pkl_path)

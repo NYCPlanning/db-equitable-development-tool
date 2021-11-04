@@ -2,7 +2,8 @@
 That website provides an interface to construct a query and then see the url to 
 access that query via an input.
 """
-import sys
+import os
+from dotenv import load_dotenv
 from typing import List
 
 from ingest.PUMS_data import PUMSData
@@ -10,6 +11,8 @@ from utils.make_logger import create_logger
 
 
 logger = create_logger("query_logger", "logs/PUMS-query-creation.log")
+load_dotenv()
+api_key = os.environ["CENSUS_API_KEY"]
 
 
 class PUMSQueryManager:
@@ -68,7 +71,7 @@ class PUMSQueryManager:
         geo_ids = geo_ids[:-1]
 
         base_url = self.construct_base_url(year)
-        url = f"{base_url}?get={vars}&ucgid={geo_ids}"
+        url = f"{base_url}?get={vars}&ucgid={geo_ids}&key={api_key}"
 
         return PUMSData(url, self.variables)
 

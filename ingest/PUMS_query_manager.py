@@ -52,7 +52,8 @@ class PUMSQueryManager:
         """Limited PUMA is for testing with single UCGID from each borough.
         This is to improve run time for debug/test. To-do: remove this variable"""
 
-        vars = f"PWGTP,{self.vars_as_params(self.variables)}"
+        replicate_weight_vars = "".join([f"PWGTP{x}," for x in range(1, 81)])
+        vars = f"PWGTP,{replicate_weight_vars}{self.vars_as_params(self.variables)}"
 
         geo_ids = ""
         for borough in self.geographic_id_range:

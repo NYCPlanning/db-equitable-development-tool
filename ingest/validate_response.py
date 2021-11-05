@@ -8,7 +8,7 @@ import pandas as pd
 def validate_PUMS(PUMS_df: pd.DataFrame):
     """Call all pums validation functions"""
     validate_PUMS_column_names(PUMS_df)
-    # validate_PUMS_serial_numbers_unique(PUMS_df)
+    validate_PUMS_serial_numbers_unique(PUMS_df)
 
 
 def validate_PUMS_column_names(PUMS_df: pd.DataFrame):

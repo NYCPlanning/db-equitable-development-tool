@@ -14,7 +14,11 @@ from utils.make_logger import create_logger
 logger = create_logger("load_pums_logger", "logs/aggregate.log")
 
 
-def load_PUMS(variable_types: List, limited_PUMA: bool = False):
+def load_PUMS(
+    variable_types: List = ["demographics"],
+    limited_PUMA: bool = False,
+    requery: bool = False,
+):
     """Future to-do: include re-query parameter that deletes files in data folder
     and runs ingestion process from scratch
 
@@ -23,10 +27,8 @@ def load_PUMS(variable_types: List, limited_PUMA: bool = False):
     """
     pkl_path = construct_pickle_path(variable_types, limited_PUMA)
 
-    if not exists(pkl_path):
-        logger.info(
-            f"No cached data for variables {variable_types}, making get request"
-        )
+    if requery or not exists(pkl_path):
+        logger.info(f"Making get request to generate data sent to {pkl_path}")
         make_GET_request(variable_types, limited_PUMA=limited_PUMA)
 
     PUMS_data = pd.read_pickle(pkl_path)

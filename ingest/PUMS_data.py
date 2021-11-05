@@ -30,6 +30,10 @@ class PUMSData:
         return recode_df
 
     def clean(self):
+        self.data["person_id"] = self.data["SERIALNO"] + self.data["SPORDER"]
+        self.data.set_index("person_id", inplace=True)
+        self.data.drop(columns=["SERIALNO", "SPORDER"], inplace=True)
+        self.data = self.data.astype(int)
         for v in self.variables:
             if v[1] == "categorical":
                 self.clean_column(v[0])

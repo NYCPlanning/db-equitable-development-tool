@@ -11,7 +11,7 @@ import requests
 import pandas as pd
 
 from ingest.PUMS_query_manager import PUMSQueryManager
-from ingest.validate_response import validate_PUMS_column_names
+from ingest.validate_response import validate_PUMS
 from utils.make_logger import create_logger
 
 logger = create_logger("request_logger", "logs/PUMS-GET.log")
@@ -32,9 +32,9 @@ def make_GET_request(variable_types, year=2019, limited_PUMA=False):
         logger.error(f"error in processing request: {r.text}")
         raise Exception("error making GET request. Check logs for more info")
 
-    PUMS.data = pd.DataFrame(data=r.json()[1:], columns=r.json()[0]).astype(int)
+    PUMS.data = pd.DataFrame(data=r.json()[1:], columns=r.json()[0])
     logger.info(f" {PUMS.data.shape[0]} PUMA records received from API")
-    validate_PUMS_column_names(PUMS.data)
+    validate_PUMS(PUMS.data)
 
     PUMS.clean()
     pkl_path = construct_pickle_path(variable_types, limited_PUMA)

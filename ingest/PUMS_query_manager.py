@@ -56,7 +56,7 @@ class PUMSQueryManager:
     ) -> PUMSData:
         """Limited PUMA is for testing with single UCGID from each borough.
         This is to improve run time for debug/test. To-do: remove this variable"""
-        weights = "PWGTP,"
+        weights = "PWGTP,SERIALNO,SPORDER,"
         if include_replicates:
             replicate_weight_vars = "".join([f"PWGTP{x}," for x in range(1, 81)])
             weights += replicate_weight_vars

@@ -29,4 +29,4 @@ jobs:
       - name: Pytest
         run: |
           . $HOME/.poetry/env
-          poetry run python pytest
+          poetry run pytest

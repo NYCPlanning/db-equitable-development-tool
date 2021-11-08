@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "**.py"
-      - "**.yml"
+      - ".github/workflows/test.yml"
 
 jobs:
   test:
@@ -18,8 +18,8 @@ jobs:
 
       - name: Poetry Install
         run: |
-          . $HOME/.poetry/env
-          poetry config virtualenvs.create false --local
+          pip install -U pip
+          pip install poetry
           poetry install
 
       - name: Pytest

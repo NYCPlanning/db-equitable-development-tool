@@ -15,7 +15,6 @@ class PUMSData:
         """Pulling PUMS data with replicate weights requires multiple GET
         requests as there is 50 variable max for each GET request. This class is
         responsible for merging these three GET requests into one dataframe
-
         """
         self.data_url = get_url
         self.rw_url_one = rep_weights_urls[0]

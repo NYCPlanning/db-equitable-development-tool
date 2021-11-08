@@ -26,7 +26,7 @@ class PUMSData:
         self.rw_df_two: pd.DataFrame = None
 
     def get_recode_df(self):
-        fp = "data/PUMS_recodes.csv"
+        fp = "resources/PUMS_recodes.csv"
         if not exists(fp):
             url = "https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2015-2019.csv"
             req = requests.get(url)

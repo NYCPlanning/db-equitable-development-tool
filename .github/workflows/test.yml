@@ -9,19 +9,19 @@ jobs:
   build:
   runs-on: ubuntu-latest
   steps:
-      - name: Install Dependencies
+    - name: Install Dependencies
       run: |
         apt update
         apt install -y python3-pip python3-distutils
         curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
 
-      - name: Poetry Install
-        run: |
-          . $HOME/.poetry/env
-          poetry config virtualenvs.create false --local
-          poetry install
+    - name: Poetry Install
+      run: |
+        . $HOME/.poetry/env
+        poetry config virtualenvs.create false --local
+        poetry install
 
-      - name: Pytest
-        run: |
-          . $HOME/.poetry/env
-          poetry run pytest -s
+    - name: Pytest
+      run: |
+        . $HOME/.poetry/env
+        poetry run pytest -s

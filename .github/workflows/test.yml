@@ -9,6 +9,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -28,7 +30,6 @@ jobs:
 
       - name: Make Logs Dir
         run: mkdir logs/
-
 
       - name: Pytest
         run: |

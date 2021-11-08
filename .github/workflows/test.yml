@@ -30,9 +30,9 @@ jobs:
 
       - name: Make Logs Dir
         run: mkdir logs/
+        run: mkdir data/
 
       - name: Pytest
         run: |
           . $HOME/.poetry/env
-          echo ${{ secrets.CENSUS_API_KEY }}
           poetry run pytest -s

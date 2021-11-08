@@ -11,7 +11,7 @@ from ingest.PUMS_data import PUMSData
 from ingest.PUMS_request import download_PUMS, construct_pickle_path
 from utils.make_logger import create_logger
 
-logger = create_logger("load_pums_logger", "logs/aggregate.log")
+logger = create_logger("load_pums_logger", "logs/load_PUMS.log")
 
 
 def load_PUMS(

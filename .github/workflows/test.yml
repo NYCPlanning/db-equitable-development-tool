@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "**.py"
+      - "**.yml"
 
 jobs:
   test:
@@ -11,8 +12,8 @@ jobs:
     steps:
       - name: Install Dependencies
         run: |
-          apt update
-          apt install -y python3-pip python3-distutils
+          sudo apt update
+          sudo apt install -y python3-pip python3-distutils
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
 
       - name: Poetry Install

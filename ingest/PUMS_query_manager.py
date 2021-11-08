@@ -8,8 +8,6 @@ import os
 from dotenv import load_dotenv
 from typing import List
 
-from pandas.core import base
-
 from ingest.PUMS_data import PUMSData
 from utils.make_logger import create_logger
 

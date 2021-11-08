@@ -8,7 +8,7 @@ from os.path import exists
 from typing import List
 from ingest.PUMS_data import PUMSData
 
-from ingest.PUMS_request import make_GET_request, construct_pickle_path
+from ingest.PUMS_request import download_PUMS, construct_pickle_path
 from utils.make_logger import create_logger
 
 logger = create_logger("load_pums_logger", "logs/aggregate.log")
@@ -29,8 +29,9 @@ def load_PUMS(
 
     if requery or not exists(pkl_path):
         logger.info(f"Making get request to generate data sent to {pkl_path}")
-        make_GET_request(variable_types, limited_PUMA=limited_PUMA)
-
+        download_PUMS(variable_types, limited_PUMA=limited_PUMA)
+    else:
+        logger.info(f"loading existing data from {pkl_path}")
     PUMS_data = pd.read_pickle(pkl_path)
     logger.info(f"PUMS data with {PUMS_data.shape[0]} records, ready for aggregation")
     return PUMS_data

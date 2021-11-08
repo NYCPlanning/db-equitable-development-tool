@@ -17,8 +17,10 @@ from utils.make_logger import create_logger
 logger = create_logger("request_logger", "logs/PUMS-GET.log")
 
 
-def make_GET_request(variable_types, year=2019, limited_PUMA=False):
-    """Construct and make get request for person-level pums data
+def download_PUMS(variable_types, year=2019, limited_PUMA=False):
+    """
+    Refactor: move this process to PUMS data class
+    Construct and make get request for person-level pums data
 
     :param year:
     :param variable_type: the category of variables we want. Can be demographic, housing secutiry
@@ -26,47 +28,39 @@ def make_GET_request(variable_types, year=2019, limited_PUMA=False):
 
     p = PUMSQueryManager(variable_types)
     PUMS = p(year, limited_PUMA)
-    # To-do: move this logic to PUMS data class as part of bigger refactor
-    logger.info(f"GET url for data is {PUMS.data_url}")
-    data_response = requests.get(PUMS.data_url)
-    if data_response.status_code != 200:
-        logger.error(f"error in processing request for data: {data_response.text}")
-        raise Exception(f"error making GET request for data: {data_response.text}")
-    PUMS.data = response_to_df(data_response)
 
-    # Easy refactor: load both dfs, merge then before assigning to PUMS attr
-    # so we don't need iteratble attr which is a pain
-    # another to-do is to drop puma, st from replicate weights df
-    rep_weights_dfs = []
-    for rep_weight_url in PUMS.rep_weights_urls:
-        logger.info(f"GET url for replicate weights is is {rep_weight_url}")
-        rep_weights_response = requests.get(rep_weight_url)
-        if rep_weights_response.status_code != 200:
-            logger.error(
-                f"error in processing request for data: {rep_weights_response.text}"
-            )
-            raise Exception(
-                "error making GET request for data. Check logs for more info"
-            )
-        rep_weights_dfs.append(response_to_df(rep_weights_response))
+    PUMS.data = make_GET_request(
+        PUMS.data_url, "data (variables, not replicate weights)"
+    )
 
-    PUMS.replicate_weights_dfs = tuple(rep_weights_dfs)
+    PUMS.rw_df_one = make_GET_request(PUMS.rw_url_one, "replicate weights 1-40")
+    PUMS.rw_df_two = make_GET_request(PUMS.rw_url_two, "replicate weights 41-80")
+
+    # Small change: drop puma, st from replicate weights df
 
     logger.info(f" {PUMS.data.shape[0]} PUMA records received from API")
-    # validate_PUMS(PUMS.data) #To-do: figure out where to put validate pums
+    # validate_PUMS(PUMS.data)  # To-do: move this to automated test
 
-    # No good reason to call these here I think.
-    PUMS.clean_all()
-    PUMS.collate()
+    # To do: collapse into one function call
+    PUMS.clean_and_collate()
 
     pkl_path = construct_pickle_path(variable_types, limited_PUMA)
     PUMS.data.to_pickle(pkl_path)
     logger.info(f"PUMS data saved to {pkl_path}")
 
 
-def response_to_df(response):
+def make_GET_request(url: str, request_name: str):
+    logger.info(f"GET url for {request_name} is {url}")
+    res = requests.get(url)
+    if res.status_code != 200:
+        logger.error(f"error in processing request for {request_name}: {res.text}")
+        raise Exception(f"error making GET request for {request_name}: {res.text}")
+    return response_to_df(res.json())
+
+
+def response_to_df(res_json):
     """To-do: move to PUMS data class during refactor"""
-    return pd.DataFrame(data=response.json()[1:], columns=response.json()[0])
+    return pd.DataFrame(data=res_json[1:], columns=res_json[0])
 
 
 def construct_pickle_path(variable_types, limited_PUMA=False):

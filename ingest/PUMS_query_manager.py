@@ -1,6 +1,8 @@
 """Use https://data.census.gov/mdat/#/search?ds=ACSPUMS5Y2019 as a reference.
 That website provides an interface to construct a query and then see the url to 
 access that query via an input.
+
+Refactor: call this from PUMS data init instead of from PUMS_request
 """
 import os
 from dotenv import load_dotenv
@@ -68,35 +70,37 @@ class PUMSQueryManager:
                     break
         geo_ids = geo_ids[:-1]
 
-        base_url = self.construct_base_url(year)
-        base_weights_section = f"{base_url}?get={identifiers}"
+        url_start = self.construct_url_start(year)
+        base_weights_section = f"{url_start}?get={identifiers}"
         geo_ids_key_section = f"&ucgid={geo_ids}&key={api_key}"
-        rep_weight_vars = []
-        for x in (1, 41):
-            rep_weight_vars.append(",".join([f"PWGTP{x}" for x in range(x, x + 40)]))
 
-        data_vars = f"PWGTP,{self.vars_as_params(self.variables)}"
-        # To-do: important refactor. Call this without passing base weights and geo ids each time. Stuck thinking through it now but this is obviously too messy
+        variable_queries = []
+        variable_queries.append(f"PWGTP,{self.vars_as_params(self.variables)}")
+        for x in (1, 41):
+            variable_queries.append(",".join([f"PWGTP{x}" for x in range(x, x + 40)]))
+
+        urls = self.generate_urls(
+            base_weights_section, geo_ids_key_section, variable_queries
+        )
         return PUMSData(
-            get_url=self.generate_url(
-                base_weights_section, data_vars, geo_ids_key_section
-            ),
-            variables=self.variables,
-            rep_weights_urls=(
-                self.generate_url(
-                    base_weights_section, rep_weight_vars[0], geo_ids_key_section
-                ),
-                self.generate_url(
-                    base_weights_section, rep_weight_vars[1], geo_ids_key_section
-                ),
-            ),
+            get_url=urls[0], variables=self.variables, rep_weights_urls=urls[1:]
         )
 
-    def generate_url(self, base_section, var_section, geo_ids_section):
+    def generate_urls(self, base: str, geo: str, variable_queries: List):
+        """Generate three urls, one for querying variables of interest
+        and two for querying replicate weights
 
-        return f"{base_section}{var_section}{geo_ids_section}"
+        :base: protocol, domain, path of url
+        :geo: query for PUMAs and API key variable
+        :variable section: maps name of url to variables in query
+        :return: urls in order of: data url, replicate weights url one and two
+        """
+        rv = []
+        for variable_query in variable_queries:
+            rv.append(f"{base}{variable_query}{geo}")
+        return rv
 
-    def construct_base_url(self, year):
+    def construct_url_start(self, year):
         if year not in self.allowed_years:
             logger.warning("{year} not one of allowed years: {self.allowed_years}")
             raise "Unallowed year"
@@ -105,15 +109,3 @@ class PUMSQueryManager:
 
     def vars_as_params(self, variables: List) -> str:
         return ",".join([v[0] for v in variables])
-
-
-@dataclass
-class urlVariableSets:
-    """Each request for PUMS data needs to be split into three GET requests.
-    These GET requests query for the same unique ID, apply the same PUMA filter
-    and use the same key. The only thing that changes is the set of variables. This
-    dataclass is implemented to keep track of these variable sets"""
-
-    data_vars: str
-    rep_weights_one: str
-    rep_weights_two: str

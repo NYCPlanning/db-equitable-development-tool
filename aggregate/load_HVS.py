@@ -13,7 +13,6 @@ def load_HVS(requery=False):
     if requery or not exists(HVS_cache_fn):
         logger.info(f"Downloading HVS data instead of using cache")
         HVS = download_HVS()
-        HVS.to_pickle(HVS_cache_fn)
 
     HVS = pd.read_pickle(HVS_cache_fn)
     logger.info(f"HVS data with {HVS.shape[0]} records, ready for aggregation")

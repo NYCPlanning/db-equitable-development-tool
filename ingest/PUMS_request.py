@@ -11,7 +11,10 @@ import requests
 import pandas as pd
 
 from ingest.PUMS_query_manager import PUMSQueryManager
-from ingest.validate_response import validate_PUMS
+from ingest.validate_response import (
+    validate_PUMS_column_names,
+    validate_PUMS_unique,
+)
 from utils.make_logger import create_logger
 
 logger = create_logger("request_logger", "logs/PUMS-GET.log")
@@ -25,7 +28,6 @@ def download_PUMS(variable_types, year=2019, limited_PUMA=False):
     :param year:
     :param variable_type: the category of variables we want. Can be demographic, housing secutiry
     :return: data from GET request in pandas dataframe"""
-
     p = PUMSQueryManager(variable_types)
     PUMS = p(year, limited_PUMA)
 
@@ -36,13 +38,12 @@ def download_PUMS(variable_types, year=2019, limited_PUMA=False):
     PUMS.rw_df_one = make_GET_request(PUMS.rw_url_one, "replicate weights 1-40")
     PUMS.rw_df_two = make_GET_request(PUMS.rw_url_two, "replicate weights 41-80")
 
-    # Small change: drop puma, st from replicate weights df
-
     logger.info(f" {PUMS.data.shape[0]} PUMA records received from API")
-    # validate_PUMS(PUMS.data)  # To-do: move this to automated test
+    # validate_PUMS_column_names(PUMS.data)  # To-do: move this to automated test
 
     # To do: collapse into one function call
     PUMS.clean_and_collate()
+    # validate_PUMS_unique(PUMS.data)
 
     pkl_path = construct_pickle_path(variable_types, limited_PUMA)
     PUMS.data.to_pickle(pkl_path)

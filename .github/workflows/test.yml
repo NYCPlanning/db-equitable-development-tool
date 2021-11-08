@@ -29,8 +29,9 @@ jobs:
           poetry install
 
       - name: Make Logs Dir
-        run: mkdir logs/
-        run: mkdir data/
+        run: |
+          mkdir logs/
+          mkdir data/
 
       - name: Pytest
         run: |

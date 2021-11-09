@@ -9,46 +9,22 @@ Start aggregation with replicated weights
 """
 import requests
 import pandas as pd
+import time
 
-from ingest.PUMS_query_manager import PUMSQueryManager
 from utils.make_logger import create_logger
 
 logger = create_logger("request_logger", "logs/PUMS-GET.log")
 
 
-def download_PUMS(variable_types, year=2019, limited_PUMA=False):
-    """
-    Refactor: move this process to PUMS data class
-    Construct and make get request for person-level pums data
-
-    :param year:
-    :param variable_type: the category of variables we want. Can be demographic, housing secutiry
-    :return: data from GET request in pandas dataframe"""
-    p = PUMSQueryManager(variable_types)
-    PUMS = p(year, limited_PUMA)
-
-    PUMS.data = make_GET_request(
-        PUMS.data_url, "data (variables, not replicate weights)"
-    )
-
-    PUMS.rw_df_one = make_GET_request(PUMS.rw_url_one, "replicate weights 1-40")
-    PUMS.rw_df_two = make_GET_request(PUMS.rw_url_two, "replicate weights 41-80")
-
-    logger.info(f" {PUMS.data.shape[0]} PUMA records received from API")
-
-    PUMS.clean_and_collate()
-
-    pkl_path = construct_pickle_path(variable_types, limited_PUMA)
-    PUMS.data.to_pickle(pkl_path)
-    logger.info(f"PUMS data saved to {pkl_path}")
-
-
-def make_GET_request(url: str, request_name: str):
+def make_GET_request(url: str, request_name: str) -> pd.DataFrame:
+    start_time = time.perf_counter()
     logger.info(f"GET url for {request_name} is {url}")
     res = requests.get(url)
     if res.status_code != 200:
         logger.error(f"error in processing request for {request_name}: {res.text}")
         raise Exception(f"error making GET request for {request_name}: {res.text}")
+    end_time = time.perf_counter()
+    print(f"get request took {end_time - start_time} seconds")
     return response_to_df(res.json())
 
 

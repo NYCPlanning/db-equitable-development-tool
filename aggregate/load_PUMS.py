@@ -8,7 +8,8 @@ from os.path import exists
 from typing import List
 from ingest.PUMS_data import PUMSData
 
-from ingest.PUMS_request import download_PUMS, construct_pickle_path
+from ingest.PUMS_request import construct_pickle_path
+from ingest.download_PUMS import download_PUMS
 from utils.make_logger import create_logger
 
 logger = create_logger("load_pums_logger", "logs/load_PUMS.log")

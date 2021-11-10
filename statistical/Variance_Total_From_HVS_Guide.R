@@ -12,6 +12,13 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 hu <- read.csv("../data/HVS_data.csv", header=TRUE)
 
+#Clean data. Eventually may want to do this in python, unsure about that 
+weights_correction <- 10^5
+rep_weights_cols = c(187:266)
+hu[,rep_weights_cols] <- hu[,rep_weights_cols] / weights_correction
+hu$fw <- hu$fw / weights_correction
+
+#
 hu$occ_final = ifelse(hu$recid==1, 1, 0)
 
 #UF_CSR is "New control status recode" which says who occupies unit and whether it's stabilizied
@@ -50,10 +57,21 @@ hu$gross_rent = ifelse(
 # in our df, variables run from columns 1 to 187 and 268 to 276
 # weights run from 188 to 267 
 
-#Added by Sasha: remove rows where recid is 
 
-hu_design <- svrepdesign(variables= hu[,c(1:187, 268:276)],
-                         repweights=hu[,188:267],
+hu_design <- svrepdesign(variables= hu[,c(1:187, 268:275)],
+                         repweights=hu[,rep_weights_cols],
                          weights=hu$fw, combined.weights = TRUE, type='other',
-                         scale=4/80, rescales=1)
+                         scale=4/80, rscales=1)
+
+occ_hus <- subset(hu_design, occ_final==1)
+survey_total = svytotal(~occ_final, design=occ_hus)
+
+#By sub-borough area
+by_sub_borough_area = svyby(~occ_final, ~boro+cd, design=hu_design, svytotal)
+
+# group by borough instead
+by_boro = svyby(~occ_final, ~boro, design=hu_design, svytotal)
+
+
+
 

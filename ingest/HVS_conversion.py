@@ -33,7 +33,7 @@ def download_HVS(human_readable=True, output_type="pkl") -> pd.DataFrame:
     if output_type == "pkl":
         HVS_data.to_pickle(HVS_cache_fn)
     elif output_type == "csv":
-        HVS_data.to_csv(HVS_cache_fn)
+        HVS_data.to_csv(HVS_cache_fn, index=False)
     else:
         raise "Unsupported file type, data not cached nor loaded"
 

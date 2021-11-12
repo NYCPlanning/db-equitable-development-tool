@@ -16,10 +16,4 @@ def download_PUMS(
     :return: data from GET request in pandas dataframe"""
     PUMS = PUMSData(variable_types=variable_types, year=year, limited_PUMA=limited_PUMA)
 
-    PUMS.populate_raw_dataframes()
-
-    # logger.info(f" {PUMS.vi_data.shape[0]} PUMA records received from API")
-
-    PUMS.clean_collate_cache()
-
-    # logger.info(f"PUMS data saved to {pkl_path}")
+    PUMS.merge_cache()

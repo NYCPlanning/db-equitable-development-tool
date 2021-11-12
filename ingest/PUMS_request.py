@@ -24,7 +24,7 @@ def make_GET_request(url: str, request_name: str) -> pd.DataFrame:
         logger.error(f"error in processing request for {request_name}: {res.text}")
         raise Exception(f"error making GET request for {request_name}: {res.text}")
     end_time = time.perf_counter()
-    print(f"get request took {end_time - start_time} seconds")
+    logger.info(f"this get request took {end_time - start_time} seconds")
     return response_to_df(res.json())
 
 

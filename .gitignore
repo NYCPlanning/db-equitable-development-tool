@@ -131,3 +131,5 @@ dmypy.json
 # Cached info
 /data
 /logs
+
+.RHistory

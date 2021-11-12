@@ -8,6 +8,7 @@ class method for aggregate step to access.  Class method will return cached data
 initalize a PUMSData object and use it to save a .pkl"""
 
 from ingest.PUMS_request import make_GET_request, construct_pickle_path
+from ingest.PUMS_query_manager import get_variables, get_urls
 
 
 class PUMSData:
@@ -15,7 +16,10 @@ class PUMSData:
     data itself, and the code to clean it"""
 
     def __init__(
-        self, urls: dict, variables: List, variable_types: List, limited_PUMA: bool
+        self,
+        variable_types: List = ["demographics"],
+        limited_PUMA: bool = False,
+        year: int = 2019,
     ):
         """Pulling PUMS data with replicate weights requires multiple GET
         requests as there is 50 variable max for each GET request. This class is
@@ -36,10 +40,11 @@ class PUMSData:
         :urls: tuple of two urls, one with each geographic regions
         :data: dataframe originally populated with variables
         """
-        self.variables = variables
-        self.variable_types = variable_types
-        self.limited_PUMA = limited_PUMA
 
+        self.variable_types = variable_types
+        self.variables = get_variables(self.variable_types)
+        self.limited_PUMA = limited_PUMA
+        urls = get_urls(variables=self.variables, year=year, limited_PUMA=limited_PUMA)
         self.data_urls = urls["vi"]
         self.rw_one_urls = urls["rw_one"]
         self.rw_two_urls = urls["rw_two"]

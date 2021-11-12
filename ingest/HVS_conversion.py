@@ -13,17 +13,37 @@ metadata_raw = requests.get(metadata_url).text
 
 occupied_raw = requests.get(data_url).text
 
-HVS_cache_fn = "data/HVS_data.pkl"
 
+def download_HVS(human_readable=True, output_type="pkl") -> pd.DataFrame:
 
-def download_HVS() -> pd.DataFrame:
     variable_positions = create_variable_postion_mapper()
     occupied_labels = create_label_cleaner()
     records = []
     for line in occupied_raw.split("\n"):
         records.append(parse_line(variable_positions, line))
-    HVS_data = pd.DataFrame(records).rename(columns=occupied_labels)
-    HVS_data.to_pickle(HVS_cache_fn)
+
+    HVS_data = pd.DataFrame(records)
+
+    HVS_data = HVS_data[HVS_data["recid"] != ""]
+    HVS_cache_fn = make_HVS_cache_fn(human_readable, output_type)
+
+    if human_readable:
+        HVS_data.rename(columns=occupied_labels, inplace=True)
+
+    if output_type == "pkl":
+        HVS_data.to_pickle(HVS_cache_fn)
+    elif output_type == "csv":
+        HVS_data.to_csv(HVS_cache_fn, index=False)
+    else:
+        raise "Unsupported file type, data not cached nor loaded"
+
+
+def make_HVS_cache_fn(human_readable=True, output_type="pkl"):
+    rv = "data/HVS_data"
+    if human_readable:
+        rv = f"{rv}_human_readable"
+
+    return f"{rv}.{output_type}"
 
 
 def create_label_cleaner():

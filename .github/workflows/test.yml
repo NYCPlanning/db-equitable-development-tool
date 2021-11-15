@@ -28,11 +28,6 @@ jobs:
           pip install poetry
           poetry install
 
-      - name: Make Logs Dir
-        run: |
-          mkdir logs/
-          mkdir data/
-
       - name: Pytest
         run: |
           . $HOME/.poetry/env

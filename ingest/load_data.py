@@ -38,6 +38,8 @@ def load_data(
 
     setup_directory("data/")
 
+    rv = {}
+
     PUMS_cache_path = make_PUMS_cache_fn(
         variable_types=PUMS_variable_types, limited_PUMA=limited_PUMA
     )
@@ -47,7 +49,7 @@ def load_data(
         download_PUMS(variable_types=PUMS_variable_types, limited_PUMA=limited_PUMA)
 
     PUMS_data = pd.read_pickle(PUMS_cache_path)
-
+    rv['PUMS'] = PUMS_data
     logger.info(
         f"PUMS data with {PUMS_data.shape[0]} records loaded, ready for aggregation"
     )
@@ -65,11 +67,11 @@ def load_data(
         HVS_data = pd.read_pickle(HVS_cache_path)
     elif HVS_output_type == ".csv":
         HVS_data = pd.read_csv(HVS_cache_path)
-
+    rv['HVS'] = HVS_data
     logger.info(
         f"HVS data with {HVS_data.shape[0]} records loaded, ready for aggregation"
     )
-    return PUMS_data, HVS_data
+    return rv
 
 
 def download_PUMS(

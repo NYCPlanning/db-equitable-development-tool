@@ -31,11 +31,3 @@ def make_GET_request(url: str, request_name: str) -> pd.DataFrame:
 def response_to_df(res_json):
     """To-do: move to PUMS data class during refactor"""
     return pd.DataFrame(data=res_json[1:], columns=res_json[0])
-
-
-def construct_pickle_path(variable_types, limited_PUMA=False):
-
-    fn = f'{"_".join(variable_types)}_by_person'
-    if limited_PUMA:
-        fn += "_limitedPUMA"
-    return f"data/{fn}.pkl"

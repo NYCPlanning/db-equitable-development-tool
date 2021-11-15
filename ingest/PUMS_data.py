@@ -7,8 +7,9 @@ import requests
 class method for aggregate step to access.  Class method will return cached data or
 initalize a PUMSData object and use it to save a .pkl"""
 
-from ingest.PUMS_request import make_GET_request, construct_pickle_path
+from ingest.PUMS_request import make_GET_request
 from ingest.PUMS_query_manager import get_variables, get_urls
+from ingest.make_cache_fn import make_PUMS_cache_fn
 
 
 class PUMSData:
@@ -84,7 +85,7 @@ class PUMSData:
         self.cache()
 
     def cache(self):
-        pkl_path = construct_pickle_path(self.variable_types, self.limited_PUMA)
+        pkl_path = make_PUMS_cache_fn(self.variable_types, self.limited_PUMA)
         self.vi_data.to_pickle(pkl_path)
 
     def assign_identifier(self, attr_name):

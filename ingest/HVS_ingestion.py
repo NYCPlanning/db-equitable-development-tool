@@ -5,6 +5,7 @@ https://github.com/NYCPlanning/db-equitable-development-tool/issues/1
 """
 import requests
 import pandas as pd
+from ingest.make_cache_fn import make_HVS_cache_fn
 
 metadata_url = "https://www2.census.gov/programs-surveys/nychvs/datasets/2017/microdata/stata_import_program_17.txt"
 data_url = "https://www2.census.gov/programs-surveys/nychvs/datasets/2017/microdata/uf_17_occ_web_b.txt"
@@ -14,7 +15,7 @@ metadata_raw = requests.get(metadata_url).text
 occupied_raw = requests.get(data_url).text
 
 
-def download_HVS(human_readable=True, output_type="pkl") -> pd.DataFrame:
+def create_HVS(human_readable=True, output_type="pkl") -> pd.DataFrame:
 
     variable_positions = create_variable_postion_mapper()
     occupied_labels = create_label_cleaner()
@@ -30,20 +31,12 @@ def download_HVS(human_readable=True, output_type="pkl") -> pd.DataFrame:
     if human_readable:
         HVS_data.rename(columns=occupied_labels, inplace=True)
 
-    if output_type == "pkl":
+    if output_type == ".pkl":
         HVS_data.to_pickle(HVS_cache_fn)
-    elif output_type == "csv":
+    elif output_type == ".csv":
         HVS_data.to_csv(HVS_cache_fn, index=False)
     else:
-        raise "Unsupported file type, data not cached nor loaded"
-
-
-def make_HVS_cache_fn(human_readable=True, output_type="pkl"):
-    rv = "data/HVS_data"
-    if human_readable:
-        rv = f"{rv}_human_readable"
-
-    return f"{rv}.{output_type}"
+        raise Exception("Unsupported file type, data not cached nor loaded")
 
 
 def create_label_cleaner():

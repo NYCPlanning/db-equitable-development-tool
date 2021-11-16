@@ -25,6 +25,7 @@ allowed_HVS_cache_types = [".csv", ".pkl"]
 def load_data(
     PUMS_variable_types: List = ["demographics"],
     limited_PUMA: bool = False,
+    year: int = 2019,
     requery: bool = False,
     HVS_human_readable: bool = False,
     HVS_output_type: str = ".csv",
@@ -41,7 +42,7 @@ def load_data(
     rv = {}
 
     PUMS_cache_path = make_PUMS_cache_fn(
-        variable_types=PUMS_variable_types, limited_PUMA=limited_PUMA
+        variable_types=PUMS_variable_types, limited_PUMA=limited_PUMA, year=year
     )
 
     if requery or not exists(PUMS_cache_path):
@@ -49,7 +50,7 @@ def load_data(
         download_PUMS(variable_types=PUMS_variable_types, limited_PUMA=limited_PUMA)
 
     PUMS_data = pd.read_pickle(PUMS_cache_path)
-    rv['PUMS'] = PUMS_data
+    rv["PUMS"] = PUMS_data
     logger.info(
         f"PUMS data with {PUMS_data.shape[0]} records loaded, ready for aggregation"
     )
@@ -67,7 +68,7 @@ def load_data(
         HVS_data = pd.read_pickle(HVS_cache_path)
     elif HVS_output_type == ".csv":
         HVS_data = pd.read_csv(HVS_cache_path)
-    rv['HVS'] = HVS_data
+    rv["HVS"] = HVS_data
     logger.info(
         f"HVS data with {HVS_data.shape[0]} records loaded, ready for aggregation"
     )

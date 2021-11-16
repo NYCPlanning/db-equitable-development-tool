@@ -45,6 +45,7 @@ class PUMSData:
         self.variable_types = variable_types
         self.variables = get_variables(self.variable_types)
         self.limited_PUMA = limited_PUMA
+        self.year = year
         urls = get_urls(variables=self.variables, year=year, limited_PUMA=limited_PUMA)
         self.urls = urls
         self.vi_data: pd.DataFrame = None
@@ -85,7 +86,11 @@ class PUMSData:
         self.cache()
 
     def cache(self):
-        pkl_path = make_PUMS_cache_fn(self.variable_types, self.limited_PUMA)
+        pkl_path = make_PUMS_cache_fn(
+            variable_types=self.variable_types,
+            limited_PUMA=self.limited_PUMA,
+            year=self.year,
+        )
         self.vi_data.to_pickle(pkl_path)
 
     def assign_identifier(self, attr_name):

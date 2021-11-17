@@ -103,6 +103,8 @@ class PUMSData:
         for v in self.variables:
             if v[1] == "categorical":
                 self.clean_column(v[0])
+            if v[1] == "continuous":
+                self.vi_data[v[0]] = self.vi_data[v[0]].astype(int)
 
     def clean_column(self, column_name):
         print(f"cleaning {column_name}")

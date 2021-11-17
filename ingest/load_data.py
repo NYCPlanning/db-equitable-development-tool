@@ -1,5 +1,5 @@
 """Access to ingestion code"""
-from typing import List
+from typing import List, Tuple
 
 from ingest.PUMS_data import PUMSData
 
@@ -29,7 +29,7 @@ def load_data(
     requery: bool = False,
     HVS_human_readable: bool = False,
     HVS_output_type: str = ".csv",
-):
+) -> dict:
     """Future to-do: include re-query parameter that deletes files in data folder
     and runs ingestion process from scratch
 

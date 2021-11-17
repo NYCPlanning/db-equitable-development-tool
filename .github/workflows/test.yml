@@ -5,6 +5,8 @@ on:
     paths:
       - "**.py"
       - ".github/workflows/test.yml"
+      - "poetry.lock"
+      - pyproject.toml
 
 jobs:
   test:

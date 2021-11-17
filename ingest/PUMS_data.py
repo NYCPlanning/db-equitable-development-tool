@@ -100,6 +100,7 @@ class PUMSData:
         df.drop(columns=["SERIALNO", "SPORDER"], inplace=True)
 
     def clean_data(self):
+        self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
         for v in self.variables:
             if v[1] == "categorical":
                 self.clean_column(v[0])

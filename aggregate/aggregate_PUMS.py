@@ -2,28 +2,28 @@
 through many interations in the future
 Reference for applying weights: https://www2.census.gov/programs-surveys/acs/tech_docs/pums/accuracy/2015_2019AccuracyPUMS.pdf
 """
-
+import pandas as pd
 from ingest.PUMS_data import PUMSData
 from ingest.load_data import load_data
+from aggregate.calculate_counts import calculate_counts_by_PUMA
 
 
 def aggregate_demographics(**kwargs):
     PUMS = load_data(
         PUMS_variable_types=["demographics"],
-        limited_PUMA=False,
+        limited_PUMA=kwargs["limited_PUMA"],
         year=kwargs["year"],
         requery=kwargs["requery"],
     )["PUMS"]
 
-    add_LEP_by_race_columns(PUMS)
+    PUMS = assign_col(PUMS, "LEP_by_race", LEP_by_race)
+    # To-do: get rw_cols from somewhere. PUMS data class to pickle maybe?
+    rw_cols = [f"PWGTP{x}" for x in range(1, 81)]
+    return calculate_counts_by_PUMA(PUMS, "LEP_by_race", rw_cols, "PWGTP", "PUMA")
 
 
-def add_LEP_by_race_columns(PUMS):
-    """Add columns to calculate lep_wnh, lep_bnh, lep_anh, lep_hsp, lep_onh from Field Specifications in Intro-1572-B-data-matrix.
-    I added lep_onh as other non-hispanic so each limited english person in city gets counted"""
-    cols = ["lep_wnh", "lep_bnh", "lep_anh", "lep_hsp", "lep_onh"]
-    PUMS[cols] = 0
-    PUMS = PUMS.apply(axis=1, func=LEP_by_race)
+def assign_col(PUMS, col_name, func) -> pd.DataFrame:
+    PUMS[col_name] = PUMS.apply(axis=1, func=func)
     return PUMS
 
 
@@ -31,26 +31,21 @@ def LEP_by_race(person):
     """Limited english proficiency by race"""
     if (
         person["AGEP"] < 5
-        or person["LANX"] == "No, Speaks Only English"
+        or person["LANX"] == "No, speaks only English"
         or person["ENG"] == "Very well"
     ):
-        return person
+        return None
 
     if person["HISP"] != "Not Spanish/Hispanic/Latino":
-        person["lep_hsp"] = 1
-        return person
+        return "lep_hsp"
     else:
         if person["RAC1P"] == "White alone":
-            person["lep_wnh"] = 1
-            return person
-        elif person["RAC1P"] == "Black alone":
-            person["lep_bnh"] = 1
-            return person
+            return "lep_wnh"
+        elif person["RAC1P"] == "Black or African American alone":
+            return "lep_bnh"
         elif person["RAC1P"] == "Asian alone":
-            person["lep_anh"] = 1
-            return person
+            return "lep_anh"
         else:
-            person["lep_onh"] = 1
-            return person
+            return "lep_onh"
 
     raise Exception("Limited english profiency by race not assigned")

@@ -3,7 +3,7 @@
 
 def make_PUMS_cache_fn(year: int, variable_types=None, limited_PUMA=False):
     fn = f'PUMS_{"_".join(variable_types)}'
-    fn = f"fn_{year}"
+    fn = f"{fn}_{year}"
     if limited_PUMA:
         fn += "_limitedPUMA"
     return f"data/{fn}.pkl"

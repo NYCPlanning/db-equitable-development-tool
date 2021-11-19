@@ -32,12 +32,14 @@ jobs:
           poetry install
 
       - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '4.1.2' # The R version to download (if necessary) and use.
+          
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
-          r-version: 'latest' # The R version to download (if necessary) and use.
           extra-packages: |
             survey
-            
+
 
       - name: Pytest
         run: |

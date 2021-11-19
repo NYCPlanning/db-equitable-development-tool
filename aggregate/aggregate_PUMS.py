@@ -16,22 +16,29 @@ def aggregate_demographics(**kwargs):
         requery=kwargs["requery"],
     )["PUMS"]
 
-    PUMS = assign_col(PUMS, "LEP_by_race", LEP_by_race_assign)
-    PUMS = assign_col(PUMS, "fb_by_race", foreign_born_by_race_assign)
-    PUMS = assign_col(PUMS, "fb", foreign_born_assign)
-
     rw_cols = [f"PWGTP{x}" for x in range(1, 81)]
 
     # Implement a way to merge each variable on dataframe. Dataframe should start
     # with no column and index of all PUMAS
 
     rv = pd.DataFrame(index=PUMS["PUMA"].unique())
-    rv = add_variable(
-        rv,
-        calc_counts(PUMS, "LEP_by_race", rw_cols, "PWGTP", "PUMA"),
+    rv = calculate_add_new_variable(
+        rv, PUMS, "LEP_by_race", LEP_by_race_assign, rw_cols, "PWGTP", "PUMA"
     )
-    rv = add_variable(rv, calc_counts(PUMS, "fb", rw_cols, "PWGTP", "PUMA"))
-    rv = add_variable(rv, calc_counts(PUMS, "fb_by_race", rw_cols, "PWGTP", "PUMA"))
+    rv = calculate_add_new_variable(
+        rv, PUMS, "fb_by_race", foreign_born_by_race_assign, rw_cols, "PWGTP", "PUMA"
+    )
+    rv = calculate_add_new_variable(
+        rv, PUMS, "fb", foreign_born_assign, rw_cols, "PWGTP", "PUMA"
+    )
+    return rv
+
+
+def calculate_add_new_variable(
+    rv, PUMS, new_var_name, variable_constructor, rw_cols, weight_col, geo_col
+):
+    PUMS = assign_col(new_var_name, variable_constructor)
+    rv = add_variable(rv, calc_counts(PUMS, new_var_name, rw_cols, weight_col, geo_col))
     return rv
 
 

@@ -5,7 +5,7 @@ Reference for applying weights: https://www2.census.gov/programs-surveys/acs/tec
 import pandas as pd
 from ingest.PUMS_data import PUMSData
 from ingest.load_data import load_data
-from statistical.calculate_counts import calculate_counts_by_PUMA
+from statistical.calculate_counts import calc_counts
 
 
 def aggregate_demographics(**kwargs):
@@ -16,10 +16,27 @@ def aggregate_demographics(**kwargs):
         requery=kwargs["requery"],
     )["PUMS"]
 
-    PUMS = assign_col(PUMS, "LEP_by_race", LEP_by_race)
-    # To-do: get rw_cols from somewhere. PUMS data class to pickle maybe?
+    PUMS = assign_col(PUMS, "LEP_by_race", LEP_by_race_assign)
+    PUMS = assign_col(PUMS, "fb_by_race", foreign_born_by_race_assign)
+    PUMS = assign_col(PUMS, "fb", foreign_born_assign)
+
     rw_cols = [f"PWGTP{x}" for x in range(1, 81)]
-    return calculate_counts_by_PUMA(PUMS, "LEP_by_race", rw_cols, "PWGTP", "PUMA")
+
+    # Implement a way to merge each variable on dataframe. Dataframe should start
+    # with no column and index of all PUMAS
+
+    rv = pd.DataFrame(index=PUMS["PUMA"].unique())
+    rv = add_variable(
+        rv,
+        calc_counts(PUMS, "LEP_by_race", rw_cols, "PWGTP", "PUMA"),
+    )
+    rv = add_variable(rv, calc_counts(PUMS, "fb", rw_cols, "PWGTP", "PUMA"))
+    rv = add_variable(rv, calc_counts(PUMS, "fb_by_race", rw_cols, "PWGTP", "PUMA"))
+    return rv
+
+
+def add_variable(big_df, new_var):
+    return big_df.merge(new_var, left_index=True, right_index=True)
 
 
 def assign_col(PUMS, col_name, func) -> pd.DataFrame:
@@ -27,7 +44,20 @@ def assign_col(PUMS, col_name, func) -> pd.DataFrame:
     return PUMS
 
 
-def LEP_by_race(person):
+def foreign_born_by_race_assign(person):
+    if person["NATIVITY"] == "Native":
+        return None
+    return f"fb_{race_assignment(person)}"
+
+
+def foreign_born_assign(person):
+    """Foreign born"""
+    if person["NATIVITY"] == "Native":
+        return None
+    return "fb"
+
+
+def LEP_by_race_assign(person):
     """Limited english proficiency by race"""
     if (
         person["AGEP"] < 5
@@ -35,17 +65,20 @@ def LEP_by_race(person):
         or person["ENG"] == "Very well"
     ):
         return None
+    return f"lep_{race_assignment(person)}"
 
+
+def race_assignment(person):
     if person["HISP"] != "Not Spanish/Hispanic/Latino":
-        return "lep_hsp"
+        return "hsp"
     else:
         if person["RAC1P"] == "White alone":
-            return "lep_wnh"
+            return "wnh"
         elif person["RAC1P"] == "Black or African American alone":
-            return "lep_bnh"
+            return "bnh"
         elif person["RAC1P"] == "Asian alone":
-            return "lep_anh"
+            return "anh"
         else:
-            return "lep_onh"
+            return "onh"
 
     raise Exception("Limited english profiency by race not assigned")

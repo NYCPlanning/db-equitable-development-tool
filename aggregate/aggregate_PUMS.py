@@ -5,7 +5,7 @@ Reference for applying weights: https://www2.census.gov/programs-surveys/acs/tec
 import pandas as pd
 from ingest.PUMS_data import PUMSData
 from ingest.load_data import load_data
-from aggregate.calculate_counts import calculate_counts_by_PUMA
+from statistical.calculate_counts import calculate_counts_by_PUMA
 
 
 def aggregate_demographics(**kwargs):

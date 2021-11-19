@@ -5,7 +5,6 @@ from aggregate.aggregate_PUMS import (
     foreign_born_by_race_assign,
 )
 from ingest.load_data import load_data
-from tests.test_LEP_by_race_assignment import TEST_RECORDS
 
 PUMS = load_data(["demographics"], limited_PUMA=True, requery=False, year=2019)["PUMS"]
 

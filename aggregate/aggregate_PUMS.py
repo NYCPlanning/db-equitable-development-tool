@@ -31,13 +31,17 @@ def aggregate_demographics(**kwargs):
     rv = calculate_add_new_variable(
         rv, PUMS, "fb", foreign_born_assign, rw_cols, "PWGTP", "PUMA"
     )
+
+    rv = calculate_add_new_variable(
+        rv, PUMS, "age_bucket", age_bucket_assign, rw_cols, "PWGTP", "PUMA"
+    )
     return rv
 
 
 def calculate_add_new_variable(
     rv, PUMS, new_var_name, variable_constructor, rw_cols, weight_col, geo_col
 ):
-    PUMS = assign_col(new_var_name, variable_constructor)
+    PUMS = assign_col(PUMS, new_var_name, variable_constructor)
     rv = add_variable(rv, calc_counts(PUMS, new_var_name, rw_cols, weight_col, geo_col))
     return rv
 
@@ -89,3 +93,12 @@ def race_assignment(person):
             return "onh"
 
     raise Exception("Limited english profiency by race not assigned")
+
+
+def age_bucket_assign(person):
+    if person["AGEP"] <= 16:
+        return "PopU16"
+    if person["AGEP"] > 16 and person["AGEP"] < 65:
+        return "P16t65"
+    if person["AGEP"] >= 65:
+        return "P65pl"

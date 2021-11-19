@@ -36,9 +36,9 @@ jobs:
           r-version: '4.1.2' # The R version to download (if necessary) and use.
 
       - name: Add dependencies
-            run: |
-              install.packages('survey')
-            shell: Rscript {0}
+        run: |
+          install.packages('survey')
+        shell: Rscript {0}
 
 
       - name: Pytest

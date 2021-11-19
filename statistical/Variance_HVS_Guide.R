@@ -2,6 +2,7 @@
 # Follow examples from documentation in https://www2.census.gov/programs-surveys/nychvs/technical-documentation/variances/2017-NYCHVS-Guide-to-Estimating-Variances.pdf
 
 #Load libraries, set working directory
+rm(list=ls())
 
 library(survey)
 library(spatstat)
@@ -23,8 +24,6 @@ hu$occ_final = ifelse(hu$recid==1, 1, 0)
 
 #UF_CSR is "New control status recode" which says who occupies unit and whether it's stabilizied
 hu$rent_bronx = ifelse(( (hu$uf_csr == 30 |hu$uf_csr==31 ) & (hu$boro==1)), 1,0)
-hu$rent_bronx
-
 hu$rent_manh = ifelse(( (hu$uf_csr == 30 |hu$uf_csr==31 ) & (hu$boro==3)), 1,0)
 
 # Difference? Doesn't make much sense to me to have measure per housing unit. Point is 
@@ -33,9 +32,9 @@ hu$stable_diff = hu$rent_manh - hu$rent_bronx
 
 
 #Proper subdomain for differences
-hu$rent_boro = ifelse(
-  ((hu$uf_csr ==30 | hu$uf_csv ==31) & (hu$boro ==3 | hu$boro ==1)), 1, 0
-)
+hu$rent_boro = ifelse((
+  ((hu$uf_csr == 30 | hu$uf_csr == 31) & (hu$boro == 3)) |
+    ((hu$uf_csr == 30 | hu$uf_csr == 31) & (hu$boro == 1))), 1, 0)
 
 #Mean/median example
 # Subdomain is renters only with non-missing rent values
@@ -47,18 +46,27 @@ hu$renters = ifelse(
 )
 
 #Gross rent
+hu$gross_rent <- hu$uf26
+hu$gross_rent[hu$uf26 == 99999] <- NA
 
-hu$gross_rent = ifelse(
-  (hu$uf26 != 99999), 
-  hu$uf26, NA
-)
+#Odds ratio example 
+hu$defect = ifelse((hu$rec53 == 4 | hu$rec53 == 5 | hu$rec53 == 6 |
+                      hu$rec53 == 7 | hu$rec53 == 8), 1, 0)
+
+
+# Need binaries for time demarcation:
+hu$time_stable <- ifelse(hu$uf_csr == 30, 0, NA)
+hu$time_stable[hu$uf_csr == 31] <- 1 
+
+# Adding vacancy dummy:
+hu$vac <- ifelse((hu$recid == 3 ), 1, 0)
 
 # Setting survey design parameters
 # in our df, variables run from columns 1 to 187 and 268 to 276
 # weights run from 188 to 267 
 
-
-hu_design <- svrepdesign(variables= hu[,c(1:187, 268:275)],
+hu$a <-1
+hu_design <- svrepdesign(variables= hu[,c(1:186, 267:280)],
                          repweights=hu[,rep_weights_cols],
                          weights=hu$fw, combined.weights = TRUE, type='other',
                          scale=4/80, rscales=1)
@@ -66,12 +74,25 @@ hu_design <- svrepdesign(variables= hu[,c(1:187, 268:275)],
 occ_hus <- subset(hu_design, occ_final==1)
 survey_total = svytotal(~occ_final, design=occ_hus)
 
+
+whole_city_gb = svyby(~occ_final, ~a, design=hu_design, svytotal)
+
 #By sub-borough area
 by_sub_borough_area = svyby(~occ_final, ~boro+cd, design=hu_design, svytotal)
 
 # group by borough instead
 by_boro = svyby(~occ_final, ~boro, design=hu_design, svytotal)
 
+# Example 6.2 Estimating variance of a difference
+rent_boros <- subset(hu_design, rent_boro == 1)
+boro_difference = svytotal(~stable_diff, design = rent_boros)
 
+# Example 6.3
+renter_hus <- subset(hu_design, renters == 1)
+mean_rent = svymean(~gross_rent, design = renter_hus)
 
+#Do median variance calculation
 
+renter_hus <- subset(hu_design, renters == 1)
+median_rent=svyquantile(~gross_rent, design = renter_hus, quantiles=c(.5))
+median_rent

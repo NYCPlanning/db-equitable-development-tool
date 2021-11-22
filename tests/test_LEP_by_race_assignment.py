@@ -3,11 +3,11 @@
 2) Make sure no person has more than one LEP by race bool assigned"""
 
 import pytest
-from aggregate.aggregate_PUMS import assign_col, LEP_by_race_assign
-from ingest.load_data import load_data
+from aggregate.aggregate_PUMS import PUMACountDemographics
 
-PUMS = load_data(["demographics"], limited_PUMA=True, requery=False, year=2019)["PUMS"]
-PUMS = assign_col(PUMS, "LEP_by_race", LEP_by_race_assign)
+aggregator = PUMACountDemographics()
+aggregator()
+data = aggregator.PUMS
 
 
 TEST_RECORDS = [
@@ -21,4 +21,4 @@ TEST_RECORDS = [
 
 @pytest.mark.parametrize("record_id, expected_val", TEST_RECORDS)
 def test_that_LEP_by_race_correctly_assigned(record_id, expected_val):
-    assert PUMS.loc[record_id]["LEP_by_race"] == expected_val
+    assert data.loc[record_id]["LEP_by_race"] == expected_val

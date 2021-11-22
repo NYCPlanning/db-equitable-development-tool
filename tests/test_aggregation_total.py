@@ -2,20 +2,16 @@
 
 import pytest
 from ingest.load_data import load_data
-from aggregate.aggregate_PUMS import (
-    age_bucket_by_race_assign,
-    aggregate_demographics,
-    assign_col,
-)
+from aggregate.aggregate_PUMS import PUMACountDemographics
 
 PUMS = load_data(limited_PUMA=True, year=2019, requery=False)["PUMS"]
 
-aggregated = aggregate_demographics(limited_PUMA=True, year=2019, requery=False)
+aggregator = PUMACountDemographics(limited_PUMA=True)
+aggregated = aggregator()
 
 
 def test_total_counts_match():
-    PUMS_with_var = assign_col(PUMS, "age_bucket_by_race", age_bucket_by_race_assign)
-    citywide_gb = PUMS_with_var.groupby("age_bucket_by_race").agg({"PWGTP": "sum"})
+    citywide_gb = aggregator.PUMS.groupby("age_bucket_by_race").agg({"PWGTP": "sum"})
     for variable in citywide_gb.index:
         assert (
             citywide_gb.at[variable, "PWGTP"] == aggregated[f"{variable}-count"].sum()

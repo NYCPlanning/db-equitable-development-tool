@@ -2,7 +2,9 @@ import pytest
 from aggregate.aggregate_PUMS import assign_col, age_bucket_assign
 from ingest.load_data import load_data
 
-PUMS = load_data(["demographics"], limited_PUMA=True, requery=False, year=2019)["PUMS"]
+PUMS = load_data(["demographics"], limited_PUMA=True, requery=False, PUMS_year=2019)[
+    "PUMS"
+]
 
 PUMS = assign_col(PUMS, "age_bucket", age_bucket_assign)
 

@@ -12,7 +12,7 @@ def aggregate_demographics(**kwargs):
     PUMS = load_data(
         PUMS_variable_types=["demographics"],
         limited_PUMA=kwargs["limited_PUMA"],
-        year=kwargs["year"],
+        PUMS_year=kwargs["year"],
         requery=kwargs["requery"],
     )["PUMS"]
 

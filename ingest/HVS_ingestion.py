@@ -31,9 +31,9 @@ def create_HVS(human_readable=True, output_type="pkl") -> pd.DataFrame:
     if human_readable:
         HVS_data.rename(columns=occupied_labels, inplace=True)
 
-    if output_type == ".pkl":
+    if output_type == "pkl":
         HVS_data.to_pickle(HVS_cache_fn)
-    elif output_type == ".csv":
+    elif output_type == "csv":
         HVS_data.to_csv(HVS_cache_fn, index=False)
     else:
         raise Exception("Unsupported file type, data not cached nor loaded")

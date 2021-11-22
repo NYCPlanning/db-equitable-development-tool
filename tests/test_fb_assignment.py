@@ -6,7 +6,9 @@ from aggregate.aggregate_PUMS import (
 )
 from ingest.load_data import load_data
 
-PUMS = load_data(["demographics"], limited_PUMA=True, requery=False, year=2019)["PUMS"]
+PUMS = load_data(["demographics"], limited_PUMA=True, requery=False, PUMS_year=2019)[
+    "PUMS"
+]
 
 
 def test_that_fb_correctly_assigned():

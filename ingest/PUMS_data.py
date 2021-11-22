@@ -78,20 +78,24 @@ class PUMSData:
         recode_df.rename(columns={"level_1": "variable_name"}, inplace=True)
         return recode_df
 
-    def merge_cache(self):
+    def merge_cache(self, output_type):
         self.populate_dataframes()
         self.clean_data()
         self.merge_rw()
         self.merge_vi_rw()
-        self.cache()
+        self.cache(output_type)
 
-    def cache(self):
-        pkl_path = make_PUMS_cache_fn(
+    def cache(self, output_type="pkl"):
+        cache_fn_path = make_PUMS_cache_fn(
             variable_types=self.variable_types,
             limited_PUMA=self.limited_PUMA,
             year=self.year,
+            output_type=output_type,
         )
-        self.vi_data.to_pickle(pkl_path)
+        if output_type == "pkl":
+            self.vi_data.to_pickle(cache_fn_path)
+        elif output_type == "csv":
+            self.vi_data.to_csv(cache_fn_path)
 
     def assign_identifier(self, attr_name):
         df = self.__getattribute__(attr_name)

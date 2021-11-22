@@ -6,7 +6,9 @@ import pytest
 from aggregate.aggregate_PUMS import assign_col, LEP_by_race_assign
 from ingest.load_data import load_data
 
-PUMS = load_data(["demographics"], limited_PUMA=True, requery=False, year=2019)["PUMS"]
+PUMS = load_data(["demographics"], limited_PUMA=True, requery=False, PUMS_year=2019)[
+    "PUMS"
+]
 PUMS = assign_col(PUMS, "LEP_by_race", LEP_by_race_assign)
 
 

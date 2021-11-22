@@ -1,4 +1,5 @@
 """Access to ingestion code"""
+from os import read
 from typing import List, Tuple
 
 from ingest.PUMS_data import PUMSData
@@ -19,16 +20,17 @@ from utils.setup_directory import setup_directory
 
 logger = create_logger("load_data_logger", "logs/load_data.log")
 
-allowed_HVS_cache_types = [".csv", ".pkl"]
+allowed_cache_formats = ["csv", "pkl"]
 
 
 def load_data(
     PUMS_variable_types: List = ["demographics"],
     limited_PUMA: bool = False,
-    year: int = 2019,
-    requery: bool = False,
+    PUMS_year: int = 2019,
+    PUMS_output_type="pkl",
     HVS_human_readable: bool = False,
-    HVS_output_type: str = ".csv",
+    HVS_output_type: str = "csv",
+    requery: bool = False,
 ) -> dict:
     """Future to-do: include re-query parameter that deletes files in data folder
     and runs ingestion process from scratch
@@ -37,37 +39,42 @@ def load_data(
     :return: pandas dataframe of PUMS data
     """
 
+    if (
+        HVS_output_type not in allowed_cache_formats
+        or PUMS_output_type not in allowed_cache_formats
+    ):
+        raise Exception(f" Only allowed file types are {allowed_cache_formats} ")
     setup_directory("data/")
 
     rv = {}
 
     PUMS_cache_path = make_PUMS_cache_fn(
-        variable_types=PUMS_variable_types, limited_PUMA=limited_PUMA, year=year
+        variable_types=PUMS_variable_types,
+        limited_PUMA=limited_PUMA,
+        year=PUMS_year,
+        output_type=PUMS_output_type,
     )
 
     if requery or not exists(PUMS_cache_path):
         logger.info(f"Making get request to generate data sent to {PUMS_cache_path}")
-        download_PUMS(variable_types=PUMS_variable_types, limited_PUMA=limited_PUMA)
+        download_PUMS(
+            variable_types=PUMS_variable_types,
+            limited_PUMA=limited_PUMA,
+            output_type=PUMS_output_type,
+        )
 
-    PUMS_data = pd.read_pickle(PUMS_cache_path)
+    PUMS_data = read_cached(PUMS_cache_path, PUMS_output_type)
     rv["PUMS"] = PUMS_data
     logger.info(
         f"PUMS data with {PUMS_data.shape[0]} records loaded, ready for aggregation"
     )
-    if HVS_output_type not in allowed_HVS_cache_types:
-        raise Exception(
-            f"{HVS_output_type} file type not supported for HVS cache. Allowed file types are {allowed_HVS_cache_types} "
-        )
     HVS_cache_path = make_HVS_cache_fn(
         human_readable=HVS_human_readable, output_type=HVS_output_type
     )
     if requery or not exists(HVS_cache_path):
         create_HVS(human_readable=HVS_human_readable, output_type=HVS_output_type)
 
-    if HVS_output_type == ".pkl":
-        HVS_data = pd.read_pickle(HVS_cache_path)
-    elif HVS_output_type == ".csv":
-        HVS_data = pd.read_csv(HVS_cache_path)
+    HVS_data = read_cached(HVS_cache_path, HVS_output_type)
     rv["HVS"] = HVS_data
     logger.info(
         f"HVS data with {HVS_data.shape[0]} records loaded, ready for aggregation"
@@ -75,8 +82,18 @@ def load_data(
     return rv
 
 
+def read_cached(path, output_type):
+    if output_type == "pkl":
+        return pd.read_pickle(path)
+    if output_type == "csv":
+        return pd.read_csv(path)
+
+
 def download_PUMS(
-    variable_types: List = ["demographics"], year=2019, limited_PUMA=False
+    variable_types: List = ["demographics"],
+    year=2019,
+    limited_PUMA=False,
+    output_type="pdl",
 ):
     """
     Refactor: move this process to PUMS data class
@@ -85,6 +102,10 @@ def download_PUMS(
     :param year:
     :param variable_type: the category of variables we want. Can be demographic, housing secutiry
     :return: data from GET request in pandas dataframe"""
-    PUMS = PUMSData(variable_types=variable_types, year=year, limited_PUMA=limited_PUMA)
+    PUMS = PUMSData(
+        variable_types=variable_types,
+        year=year,
+        limited_PUMA=limited_PUMA,
+    )
 
-    PUMS.merge_cache()
+    PUMS.merge_cache(output_type)

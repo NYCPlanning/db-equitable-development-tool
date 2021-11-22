@@ -1,6 +1,10 @@
 """Generalized code to get counts and associated variances
 To-do: move this to statistical directory"""
 
+import warnings
+
+warnings.filterwarnings("ignore")
+
 import pandas as pd
 import rpy2
 import rpy2.robjects as robjects

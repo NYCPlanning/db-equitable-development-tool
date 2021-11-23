@@ -41,15 +41,17 @@ def load_data(
 
     rv = {}
 
-    PUMS_cache_path = make_PUMS_cache_fn(
-        variable_types=PUMS_variable_types, limited_PUMA=limited_PUMA, year=year
+    ingestor = PUMSData(
+        variable_types=PUMS_variable_types, year=year, limited_PUMA=limited_PUMA
     )
 
-    if requery or not exists(PUMS_cache_path):
-        logger.info(f"Making get request to generate data sent to {PUMS_cache_path}")
-        download_PUMS(variable_types=PUMS_variable_types, limited_PUMA=limited_PUMA)
+    if requery or not exists(ingestor.cache_path):
+        logger.info(
+            f"Making get request to generate data sent to {ingestor.cache_path}"
+        )
+        ingestor.download_cache()
 
-    PUMS_data = pd.read_pickle(PUMS_cache_path)
+    PUMS_data = pd.read_pickle(ingestor.cache_path)
     rv["PUMS"] = PUMS_data
     logger.info(
         f"PUMS data with {PUMS_data.shape[0]} records loaded, ready for aggregation"
@@ -73,18 +75,3 @@ def load_data(
         f"HVS data with {HVS_data.shape[0]} records loaded, ready for aggregation"
     )
     return rv
-
-
-def download_PUMS(
-    variable_types: List = ["demographics"], year=2019, limited_PUMA=False
-):
-    """
-    Refactor: move this process to PUMS data class
-    Construct and make get request for person-level pums data
-
-    :param year:
-    :param variable_type: the category of variables we want. Can be demographic, housing secutiry
-    :return: data from GET request in pandas dataframe"""
-    PUMS = PUMSData(variable_types=variable_types, year=year, limited_PUMA=limited_PUMA)
-
-    PUMS.merge_cache()

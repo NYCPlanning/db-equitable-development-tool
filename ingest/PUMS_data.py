@@ -43,6 +43,11 @@ class PUMSData:
         :data: dataframe originally populated with variables
         """
 
+        self.cache_path = make_PUMS_cache_fn(
+            variable_types=variable_types,
+            limited_PUMA=limited_PUMA,
+            year=year,
+        )
         self.variable_types = variable_types
         self.variables = get_variables(self.variable_types)
         self.limited_PUMA = limited_PUMA
@@ -79,7 +84,7 @@ class PUMSData:
         recode_df.rename(columns={"level_1": "variable_name"}, inplace=True)
         return recode_df
 
-    def merge_cache(self):
+    def download_cache(self):
         self.populate_dataframes()
         self.clean_data()
         self.merge_rw()
@@ -87,12 +92,8 @@ class PUMSData:
         self.cache()
 
     def cache(self):
-        pkl_path = make_PUMS_cache_fn(
-            variable_types=self.variable_types,
-            limited_PUMA=self.limited_PUMA,
-            year=self.year,
-        )
-        self.vi_data.to_pickle(pkl_path)
+
+        self.vi_data.to_pickle(self.cache_path)
 
     def assign_identifier(self, attr_name):
         df = self.__getattribute__(attr_name)

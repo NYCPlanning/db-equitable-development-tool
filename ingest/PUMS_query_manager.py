@@ -30,7 +30,13 @@ variable_mapper = {
         ("LANX", "categorical"),
         ("ENG", "categorical"),
         ("AGEP", "continuous"),
-    ]
+    ],
+    "economics": [
+        ("HINCP", "continous"),  # Household income
+        ("ESR", "categorical"),  # Employment status
+        ("WAGP", "continous"),  # Wages
+        ("SCHL", "categorical"),  # Educational achievement
+    ],
 }
 
 NYC_PUMA_base = "7950000US360"
@@ -47,7 +53,7 @@ geo_ids = [
     ),
 ]
 
-allowed_variable_types = ["demographics"]
+allowed_variable_types = ["demographics", "economics"]
 allowed_years = [2019]
 
 

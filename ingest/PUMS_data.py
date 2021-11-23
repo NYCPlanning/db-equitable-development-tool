@@ -1,5 +1,6 @@
 from typing import List
 import pandas as pd
+import numpy as np
 from os.path import exists
 import requests
 
@@ -108,11 +109,12 @@ class PUMSData:
                 self.vi_data[v[0]] = self.vi_data[v[0]].astype(int)
 
     def clean_column(self, column_name):
-        print(f"cleaning {column_name}")
+        print(f"cleaning {column_name}")  # To-do: send this to log
         codes = self.recode_df[self.recode_df["variable_name"] == column_name]
         codes = codes[["C", "Record Type"]]
-        codes.replace({"C": {"b": 0}}, inplace=True)
-        codes["C"] = codes["C"].astype(int)
+        # codes.replace({"C": {"b": 0}}, inplace=True)
+        # codes["C"] = codes["C"].astype(int)
+        codes["C"] = pd.to_numeric(codes["C"], errors="coerce").replace(np.NaN, 0)
         codes.set_index("C", inplace=True)
         mapper = {column_name: codes.to_dict()["Record Type"]}
 

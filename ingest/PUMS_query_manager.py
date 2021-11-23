@@ -32,9 +32,9 @@ variable_mapper = {
         ("AGEP", "continuous"),
     ],
     "economics": [
-        ("HINCP", "continous"),  # Household income
+        ("HINCP", "continuous"),  # Household income
         ("ESR", "categorical"),  # Employment status
-        ("WAGP", "continous"),  # Wages
+        ("WAGP", "continuous"),  # Wages
         ("SCHL", "categorical"),  # Educational achievement
     ],
 }

@@ -3,6 +3,7 @@
 from numpy import exp
 import pytest
 from ingest.load_data import load_data
+from tests.test_PUMA_demographic_count_aggregation import PUMS
 
 PUMS_economics = load_data(PUMS_variable_types=["economics"], limited_PUMA=True)["PUMS"]
 
@@ -39,5 +40,7 @@ EXPECTED_COLS_VALUES_CONTINOUS = [("HINCP", -60000, 99999999), ("WAGP", -1, 9999
 def test_continous_columns_have_expected_values(column, min_val, max_val):
     """These tests aren't great"""
     assert column in PUMS_economics.columns
+    print(min(PUMS_economics[column]))
+    print(PUMS_economics[column])
     assert min(PUMS_economics[column]) >= min_val
     assert max(PUMS_economics[column]) <= max_val

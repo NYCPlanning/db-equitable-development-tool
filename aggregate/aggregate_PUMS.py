@@ -5,13 +5,21 @@ Reference for applying weights: https://www2.census.gov/programs-surveys/acs/tec
 Next up is implement caching for aggregated data so tests run faster
 """
 from os.path import exists
+import pickle
 import pandas as pd
 from pandas.core.frame import DataFrame
 from ingest.load_data import load_data
 from statistical.calculate_counts import calc_counts
 
 
-class PUMSCount:
+class BaseAggregator:
+    """Placeholder for base aggregator class for when more types of aggregation are added"""
+
+    def __init__(self) -> None:
+        pass
+
+
+class PUMSCount(BaseAggregator):
     """Parent class for aggregating PUMS data"""
 
     rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
@@ -20,13 +28,10 @@ class PUMSCount:
 
     def __init__(self) -> None:
 
-        if self.requery or not exists(self.cache_fn):
-            self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
-            for ind in self.indicators:
-                self.calculate_add_new_variable(indicator=ind)
-            self.aggregated.to_pickle(self.cache_fn)
-        else:
-            self.aggregated = pd.read_pickle(self.cache_fn)
+        self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
+        for ind in self.indicators:
+            self.calculate_add_new_variable(indicator=ind)
+        # self.aggregated.to_pickle(self.cache_fn)
 
     def calculate_add_new_variable(self, indicator):
         self.assign_indicator(indicator)
@@ -46,7 +51,7 @@ class PUMSCount:
         )
 
 
-class PUMACountDemographics(PUMSCount):
+class PUMSCountDemographics(PUMSCount):
 
     indicators = [
         "LEP",
@@ -56,15 +61,14 @@ class PUMACountDemographics(PUMSCount):
         "age_bucket",
         "age_bucket_by_race",
     ]
-    cache_fn = "data/PUMS_demographic_counts_aggregated.pkl"  # Can make this dynamic based on position on inheritance tree
+    cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
 
     def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
-        self.requery = requery
         self.PUMS: pd.DataFrame = load_data(
             PUMS_variable_types=["demographics"],
             limited_PUMA=limited_PUMA,
             year=year,
-            requery=False,
+            requery=requery,
         )["PUMS"]
         PUMSCount.__init__(self)
 

@@ -24,18 +24,18 @@ api_key = os.environ["CENSUS_API_KEY"]
 
 variable_mapper = {
     "demographics": [
-        ("RAC1P", "categorical"),
-        ("HISP", "categorical"),
-        ("NATIVITY", "categorical"),
-        ("LANX", "categorical"),
-        ("ENG", "categorical"),
-        ("AGEP", "continuous"),
+        ("RAC1P", "clean_simple_cateogorical"),
+        ("HISP", "clean_simple_cateogorical"),
+        ("NATIVITY", "clean_simple_cateogorical"),
+        ("LANX", "clean_simple_cateogorical"),
+        ("ENG", "clean_simple_cateogorical"),
+        ("AGEP", "clean_continous"),
     ],
     "economics": [
-        ("HINCP", "continuous"),  # Household income
-        ("ESR", "categorical"),  # Employment status
-        ("WAGP", "continuous"),  # Wages
-        ("SCHL", "categorical"),  # Educational achievement
+        ("HINCP", "clean_continous"),  # Household income
+        ("ESR", "clean_simple_cateogorical"),  # Employment status
+        ("WAGP", "clean_continous"),  # Wages
+        ("SCHL", "clean_simple_cateogorical"),  # Educational achievement
     ],
 }
 

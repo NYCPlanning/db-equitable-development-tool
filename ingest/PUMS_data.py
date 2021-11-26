@@ -1,8 +1,6 @@
 from typing import List
 import pandas as pd
 import numpy as np
-from os.path import exists
-import requests
 
 """To do: make this central module from which all other code is called. Write 
 class method for aggregate step to access.  Class method will return cached data or
@@ -11,6 +9,7 @@ initalize a PUMSData object and use it to save a .pkl"""
 from ingest.PUMS_request import make_GET_request
 from ingest.PUMS_query_manager import get_variables, get_urls
 from ingest.make_cache_fn import make_PUMS_cache_fn
+from ingest.PUMS_cleaner import PUMSCleaner
 
 
 class PUMSData:
@@ -70,19 +69,8 @@ class PUMSData:
             self.assign_identifier(attr_name)
 
     def get_recode_df(self):
-        fp = "resources/PUMS_recodes.csv"
-        if not exists(fp):
-            url = "https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2015-2019.csv"
-            req = requests.get(url)
-            url_content = req.content
-            csv_file = open(fp, "wb")
-            csv_file.write(url_content)
-            csv_file.close()
-        recode_df = pd.read_csv(fp).reset_index()
-        recode_df = recode_df[recode_df["level_0"] == "VAL"]
-        recode_df.drop(columns=["level_0"])
-        recode_df.rename(columns={"level_1": "variable_name"}, inplace=True)
-        return recode_df
+        """Moved to top of PUMS cleaner modules"""
+        pass
 
     def download_cache(self):
         self.populate_dataframes()
@@ -103,24 +91,9 @@ class PUMSData:
 
     def clean_data(self):
         self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
+        cleaner = PUMSCleaner()
         for v in self.variables:
-            if v[1] == "categorical":
-                self.clean_column(v[0])
-            if v[1] == "continuous":
-                self.vi_data[v[0]] = self.vi_data[v[0]].astype(int)
-
-    def clean_column(self, column_name):
-        print(f"cleaning {column_name}")  # To-do: send this to log
-        codes = self.recode_df[self.recode_df["variable_name"] == column_name]
-        codes = codes[["C", "Record Type"]]
-        # codes.replace({"C": {"b": 0}}, inplace=True)
-        # codes["C"] = codes["C"].astype(int)
-        codes["C"] = pd.to_numeric(codes["C"], errors="coerce").replace(np.NaN, 0)
-        codes.set_index("C", inplace=True)
-        mapper = {column_name: codes.to_dict()["Record Type"]}
-
-        self.vi_data[column_name] = self.vi_data[column_name].astype(int)
-        self.vi_data.replace(mapper, inplace=True)
+            self.vi_data = cleaner.__getattribute__(v[1])(self.vi_data, v[0])
 
     def merge_rw(self):
         """Merge two dataframes of replicate weights into one"""

@@ -14,7 +14,6 @@ from typing import List
 
 from utils.make_logger import create_logger
 
-from dataclasses import dataclass
 
 logger = create_logger("query_logger", "logs/PUMS-query-creation.log")
 load_dotenv()
@@ -67,7 +66,7 @@ def get_variables(variable_types: List) -> None:
     return rv
 
 
-def get_urls(variables: List, year: int, limited_PUMA=False) -> dict:
+def get_urls(variables: List, year: int, limited_PUMA=False, include_rw=True) -> dict:
     """
     :Limited_PUMA: for testing with single UCGID from each borough.
     :return:  dictionary of lists of urls. Each list is a set of of geographic regions
@@ -84,6 +83,7 @@ def get_urls(variables: List, year: int, limited_PUMA=False) -> dict:
 
     variable_queries["vi"] = f"PWGTP,{vars_as_params(variables)}"
 
+    if include_rw:
     for x, k in ((1, "rw_one"), (41, "rw_two")):
         variable_queries[k] = ",".join([f"PWGTP{x}" for x in range(x, x + 40)])
 

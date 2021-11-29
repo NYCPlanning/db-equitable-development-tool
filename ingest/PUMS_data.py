@@ -21,6 +21,7 @@ class PUMSData:
         variable_types: List = ["demographics"],
         limited_PUMA: bool = False,
         year: int = 2019,
+        include_rw: bool = True,
     ):
         """Pulling PUMS data with replicate weights requires multiple GET
         requests as there is 50 variable max for each GET request. This class is
@@ -41,17 +42,23 @@ class PUMSData:
         :urls: tuple of two urls, one with each geographic regions
         :data: dataframe originally populated with variables
         """
-
+        self.include_rw = include_rw
         self.cache_path = make_PUMS_cache_fn(
             variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
+            include_rw=self.include_rw,
         )
         self.variable_types = variable_types
         self.variables = get_variables(self.variable_types)
         self.limited_PUMA = limited_PUMA
         self.year = year
-        urls = get_urls(variables=self.variables, year=year, limited_PUMA=limited_PUMA)
+        urls = get_urls(
+            variables=self.variables,
+            year=year,
+            limited_PUMA=limited_PUMA,
+            include_rw=self.include_rw,
+        )
         self.urls = urls
         self.vi_data: pd.DataFrame = None
         self.rw_one_data: pd.DataFrame = None
@@ -72,11 +79,12 @@ class PUMSData:
         """Moved to top of PUMS cleaner modules"""
         pass
 
-    def download_cache(self):
+    def download_and_cache(self):
         self.populate_dataframes()
         self.clean_data()
-        self.merge_rw()
-        self.merge_vi_rw()
+        if self.include_rw:
+            self.merge_rw()
+            self.merge_vi_rw()
         self.cache()
 
     def cache(self):

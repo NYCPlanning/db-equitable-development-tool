@@ -24,6 +24,7 @@ allowed_HVS_cache_types = [".csv", ".pkl"]
 
 def load_data(
     PUMS_variable_types: List = ["demographics"],
+    include_rw: bool = True,
     limited_PUMA: bool = False,
     year: int = 2019,
     requery: bool = False,
@@ -42,14 +43,17 @@ def load_data(
     rv = {}
 
     ingestor = PUMSData(
-        variable_types=PUMS_variable_types, year=year, limited_PUMA=limited_PUMA
+        variable_types=PUMS_variable_types,
+        year=year,
+        limited_PUMA=limited_PUMA,
+        include_rw=include_rw,
     )
 
     if requery or not exists(ingestor.cache_path):
         logger.info(
             f"Making get request to generate data sent to {ingestor.cache_path}"
         )
-        ingestor.download_cache()
+        ingestor.download_and_cache()
 
     PUMS_data = pd.read_pickle(ingestor.cache_path)
     rv["PUMS"] = PUMS_data

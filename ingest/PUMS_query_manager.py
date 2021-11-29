@@ -84,8 +84,8 @@ def get_urls(variables: List, year: int, limited_PUMA=False, include_rw=True) ->
     variable_queries["vi"] = f"PWGTP,{vars_as_params(variables)}"
 
     if include_rw:
-    for x, k in ((1, "rw_one"), (41, "rw_two")):
-        variable_queries[k] = ",".join([f"PWGTP{x}" for x in range(x, x + 40)])
+        for x, k in ((1, "rw_one"), (41, "rw_two")):
+            variable_queries[k] = ",".join([f"PWGTP{x}" for x in range(x, x + 40)])
 
     urls = generate_urls(base_weights_section, geo_queries, variable_queries)
     return urls

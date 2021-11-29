@@ -1,11 +1,12 @@
 """"""
 
-from numpy import exp
 import pytest
 from ingest.load_data import load_data
 from tests.test_PUMA_demographic_count_aggregation import PUMS
 
-PUMS_economics = load_data(PUMS_variable_types=["economics"], limited_PUMA=True)["PUMS"]
+PUMS_economics = load_data(
+    PUMS_variable_types=["economics"], limited_PUMA=True, include_rw=False, requery=True
+)["PUMS"]
 
 
 EXPECTED_COLS_VALUES_CATEGORICAL = [
@@ -44,3 +45,19 @@ def test_continous_columns_have_expected_values(column, min_val, max_val):
     print(PUMS_economics[column])
     assert min(PUMS_economics[column]) >= min_val
     assert max(PUMS_economics[column]) <= max_val
+
+
+EXPECTED_COLS_VALUES_RANGE_CATEGORICAL = [
+    ("INDP", 170, "Agriculture, Forestry, Fishing and Hunting, and Mining"),
+    ("OCCP", 4040, "Service Occupations"),
+]
+
+
+@pytest.mark.parametrize(
+    "column, old_val, new_val", EXPECTED_COLS_VALUES_RANGE_CATEGORICAL
+)
+def test_categorical_range_variables_have_expected_values(column, old_val, new_val):
+    assert (
+        PUMS_economics.loc[PUMS_economics[column] == old_val, f"{column}_cleaned"][0]
+        == new_val
+    )

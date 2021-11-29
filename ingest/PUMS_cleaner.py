@@ -45,8 +45,7 @@ class PUMSCleaner:
             vi_data.loc[
                 vi_data[column_name].between(*category[0]), new_col_name
             ] = category[1]
-        vi_data[column_name] = vi_data[new_col_name]
-        vi_data.drop(columns=[new_col_name])
+        # vi_data[column_name] = vi_data[new_col_name]
         return vi_data
 
     def get_one_to_one_recode_df(self):

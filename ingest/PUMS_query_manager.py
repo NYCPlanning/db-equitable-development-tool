@@ -35,6 +35,8 @@ variable_mapper = {
         ("ESR", "clean_simple_cateogorical"),  # Employment status
         ("WAGP", "clean_continous"),  # Wages
         ("SCHL", "clean_simple_cateogorical"),  # Educational achievement
+        ("INDP", "clean_range_categorical"),  # Industry
+        ("OCCP", "clean_range_categorical"),  # Occupation
     ],
 }
 

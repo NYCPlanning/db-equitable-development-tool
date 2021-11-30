@@ -23,7 +23,10 @@ class BaseAggregator:
         """For debugging and collaborating"""
         if not os.path.exists(".output/"):
             os.mkdir(".output/")
-        self.aggregated.to_csv(f".output/{self.__class__.__name__}.csv")
+        fn = self.__class__.__name__
+        if self.limited_PUMA:
+            fn += "_limitedPUMA"
+        self.aggregated.to_csv(f".output/{fn}.csv")
 
 
 class PUMSCount(BaseAggregator):
@@ -35,6 +38,7 @@ class PUMSCount(BaseAggregator):
 
     def __init__(self, limited_PUMA, year, requery) -> None:
         print("downloading PUMS data")
+        self.limited_PUMA = limited_PUMA
         self.PUMS: pd.DataFrame = load_data(
             PUMS_variable_types=["demographics"],
             limited_PUMA=limited_PUMA,
@@ -95,6 +99,7 @@ class PUMSCountDemographics(PUMSCount):
         "foreign_born_by_race",
         "age_bucket",
         "age_bucket_by_race",
+        "race",  # This is NOT the race used in the final product. This is race from PUMS used to debug
     ]
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
 

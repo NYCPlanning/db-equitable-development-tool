@@ -6,7 +6,6 @@ To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 """
 import os
 import pandas as pd
-from pandas.core.frame import DataFrame
 from ingest.load_data import load_data
 from statistical.calculate_counts import calc_counts
 
@@ -24,6 +23,7 @@ class BaseAggregator:
         if not os.path.exists(".output/"):
             os.mkdir(".output/")
         fn = self.__class__.__name__
+        fn += self.year
         if self.limited_PUMA:
             fn += "_limitedPUMA"
         self.aggregated.to_csv(f".output/{fn}.csv")
@@ -39,6 +39,7 @@ class PUMSCount(BaseAggregator):
     def __init__(self, variable_types, limited_PUMA, year, requery) -> None:
         print("downloading PUMS data")
         self.limited_PUMA = limited_PUMA
+        self.year = year
         self.PUMS: pd.DataFrame = load_data(
             PUMS_variable_types=variable_types,
             limited_PUMA=limited_PUMA,

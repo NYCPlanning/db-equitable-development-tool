@@ -132,7 +132,8 @@ dmypy.json
 .Rhistory
 
 # Cached info
-/data
-/logs
+data/
+logs/
 
-.RHistory
+# Local Output
+.output/

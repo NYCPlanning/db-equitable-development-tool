@@ -36,11 +36,11 @@ class PUMSCount(BaseAggregator):
     weight_col = "PWGTP"
     geo_col = "PUMA"
 
-    def __init__(self, limited_PUMA, year, requery) -> None:
+    def __init__(self, variable_types, limited_PUMA, year, requery) -> None:
         print("downloading PUMS data")
         self.limited_PUMA = limited_PUMA
         self.PUMS: pd.DataFrame = load_data(
-            PUMS_variable_types=["demographics"],
+            PUMS_variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,

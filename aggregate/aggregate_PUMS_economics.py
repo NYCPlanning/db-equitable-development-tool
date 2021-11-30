@@ -7,14 +7,20 @@ class PUMSCountEconomics(PUMSCount):
     indicators = [
         "lf",
         "lf_by_race",
-        "occupation",  # Termed "Employment by occupation" in data matrix
-        "occupation_by_race",
-        "industry",  # Termed "Employment by industry sector" in data matrix
-        "industry_by_race",
+        # "occupation",  # Termed "Employment by occupation" in data matrix
+        # "occupation_by_race",
+        # "industry",  # Termed "Employment by industry sector" in data matrix
+        # "industry_by_race",
     ]
 
     def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
-        PUMSCount.__init__(self, limited_PUMA, year, requery)
+        PUMSCount.__init__(
+            self,
+            variable_types=["economics", "demographics"],
+            limited_PUMA=limited_PUMA,
+            year=year,
+            requery=requery,
+        )
 
     def lf_assign(self, person):
         if (

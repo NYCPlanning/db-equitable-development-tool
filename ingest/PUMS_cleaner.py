@@ -45,7 +45,7 @@ class PUMSCleaner:
             vi_data.loc[
                 vi_data[column_name].between(*category[0]), new_col_name
             ] = category[1]
-        # vi_data[column_name] = vi_data[new_col_name]
+        vi_data[column_name] = vi_data[new_col_name]  # This will make tests fail
         return vi_data
 
     def get_one_to_one_recode_df(self):
@@ -77,7 +77,12 @@ class PUMSCleaner:
     def column_recode(self, sheet_name, recodes_column, rows):
         industry_recodes = pd.read_excel(self.range_recode_fp, sheet_name=sheet_name)
         industry_recodes.rename(columns={recodes_column: "Recode_Ranges"}, inplace=True)
-        rv = []
+        rv = [
+            (
+                (169, 169),
+                "N/A (less than 16 years old/NILF who last worked more than 5 years ago or never worked)",
+            )
+        ]
         for r in rows:
             recode_range = industry_recodes["Recode_Ranges"][r]
             rv.extend(self.get_recode_mapper(recode_range.split(" ")[2:]))
@@ -90,6 +95,11 @@ class PUMSCleaner:
                 numeric_ranges = l[: i - 1]
                 category = " ".join(l[i:])
                 break
+
+        # Hacky fix where this sheet is incorrect
+        if category == "Agriculture, Forestry, Fishing and Hunting, and Mining":
+            numeric_ranges = ("170", "", "560")
+
         rv = []
         for r in range(0, len(numeric_ranges), 3):
             rv.append(

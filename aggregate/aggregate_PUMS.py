@@ -23,7 +23,7 @@ class BaseAggregator:
         if not os.path.exists(".output/"):
             os.mkdir(".output/")
         fn = self.__class__.__name__
-        fn += self.year
+        fn += str(self.year)
         if self.limited_PUMA:
             fn += "_limitedPUMA"
         self.aggregated.to_csv(f".output/{fn}.csv")
@@ -106,7 +106,13 @@ class PUMSCountDemographics(PUMSCount):
 
     def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
 
-        PUMSCount.__init__(self, limited_PUMA, year, requery)
+        PUMSCount.__init__(
+            self,
+            variable_types=["demographics"],
+            limited_PUMA=limited_PUMA,
+            year=year,
+            requery=requery,
+        )
 
     def foreign_born_by_race_assign(self, person):
         fb = self.foreign_born_assign(person)

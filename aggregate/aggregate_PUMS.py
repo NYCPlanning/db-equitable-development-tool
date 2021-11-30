@@ -23,7 +23,7 @@ class BaseAggregator:
         if not os.path.exists(".output/"):
             os.mkdir(".output/")
         fn = self.__class__.__name__
-        fn += str(self.year)
+        fn += "_" + str(self.year)
         if self.limited_PUMA:
             fn += "_limitedPUMA"
         self.aggregated.to_csv(f".output/{fn}.csv")

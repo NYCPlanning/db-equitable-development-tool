@@ -131,6 +131,9 @@ dmypy.json
 #R History 
 .Rhistory
 
+#DS Store
+.DS_Store
+
 # Cached info
 data/
 logs/

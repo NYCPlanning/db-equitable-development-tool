@@ -3,11 +3,31 @@
 import pytest
 from aggregate.aggregate_PUMS import PUMSCountDemographics
 from ingest.load_data import load_data
+from tests.util import races, race_counts, age_bucket_counts
+
 
 aggregator = PUMSCountDemographics(limited_PUMA=True)
 by_person_data = aggregator.PUMS
+aggregated = aggregator.aggregated
+# PUMS = load_data(limited_PUMA=True, year=2019, requery=False)["PUMS"]
 
-PUMS = load_data(limited_PUMA=True, year=2019, requery=False)["PUMS"]
+
+def test_that_all_races_sum_to_total_within_indicator():
+    """Parameterize this to look at nativity, age buckets as well"""
+    lep_race_cols = [f"lep_{r}" for r in race_counts]  # Generate this from function
+    assert (aggregated[lep_race_cols].sum(axis=1) == aggregated["lep-count"]).all()
+
+
+def test_that_all_races_sum_to_total():
+
+    assert (aggregated[race_counts].sum(axis=1) == aggregated["total_pop-count"]).all()
+
+
+def test_that_all_age_buckets_sum_to_total():
+
+    assert (
+        aggregated[age_bucket_counts].sum(axis=1) == aggregated["total_pop-count"]
+    ).all()
 
 
 def test_total_counts_match():

@@ -37,7 +37,7 @@ class PUMSCount(BaseAggregator):
     geo_col = "PUMA"
 
     def __init__(self, variable_types, limited_PUMA, year, requery) -> None:
-        print("downloading PUMS data")
+        print("downloading PUMS data")  # To-do: send to logs
         self.limited_PUMA = limited_PUMA
         self.year = year
         self.PUMS: pd.DataFrame = load_data(
@@ -46,9 +46,10 @@ class PUMSCount(BaseAggregator):
             year=year,
             requery=requery,
         )["PUMS"]
-        print("downloaded PUMS")
+        print("downloaded PUMS")  # To-do: send to logs
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
+        self.calculate_add_new_variable(indicator="total_pop")
         for ind in self.indicators:
             print(f"aggregating {ind}")
             self.calculate_add_new_variable(indicator=ind)
@@ -76,6 +77,9 @@ class PUMSCount(BaseAggregator):
         self.PUMS[indicator] = self.PUMS.apply(
             axis=1, func=self.__getattribute__(f"{indicator}_assign")
         )
+
+    def total_pop_assign(self, person):
+        return "total_pop"
 
     def race_assign(self, person):
         if person["HISP"] != "Not Spanish/Hispanic/Latino":

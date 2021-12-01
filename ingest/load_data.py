@@ -42,20 +42,19 @@ def load_data(
 
     rv = {}
 
-    ingestor = PUMSData(
-        variable_types=PUMS_variable_types,
-        year=year,
-        limited_PUMA=limited_PUMA,
-        include_rw=include_rw,
+    cache_path = PUMSData.get_cache_fn(
+        PUMS_variable_types, limited_PUMA, year, include_rw
     )
-
-    if requery or not exists(ingestor.cache_path):
-        logger.info(
-            f"Making get request to generate data sent to {ingestor.cache_path}"
+    if requery or not exists(cache_path):
+        logger.info(f"Making get request to generate data sent to {cache_path}")
+        PUMSData(
+            variable_types=PUMS_variable_types,
+            year=year,
+            limited_PUMA=limited_PUMA,
+            include_rw=include_rw,
         )
-        # ingestor.download_and_cache()
 
-    PUMS_data = pd.read_pickle(ingestor.cache_path)
+    PUMS_data = pd.read_pickle(cache_path)
     rv["PUMS"] = PUMS_data
     logger.info(
         f"PUMS data with {PUMS_data.shape[0]} records loaded, ready for aggregation"

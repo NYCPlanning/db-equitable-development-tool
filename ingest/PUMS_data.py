@@ -42,12 +42,10 @@ class PUMSData:
         :urls: tuple of two urls, one with each geographic regions
         :data: dataframe originally populated with variables
         """
+        print("calling init ")
         self.include_rw = include_rw
-        self.cache_path = make_PUMS_cache_fn(
-            variable_types=variable_types,
-            limited_PUMA=limited_PUMA,
-            year=year,
-            include_rw=self.include_rw,
+        self.cache_path = self.get_cache_fn(
+            variable_types, limited_PUMA, year, include_rw
         )
         self.variable_types = variable_types
         self.variables = get_variables(self.variable_types)
@@ -65,6 +63,15 @@ class PUMSData:
         self.rw_one_data: pd.DataFrame = None
         self.rw_two_data: pd.DataFrame = None
         self.download_and_cache()
+
+    @classmethod
+    def get_cache_fn(self, variable_types, limited_PUMA, year, include_rw):
+        return make_PUMS_cache_fn(
+            variable_types=variable_types,
+            limited_PUMA=limited_PUMA,
+            year=year,
+            include_rw=include_rw,
+        )
 
     def populate_dataframes(self):
         for k, i in self.urls.items():

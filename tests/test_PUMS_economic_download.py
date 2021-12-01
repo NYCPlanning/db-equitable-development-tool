@@ -2,11 +2,8 @@
 
 import pytest
 from ingest.PUMS_data import PUMSData
-from ingest.load_data import load_data
 from tests.test_PUMA_demographic_count_aggregation import PUMS
 
-
-# To-do: refactor to use ingestor for all tests
 
 ingestor = PUMSData(variable_types=["economics"], limited_PUMA=True, include_rw=False)
 raw = ingestor.vi_data_raw

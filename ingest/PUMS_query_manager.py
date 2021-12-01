@@ -2,7 +2,7 @@
 This class is responsible for generating list of variables and associated URLs for a 
 given set of variable types. 
 
-Use https://data.census.gov/mdat/#/search?ds=ACSPUMS5Y2019 as a reference.
+Use https://data.census.gov/mdat/#/search?ds=ACSPUMS5Y2012 as a reference.
 That website provides an interface to construct a query and then see the url to 
 access that query via an input.
 
@@ -14,6 +14,7 @@ from typing import List
 
 from utils.make_logger import create_logger
 
+from dataclasses import dataclass
 
 logger = create_logger("query_logger", "logs/PUMS-query-creation.log")
 load_dotenv()
@@ -23,20 +24,18 @@ api_key = os.environ["CENSUS_API_KEY"]
 
 variable_mapper = {
     "demographics": [
-        ("RAC1P", "clean_simple_cateogorical"),
-        ("HISP", "clean_simple_cateogorical"),
-        ("NATIVITY", "clean_simple_cateogorical"),
-        ("LANX", "clean_simple_cateogorical"),
-        ("ENG", "clean_simple_cateogorical"),
-        ("AGEP", "clean_continous"),
+        ("RAC1P", "categorical"),
+        ("HISP", "categorical"),
+        ("NATIVITY", "categorical"),
+        ("LANX", "categorical"),
+        ("ENG", "categorical"),
+        ("AGEP", "continuous"),
     ],
     "economics": [
-        ("HINCP", "clean_continous"),  # Household income
-        ("ESR", "clean_simple_cateogorical"),  # Employment status
-        ("WAGP", "clean_continous"),  # Wages
-        ("SCHL", "clean_simple_cateogorical"),  # Educational achievement
-        ("INDP", "clean_range_categorical"),  # Industry
-        ("OCCP", "clean_range_categorical"),  # Occupation
+        ("HINCP", "continuous"),  # Household income
+        ("ESR", "categorical"),  # Employment status
+        ("WAGP", "continuous"),  # Wages
+        ("SCHL", "categorical"),  # Educational achievement
     ],
 }
 
@@ -55,7 +54,7 @@ geo_ids = [
 ]
 
 allowed_variable_types = ["demographics", "economics"]
-allowed_years = [2019]
+allowed_years = [2012, 2019]
 
 
 def get_variables(variable_types: List) -> None:
@@ -68,7 +67,7 @@ def get_variables(variable_types: List) -> None:
     return rv
 
 
-def get_urls(variables: List, year: int, limited_PUMA=False, include_rw=True) -> dict:
+def get_urls(variables: List, year: int, limited_PUMA=False) -> dict:
     """
     :Limited_PUMA: for testing with single UCGID from each borough.
     :return:  dictionary of lists of urls. Each list is a set of of geographic regions
@@ -85,9 +84,8 @@ def get_urls(variables: List, year: int, limited_PUMA=False, include_rw=True) ->
 
     variable_queries["vi"] = f"PWGTP,{vars_as_params(variables)}"
 
-    if include_rw:
-        for x, k in ((1, "rw_one"), (41, "rw_two")):
-            variable_queries[k] = ",".join([f"PWGTP{x}" for x in range(x, x + 40)])
+    for x, k in ((1, "rw_one"), (41, "rw_two")):
+        variable_queries[k] = ",".join([f"PWGTP{x}" for x in range(x, x + 40)])
 
     urls = generate_urls(base_weights_section, geo_queries, variable_queries)
     return urls
@@ -134,7 +132,7 @@ def generate_geo_queries(limited_PUMA):
 
 def construct_url_start(year):
     if year not in allowed_years:
-        logger.warning("{year} not one of allowed years: {self.allowed_years}")
+        logger.warning("{year} not one of allowed years: {allowed_years}")
         raise Exception("Unallowed year")
     base_url = f"https://api.census.gov/data/{year}/acs/acs5/pums"
     return base_url

@@ -2,7 +2,6 @@
 
 import pytest
 from ingest.PUMS_data import PUMSData
-from tests.test_PUMA_demographic_count_aggregation import PUMS
 
 
 ingestor = PUMSData(variable_types=["economics"], limited_PUMA=True, include_rw=False)

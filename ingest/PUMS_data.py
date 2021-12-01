@@ -61,10 +61,10 @@ class PUMSData:
         )
         self.urls = urls
         self.vi_data: pd.DataFrame = None
+        self.vi_data_raw: pd.DataFrame = None
         self.rw_one_data: pd.DataFrame = None
         self.rw_two_data: pd.DataFrame = None
-
-        self.recode_df = self.get_recode_df()
+        self.download_and_cache()
 
     def populate_dataframes(self):
         for k, i in self.urls.items():
@@ -74,17 +74,15 @@ class PUMSData:
             attr_name = f"{k}_data"
             self.__setattr__(attr_name, data)
             self.assign_identifier(attr_name)
-
-    def get_recode_df(self):
-        """Moved to top of PUMS cleaner modules"""
-        pass
+        self.vi_data_raw = self.vi_data.copy(deep=True)
 
     def download_and_cache(self):
         self.populate_dataframes()
-        self.clean_data()
         if self.include_rw:
             self.merge_rw()
             self.merge_vi_rw()
+
+        self.clean_data()
         self.cache()
 
     def cache(self):

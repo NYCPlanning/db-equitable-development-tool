@@ -29,5 +29,4 @@ def make_GET_request(url: str, request_name: str) -> pd.DataFrame:
 
 
 def response_to_df(res_json):
-    """To-do: move to PUMS data class during refactor"""
     return pd.DataFrame(data=res_json[1:], columns=res_json[0])

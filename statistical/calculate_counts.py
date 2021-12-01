@@ -1,5 +1,4 @@
-"""Generalized code to get counts and associated variances
-To-do: move this to statistical directory"""
+"""Generalized code to get counts and associated variances"""
 
 import warnings
 

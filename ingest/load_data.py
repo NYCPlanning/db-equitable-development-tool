@@ -31,8 +31,8 @@ def load_data(
     HVS_human_readable: bool = False,
     HVS_output_type: str = ".csv",
 ) -> dict:
-    """Future to-do: include re-query parameter that deletes files in data folder
-    and runs ingestion process from scratch
+    """
+    To-do: break out pums download into it's own function that can be called on its own
 
     :param limited_PUMA: only query for first PUMA in each borough. For debugging
     :return: pandas dataframe of PUMS data
@@ -53,7 +53,7 @@ def load_data(
         logger.info(
             f"Making get request to generate data sent to {ingestor.cache_path}"
         )
-        ingestor.download_and_cache()
+        # ingestor.download_and_cache()
 
     PUMS_data = pd.read_pickle(ingestor.cache_path)
     rv["PUMS"] = PUMS_data

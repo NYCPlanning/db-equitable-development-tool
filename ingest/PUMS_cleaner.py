@@ -4,6 +4,7 @@ import numpy as np
 from os.path import exists
 import requests
 import re
+from utils.make_logger import create_logger
 
 
 class PUMSCleaner:
@@ -13,16 +14,17 @@ class PUMSCleaner:
     def __init__(self) -> None:
         self.one_to_one_recodes = self.get_one_to_one_recode_df()
         self.range_recodes = self.get_range_recodes()
+        self.logger = create_logger("PUMS_cleaner_log", "logs/PUMSCleaner.log")
 
     def clean_simple_cateogorical(self, vi_data, column_name):
         """For columns that are downloaded as integers and map one to one to categories in data dictionary"""
-        print(f"cleaning {column_name}")  # To-do: send this to log
+        self.logger.info(
+            f"cleaning {column_name} with simple categorical mapping approach. This uses the one_to_one_recodes df"
+        )
         codes = self.one_to_one_recodes[
             self.one_to_one_recodes["variable_name"] == column_name
         ]
         codes = codes[["C", "Record Type"]]
-        # codes.replace({"C": {"b": 0}}, inplace=True)
-        # codes["C"] = codes["C"].astype(int)
         codes["C"] = pd.to_numeric(codes["C"], errors="coerce").replace(np.NaN, 0)
         codes.set_index("C", inplace=True)
         mapper = {column_name: codes.to_dict()["Record Type"]}
@@ -31,12 +33,16 @@ class PUMSCleaner:
         return vi_data
 
     def clean_continous(self, vi_data, column_name):
+        self.logger.info(f"cleaning {column_name} to integer type")
         vi_data[column_name] = vi_data[column_name].astype(int)
         return vi_data
 
     def clean_range_categorical(self, vi_data, column_name):
         """Based on https://stackoverflow.com/questions/57376325/replace-a-range-of-integer-values-in-multiple-columns-of-pandas"""
 
+        self.logger.info(
+            f"cleaning {column_name} with range to category mapping approach. This uses the range_recodes df"
+        )
         recode_ranges = self.range_recodes[column_name]
         vi_data[column_name] = vi_data[column_name].astype(int)
         new_col_name = column_name + "_cleaned"
@@ -45,7 +51,8 @@ class PUMSCleaner:
             vi_data.loc[
                 vi_data[column_name].between(*category[0]), new_col_name
             ] = category[1]
-        vi_data[column_name] = vi_data[new_col_name]  # This will make tests fail
+        vi_data[column_name] = vi_data[new_col_name]
+        vi_data.drop(columns=new_col_name, inplace=True)
         return vi_data
 
     def get_one_to_one_recode_df(self):

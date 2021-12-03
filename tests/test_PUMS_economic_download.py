@@ -41,8 +41,6 @@ EXPECTED_COLS_VALUES_CONTINOUS = [("HINCP", -60000, 99999999), ("WAGP", -1, 9999
 def test_continous_columns_have_expected_values(column, min_val, max_val):
     """These tests aren't great"""
     assert column in clean.columns
-    print(min(clean[column]))
-    print(clean[column])
     assert min(clean[column]) >= min_val
     assert max(clean[column]) <= max_val
 

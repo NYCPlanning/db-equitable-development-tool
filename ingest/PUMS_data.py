@@ -42,7 +42,6 @@ class PUMSData:
         :urls: tuple of two urls, one with each geographic regions
         :data: dataframe originally populated with variables
         """
-        print("calling init ")
         self.include_rw = include_rw
         self.cache_path = self.get_cache_fn(
             variable_types, limited_PUMA, year, include_rw

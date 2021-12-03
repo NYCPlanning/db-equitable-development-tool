@@ -5,7 +5,9 @@ clean/collate data correctly"""
 
 from ingest.load_data import load_data
 
-PUMS_data = load_data(["demographics", "economics"], limited_PUMA=True)["PUMS"]
+PUMS_data = load_data(["demographics", "economics"], limited_PUMA=True, requery=True)[
+    "PUMS"
+]
 
 
 def test_PUMS_replicate_weights():

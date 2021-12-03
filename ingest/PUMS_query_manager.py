@@ -134,7 +134,7 @@ def generate_geo_queries(limited_PUMA):
 
 def construct_url_start(year):
     if year not in allowed_years:
-        logger.warning("{year} not one of allowed years: {self.allowed_years}")
+        logger.warning(f"{year} not one of allowed years: {allowed_years}")
         raise Exception("Unallowed year")
     base_url = f"https://api.census.gov/data/{year}/acs/acs5/pums"
     return base_url

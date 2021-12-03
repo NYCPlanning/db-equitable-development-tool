@@ -8,6 +8,10 @@ import os
 import pandas as pd
 from ingest.load_data import load_data
 from statistical.calculate_counts import calc_counts
+from utils.make_logger import create_logger
+import time
+
+logger = create_logger("request_logger", "logs/aggregation.log")
 
 
 class BaseAggregator:
@@ -16,10 +20,13 @@ class BaseAggregator:
     aggregated: pd.DataFrame
 
     def __init__(self) -> None:
-        pass
+        self.init_time = time.perf_counter()
+        self.logger = create_logger(
+            f"{self.__class__.__name__}_logger", f"logs/{self.__class__.__name__}.log"
+        )
 
     def cache_flat_csv(self):
-        """For debugging and collaborating"""
+        """For debugging and collaborating. This is where .csv's for"""
         if not os.path.exists(".output/"):
             os.mkdir(".output/")
         fn = self.__class__.__name__
@@ -37,22 +44,28 @@ class PUMSCount(BaseAggregator):
     geo_col = "PUMA"
 
     def __init__(self, variable_types, limited_PUMA, year, requery) -> None:
-        print("downloading PUMS data")  # To-do: send to logs
+        BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
         self.year = year
+        PUMS_load_start = time.perf_counter()
         self.PUMS: pd.DataFrame = load_data(
             PUMS_variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
         )["PUMS"]
-        print("downloaded PUMS")  # To-do: send to logs
+        PUMS_load_end = time.perf_counter()
+        self.logger.info(
+            f"PUMS data from download took {PUMS_load_end - PUMS_load_start} seconds"
+        )
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
         self.calculate_add_new_variable(indicator="total_pop")
         for ind in self.indicators:
-            print(f"aggregating {ind}")
+            agg_start = time.perf_counter()
             self.calculate_add_new_variable(indicator=ind)
+            self.logger.info(f"aggregating {ind} took {time.perf_counter()-agg_start}")
+
         self.sort_aggregated_columns_alphabetically()
 
     def sort_aggregated_columns_alphabetically(self):

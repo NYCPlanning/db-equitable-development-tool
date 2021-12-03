@@ -1,9 +1,8 @@
 """Doing aggregation is runtime-intensive so all tests use same aggregator object"""
 
 import pytest
-from aggregate.aggregate_PUMS import PUMSCountDemographics
-from ingest.load_data import load_data
-from tests.util import races, race_counts, age_bucket_counts
+from aggregate.aggregate_PUMS_demographics import PUMSCountDemographics
+from tests.util import race_counts, age_bucket_counts
 
 
 aggregator = PUMSCountDemographics(limited_PUMA=True)

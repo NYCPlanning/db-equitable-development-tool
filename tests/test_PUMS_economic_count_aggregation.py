@@ -1,18 +1,25 @@
 import pytest
-from aggregate.aggregate_PUMS_economics import PUMSCountEconomics
 from ingest.load_data import load_data
+from tests.local_loader import LocalLoader
 from tests.util import races, race_counts, age_bucket_counts
 
 
-aggregator = PUMSCountEconomics(limited_PUMA=True)
-by_person_data = aggregator.PUMS
-aggregated = aggregator.aggregated
+local_loader = LocalLoader()
+
+
+def test_local_loader(all_data):
+    """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
+    This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
+    local_loader.load_aggregated(all_data)
 
 
 def test_all_race_sum_to_total_within_labor_force():
     """Can be folded into test_that_all_races_sum_to_total_within_indicator in demographics aggregation tests"""
     lf_race_cols = [f"lf_{r}" for r in race_counts]
-    assert (aggregated[lf_race_cols].sum(axis=1) == aggregated["lf-count"]).all()
+    assert (
+        local_loader.aggregated[lf_race_cols].sum(axis=1)
+        == local_loader.aggregated["lf-count"]
+    ).all()
 
 
 def test_all_occupations_and_industry_sum_to_total():
@@ -23,7 +30,9 @@ def test_all_occupations_and_industry_sum_to_total():
 def test_industry_assigned_correctly():
     """Can parameterize this to include other industries"""
     assert (
-        by_person_data[by_person_data["INDP"] == "Wholesale Trade"]["industry"]
+        local_loader.by_person_data[
+            local_loader.by_person_data["INDP"] == "Wholesale Trade"
+        ]["industry"]
         == "Whlsl"
     ).all()
 
@@ -31,8 +40,8 @@ def test_industry_assigned_correctly():
 def test_occupation_assigned_correctly():
     """Can parameterize this to include other occupations"""
     assert (
-        by_person_data[by_person_data["OCCP"] == "Sales and Office Occupations"][
-            "occupation"
-        ]
+        local_loader.by_person_data[
+            local_loader.by_person_data["OCCP"] == "Sales and Office Occupations"
+        ]["occupation"]
         == "slsoff"
     ).all()

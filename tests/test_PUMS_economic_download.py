@@ -1,26 +1,7 @@
 """"""
 
 import pytest
-from ingest.PUMS_data import PUMSData
-from tests.test_PUMS_download import local_load
-
-
-class LocalLoader:
-    """To persist whichever dataset is loaded"""
-
-    def __init__(self) -> None:
-        pass
-
-    def load(self, all_data):
-        """To be called in first test"""
-        limited_PUMA = not all_data
-
-        self.ingestor = PUMSData(
-            variable_types=["economics"], limited_PUMA=limited_PUMA, include_rw=False
-        )
-        self.raw = self.ingestor.vi_data_raw
-        self.clean = self.ingestor.vi_data
-
+from tests.local_loader import LocalLoader
 
 local_loader = LocalLoader()
 
@@ -45,7 +26,7 @@ EXPECTED_COLS_VALUES_CATEGORICAL = [
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
-    local_loader.load(all_data)
+    local_loader.load_by_person(all_data, include_rw=False)
 
 
 @pytest.mark.parametrize("column, expected_values", EXPECTED_COLS_VALUES_CATEGORICAL)

@@ -44,4 +44,4 @@ jobs:
       - name: Pytest
         run: |
           . $HOME/.poetry/env
-          poetry run pytest -s
+          poetry run pytest -s -q --all_data

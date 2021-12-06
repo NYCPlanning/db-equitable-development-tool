@@ -17,24 +17,26 @@ def test_local_loader(all_data):
 
 def test_PUMS_download(all_data: bool):
     if all_data:
-        assert local_loader.clean.shape[0] > 3 * (10 ** 5)
+        assert local_loader.by_person.shape[0] > 3 * (10 ** 5)
     else:
-        assert local_loader.clean.shape[0] > 3 * (10 ** 4)
+        assert local_loader.by_person.shape[0] > 3 * (10 ** 4)
 
 
 def test_PUMS_includes_replicate_weights():
     """The full query doesn't work yet so first test limited PUMAs.
     Test that PUMS download gets correct columns"""
-    assert "PWGTP" in local_loader.clean.columns, "Person weights column not present"
+    assert (
+        "PWGTP" in local_loader.by_person.columns
+    ), "Person weights column not present"
     for i in range(1, 81):
         assert (
-            f"PWGTP{i}" in local_loader.clean.columns
+            f"PWGTP{i}" in local_loader.by_person.columns
         ), f"Replicate weight {i} not present"
 
 
 def test_PUMA_column_present():
-    assert "PUMA" in local_loader.clean.columns, "PUMA column not present"
+    assert "PUMA" in local_loader.by_person.columns, "PUMA column not present"
 
 
 def test_PUMS_data_unique():
-    assert local_loader.clean.index.is_unique, "Duplicates in PUMS data"
+    assert local_loader.by_person.index.is_unique, "Duplicates in PUMS data"

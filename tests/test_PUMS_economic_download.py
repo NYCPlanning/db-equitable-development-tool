@@ -32,9 +32,9 @@ def test_local_loader(all_data):
 @pytest.mark.parametrize("column, expected_values", EXPECTED_COLS_VALUES_CATEGORICAL)
 def test_categorical_columns_have_expected_values(column, expected_values):
 
-    assert column in local_loader.clean.columns
+    assert column in local_loader.by_person.columns
     for ev in expected_values:
-        assert ev in local_loader.clean[column].values
+        assert ev in local_loader.by_person[column].values
 
 
 EXPECTED_COLS_VALUES_CONTINOUS = [("HINCP", -60000, 99999999), ("WAGP", -1, 999999)]
@@ -43,9 +43,9 @@ EXPECTED_COLS_VALUES_CONTINOUS = [("HINCP", -60000, 99999999), ("WAGP", -1, 9999
 @pytest.mark.parametrize("column, min_val, max_val", EXPECTED_COLS_VALUES_CONTINOUS)
 def test_continous_columns_have_expected_values(column, min_val, max_val):
     """These tests aren't great"""
-    assert column in local_loader.clean.columns
-    assert min(local_loader.clean[column]) >= min_val
-    assert max(local_loader.clean[column]) <= max_val
+    assert column in local_loader.by_person.columns
+    assert min(local_loader.by_person[column]) >= min_val
+    assert max(local_loader.by_person[column]) <= max_val
 
 
 EXPECTED_COLS_VALUES_RANGE_CATEGORICAL = [
@@ -59,6 +59,8 @@ EXPECTED_COLS_VALUES_RANGE_CATEGORICAL = [
 )
 def test_categorical_range_variables_have_expected_values(column, old_val, new_val):
 
-    ids = local_loader.raw[local_loader.raw[column] == old_val].index
+    ids = local_loader.by_person_raw[
+        local_loader.by_person_raw[column] == old_val
+    ].index
 
-    sum(local_loader.clean.loc[ids][column] == new_val) == len(ids)
+    sum(local_loader.by_person.loc[ids][column] == new_val) == len(ids)

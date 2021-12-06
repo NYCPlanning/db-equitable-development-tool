@@ -17,8 +17,8 @@ class LocalLoader:
             limited_PUMA=limited_PUMA,
             include_rw=include_rw,
         )
-        self.raw = self.ingestor.vi_data_raw
-        self.clean = self.ingestor.vi_data
+        self.by_person_raw = self.ingestor.vi_data_raw
+        self.by_person = self.ingestor.vi_data
 
     def load_aggregated(self, all_data):
         limited_PUMA = not all_data

@@ -94,7 +94,9 @@ mean_rent = svymean(~gross_rent, design = renter_hus)
 #Do median variance calculation
 
 renter_hus <- subset(hu_design, renters == 1)
-median_rent=svyquantile(~gross_rent, design = renter_hus, quantiles=c(.5))
+median_rent <- svyquantile(~gross_rent, design = renter_hus, 
+                        interval.type = "quantile",
+                        quantiles=c(.5))
 median_rent
 
 #HVS Guide says SE should be 8.794271 

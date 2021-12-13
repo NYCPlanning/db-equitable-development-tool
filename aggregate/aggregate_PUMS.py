@@ -7,7 +7,8 @@ To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 import os
 import pandas as pd
 from ingest.load_data import load_data
-from statistical.calculate_counts import calc_counts
+from statistical.calculate_counts import calculate_counts
+from statistical.calculate_medians import calculate_median
 from utils.make_logger import create_logger
 import time
 
@@ -36,7 +37,7 @@ class BaseAggregator:
         self.aggregated.to_csv(f".output/{fn}.csv")
 
 
-class PUMSCount(BaseAggregator):
+class PUMSAggregator(BaseAggregator):
     """Parent class for aggregating PUMS data"""
 
     rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
@@ -60,7 +61,6 @@ class PUMSCount(BaseAggregator):
         )
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
-        self.calculate_add_new_variable(indicator="total_pop")
         for ind in self.indicators:
             agg_start = time.perf_counter()
             self.calculate_add_new_variable(indicator=ind)
@@ -76,7 +76,7 @@ class PUMSCount(BaseAggregator):
 
     def calculate_add_new_variable(self, indicator):
         self.assign_indicator(indicator)
-        new_indicator_aggregated = calc_counts(
+        new_indicator_aggregated = self.R_calculation(
             self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
         )
         self.add_aggregated_data(new_indicator_aggregated)
@@ -106,3 +106,14 @@ class PUMSCount(BaseAggregator):
                 return "anh"
             else:
                 return "onh"
+
+
+class PUMSCount(PUMSAggregator):
+    """Need some way to introduce total pop indicator here"""
+
+    indicators = ["total_pop"]
+    R_calculation = calculate_counts
+
+
+class PUMSMedian(PUMSAggregator):
+    R_calculation = calculate_median

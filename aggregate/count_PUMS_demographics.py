@@ -3,19 +3,21 @@ from aggregate.aggregate_PUMS import PUMSCount
 
 class PUMSCountDemographics(PUMSCount):
 
-    indicators = [
-        "LEP",
-        "LEP_by_race",
-        "foreign_born",
-        "foreign_born_by_race",
-        "age_bucket",
-        "age_bucket_by_race",
-        "race",  # This is NOT the race used in the final product. This is race from PUMS used to debug
-    ]
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
 
     def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
 
+        self.indicators.extend(
+            [
+                "LEP",
+                "LEP_by_race",
+                "foreign_born",
+                "foreign_born_by_race",
+                "age_bucket",
+                "age_bucket_by_race",
+                "race",  # This is NOT the race used in the final product. This is race from PUMS used to debug
+            ]
+        )
         PUMSCount.__init__(
             self,
             variable_types=["demographics"],

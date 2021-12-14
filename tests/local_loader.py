@@ -15,7 +15,7 @@ class LocalLoader:
         limited_PUMA = not all_data
 
         self.ingestor = PUMSData(
-            variable_types=["economics"],
+            variable_types=["demographics"],
             limited_PUMA=limited_PUMA,
             include_rw=include_rw,
         )
@@ -28,7 +28,7 @@ class LocalLoader:
             aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)
         elif type == "economics":
             aggregator = PUMSCountEconomics(limited_PUMA=limited_PUMA)
-        self.by_person_data = aggregator.PUMS
+        self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated
 
     def load_aggregated_medians(self, all_data, type):
@@ -37,5 +37,5 @@ class LocalLoader:
             aggregator = PUMSMedianDemographics(limited_PUMA=limited_PUMA)
         elif type == "economics":
             raise Exception
-        self.by_person_data = aggregator.PUMS
+        self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated

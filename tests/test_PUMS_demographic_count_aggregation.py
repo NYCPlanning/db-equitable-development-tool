@@ -41,7 +41,7 @@ def test_that_all_age_buckets_sum_to_total():
 
 
 def test_total_counts_match():
-    citywide_gb = local_loader.by_person_data.groupby("age_bucket_by_race").agg(
+    citywide_gb = local_loader.by_person.groupby("age_bucket_by_race").agg(
         {"PWGTP": "sum"}
     )
     for variable in citywide_gb.index:
@@ -53,7 +53,7 @@ def test_total_counts_match():
 
 def test_age_bucket_assignment_correct():
     """95 is top coded value for age"""
-    by_person_data = local_loader.by_person_data
+    by_person_data = local_loader.by_person
     assert min(by_person_data[by_person_data["age_bucket"] == "PopU16"]["AGEP"]) == 0
     assert max(by_person_data[by_person_data["age_bucket"] == "PopU16"]["AGEP"]) == 16
     assert min(by_person_data[by_person_data["age_bucket"] == "P16t65"]["AGEP"]) == 17
@@ -63,7 +63,7 @@ def test_age_bucket_assignment_correct():
 
 
 def test_that_fb_correctly_assigned():
-    by_person_data = local_loader.by_person_data
+    by_person_data = local_loader.by_person
     assert (
         by_person_data[by_person_data["NATIVITY"] == "Native"]["foreign_born"]
         .isna()
@@ -86,14 +86,11 @@ TEST_CASES = [
 
 @pytest.mark.parametrize("person_id, expected_val", TEST_CASES)
 def test_that_fb_by_race_correctly_assigned(person_id, expected_val):
-    assert (
-        local_loader.by_person_data.loc[person_id]["foreign_born_by_race"]
-        == expected_val
-    )
+    assert local_loader.by_person.loc[person_id]["foreign_born_by_race"] == expected_val
 
 
 def test_that_native_born_no_fb_by_race():
-    by_person_data = local_loader.by_person_data
+    by_person_data = local_loader.by_person
     assert (
         by_person_data[by_person_data["NATIVITY"] == "Native"]["foreign_born_by_race"]
         .isna()
@@ -112,4 +109,4 @@ TEST_RECORDS = [
 
 @pytest.mark.parametrize("record_id, expected_val", TEST_RECORDS)
 def test_that_LEP_by_race_correctly_assigned(record_id, expected_val):
-    assert local_loader.by_person_data.loc[record_id]["LEP_by_race"] == expected_val
+    assert local_loader.by_person.loc[record_id]["LEP_by_race"] == expected_val

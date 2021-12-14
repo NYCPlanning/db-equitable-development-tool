@@ -30,9 +30,9 @@ def test_all_occupations_and_industry_sum_to_total():
 def test_industry_assigned_correctly():
     """Can parameterize this to include other industries"""
     assert (
-        local_loader.by_person_data[
-            local_loader.by_person_data["INDP"] == "Wholesale Trade"
-        ]["industry"]
+        local_loader.by_person[local_loader.by_person["INDP"] == "Wholesale Trade"][
+            "industry"
+        ]
         == "Whlsl"
     ).all()
 
@@ -40,8 +40,8 @@ def test_industry_assigned_correctly():
 def test_occupation_assigned_correctly():
     """Can parameterize this to include other occupations"""
     assert (
-        local_loader.by_person_data[
-            local_loader.by_person_data["OCCP"] == "Sales and Office Occupations"
+        local_loader.by_person[
+            local_loader.by_person["OCCP"] == "Sales and Office Occupations"
         ]["occupation"]
         == "slsoff"
     ).all()

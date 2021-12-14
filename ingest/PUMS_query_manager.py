@@ -108,7 +108,7 @@ def generate_urls(base: str, geos: List, variable_queries: List):
     for k, query in variable_queries.items():
         region_urls = []
         for geo_ids in geos:
-            region_urls.append(f"{base}{query}&ucgid={geo_ids}&key={api_key}")
+            region_urls.append(f"{base}{query}&ucgid={geo_ids}")
         rv[k] = region_urls
     return rv
 

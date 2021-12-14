@@ -2,6 +2,7 @@ from aggregate.aggregate_PUMS import PUMSCount
 
 
 class PUMSCountDemographics(PUMSCount):
+    """Medians aggregator has crosstabs in data structure instead of appended as text. This may be better design"""
 
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
 

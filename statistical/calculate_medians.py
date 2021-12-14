@@ -16,8 +16,7 @@ from rpy2.robjects import r, pandas2ri
 pandas2ri.activate()
 
 
-def calculate_median(_, data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col):
-    """Became attribute and now gets aggregator passed as first variable which I don't want"""
+def get_design_object(data, variable_col, rw_cols, weight_col):
     survey_design = survey_package.svrepdesign(
         variables=data[[variable_col]],
         repweights=data[rw_cols],
@@ -27,6 +26,13 @@ def calculate_median(_, data: pd.DataFrame, variable_col, rw_cols, weight_col, g
         scale=4 / 80,
         rscales=1,
     )
+
+    return survey_design
+
+
+def calculate_median(data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col):
+    """Became attribute and now gets aggregator passed as first variable which I don't want"""
+    survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
     aggregated: pd.DataFrame
     aggregated = survey_package.svyby(
         formula=data[[variable_col]],
@@ -47,3 +53,39 @@ def calculate_median(_, data: pd.DataFrame, variable_col, rw_cols, weight_col, g
     aggregated.drop(columns=geo_col, inplace=True)
 
     return aggregated
+
+
+def calculate_median_with_crosstab(
+    data: pd.DataFrame, variable_col, crosstab_col, rw_cols, weight_col, geo_col
+):
+    """Can only do one crosstab at a time for now"""
+    survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
+
+    aggregated = survey_package.svyby(
+        formula=data[[variable_col]],
+        by=data[[geo_col, crosstab_col]],
+        design=survey_design,
+        quantiles=base.c(0.5),
+        FUN=survey_package.svyquantile,
+        **{"interval.type": "quantile"},
+    )
+    median_col_name = f"{variable_col}-median"
+    se_col_name = f"{variable_col}-se"
+    aggregated.rename(
+        columns={
+            variable_col: median_col_name,
+            f"se.{variable_col}": se_col_name,
+        },
+        inplace=True,
+    )
+    pivot_table = pd.pivot_table(
+        data=aggregated,
+        values=[median_col_name, se_col_name],
+        columns=crosstab_col,
+        index=geo_col,
+    )
+    pivot_table.columns = [
+        f"{crosstab_var}-{stat}" for stat, crosstab_var in pivot_table.columns
+    ]
+
+    return pivot_table

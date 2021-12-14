@@ -8,7 +8,6 @@ import os
 import pandas as pd
 from ingest.load_data import load_data
 from statistical.calculate_counts import calculate_counts
-from statistical.calculate_medians import calculate_median
 from utils.make_logger import create_logger
 import time
 
@@ -63,10 +62,12 @@ class PUMSAggregator(BaseAggregator):
         self.aggregated.index.name = "PUMA"
         for ind in self.indicators:
             agg_start = time.perf_counter()
-            self.calculate_add_new_variable(indicator=ind)
+            self.calculate_add_new_variable(ind)
             self.logger.info(f"aggregating {ind} took {time.perf_counter()-agg_start}")
-
-        self.sort_aggregated_columns_alphabetically()
+        try:
+            self.sort_aggregated_columns_alphabetically()
+        except:
+            print("couldn't sort columns alphabetically")
 
     def sort_aggregated_columns_alphabetically(self):
         """Put each variable next to it's standard error"""
@@ -75,6 +76,7 @@ class PUMSAggregator(BaseAggregator):
         )
 
     def calculate_add_new_variable(self, indicator):
+        """This is currently specific to count aggregations, may want to move to that child class."""
         self.assign_indicator(indicator)
         new_indicator_aggregated = self.R_calculation(
             self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
@@ -87,9 +89,10 @@ class PUMSAggregator(BaseAggregator):
         )
 
     def assign_indicator(self, indicator) -> pd.DataFrame:
-        self.PUMS[indicator] = self.PUMS.apply(
-            axis=1, func=self.__getattribute__(f"{indicator}_assign")
-        )
+        if indicator not in self.PUMS.columns:
+            self.PUMS[indicator] = self.PUMS.apply(
+                axis=1, func=self.__getattribute__(f"{indicator}_assign")
+            )
 
     def total_pop_assign(self, person):
         return "total_pop"
@@ -113,7 +116,3 @@ class PUMSCount(PUMSAggregator):
 
     indicators = ["total_pop"]
     R_calculation = calculate_counts
-
-
-class PUMSMedian(PUMSAggregator):
-    R_calculation = calculate_median

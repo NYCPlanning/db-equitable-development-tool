@@ -10,12 +10,12 @@ class LocalLoader:
     def __init__(self) -> None:
         pass
 
-    def load_by_person(self, all_data, include_rw=True):
+    def load_by_person(self, all_data, include_rw=True, variable_set="demographic"):
         """To be called in first test"""
         limited_PUMA = not all_data
 
         self.ingestor = PUMSData(
-            variable_types=["demographics"],
+            variable_types=[variable_set],
             limited_PUMA=limited_PUMA,
             include_rw=include_rw,
         )

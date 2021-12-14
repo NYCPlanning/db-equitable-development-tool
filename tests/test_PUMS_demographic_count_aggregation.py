@@ -12,7 +12,7 @@ local_loader = LocalLoader()
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
-    local_loader.load_aggregated(all_data, "demographics")
+    local_loader.load_aggregated_counts(all_data, "demographics")
 
 
 def test_that_all_races_sum_to_total_within_indicator():

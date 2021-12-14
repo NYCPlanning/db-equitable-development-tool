@@ -1,6 +1,7 @@
 from ingest.PUMS_data import PUMSData
 from aggregate.count_PUMS_economics import PUMSCountEconomics
 from aggregate.count_PUMS_demographics import PUMSCountDemographics
+from aggregate.median_PUMS_demographics import PUMSMedianDemographics
 
 
 class LocalLoader:
@@ -21,11 +22,20 @@ class LocalLoader:
         self.by_person_raw = self.ingestor.vi_data_raw
         self.by_person = self.ingestor.vi_data
 
-    def load_aggregated(self, all_data, type):
+    def load_aggregated_counts(self, all_data, type):
         limited_PUMA = not all_data
         if type == "demographics":
             aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)
         elif type == "economics":
             aggregator = PUMSCountEconomics(limited_PUMA=limited_PUMA)
+        self.by_person_data = aggregator.PUMS
+        self.aggregated = aggregator.aggregated
+
+    def load_aggregated_medians(self, all_data, type):
+        limited_PUMA = not all_data
+        if type == "demographics":
+            aggregator = PUMSMedianDemographics(limited_PUMA=limited_PUMA)
+        elif type == "economics":
+            raise Exception
         self.by_person_data = aggregator.PUMS
         self.aggregated = aggregator.aggregated

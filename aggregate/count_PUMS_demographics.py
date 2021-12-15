@@ -1,4 +1,6 @@
-from aggregate.aggregate_PUMS import PUMSCount
+from aggregate.aggregate_PUMS import PUMSAggregator, PUMSCount
+from statistical.calculate_fractions import calculate_fractions
+from statistical.calculate_counts import calculate_counts
 
 
 class PUMSCountDemographics(PUMSCount):
@@ -7,18 +9,19 @@ class PUMSCountDemographics(PUMSCount):
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
 
     def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
-
+        print("WARNING! most indicators excluded for debugging")
         self.indicators.extend(
             [
-                "LEP",
-                "LEP_by_race",
-                "foreign_born",
-                "foreign_born_by_race",
+                # "LEP",
+                # "LEP_by_race",
+                # "foreign_born",
+                # "foreign_born_by_race",
                 "age_bucket",
-                "age_bucket_by_race",
+                # "age_bucket_by_race",
                 "race",  # This is NOT the race used in the final product. This is race from PUMS used to debug
             ]
         )
+        self.categories = {}
         PUMSCount.__init__(
             self,
             variable_types=["demographics"],
@@ -26,6 +29,29 @@ class PUMSCountDemographics(PUMSCount):
             year=year,
             requery=requery,
         )
+
+    def calculate_add_new_variable(self, indicator):
+        self.assign_indicator(indicator)
+        print("warning: skipping counts for debuging of fractions")
+        # new_indicator_aggregated = calculate_counts(
+        #     self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
+        # )
+        # self.add_aggregated_data(new_indicator_aggregated)
+        print(f"calculating fraction for {indicator}")
+
+        self.add_category(indicator)
+        fraction_aggregated = calculate_fractions(
+            self.PUMS.copy(deep=True),
+            indicator,
+            self.categories[indicator],
+            self.rw_cols,
+            self.weight_col,
+            self.geo_col,
+        )
+        self.add_aggregated_data(fraction_aggregated)
+
+    def add_category(self, indicator):
+        self.categories[indicator] = list(self.PUMS[indicator].unique())
 
     def foreign_born_by_race_assign(self, person):
         fb = self.foreign_born_assign(person)

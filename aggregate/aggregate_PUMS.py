@@ -75,14 +75,6 @@ class PUMSAggregator(BaseAggregator):
             sorted(self.aggregated.columns), axis=1
         )
 
-    def calculate_add_new_variable(self, indicator):
-        """This is currently specific to count aggregations, may want to move to that child class."""
-        self.assign_indicator(indicator)
-        new_indicator_aggregated = self.R_calculation(
-            self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
-        )
-        self.add_aggregated_data(new_indicator_aggregated)
-
     def add_aggregated_data(self, new_var):
         self.aggregated = self.aggregated.merge(
             new_var, left_index=True, right_index=True
@@ -115,4 +107,3 @@ class PUMSCount(PUMSAggregator):
     """Need some way to introduce total pop indicator here"""
 
     indicators = ["total_pop"]
-    R_calculation = calculate_counts

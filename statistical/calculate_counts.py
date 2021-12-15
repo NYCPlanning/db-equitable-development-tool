@@ -18,7 +18,7 @@ from rpy2.robjects import r, pandas2ri
 pandas2ri.activate()
 
 
-def calculate_counts(_, data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col):
+def calculate_counts(data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col):
     """To do: implement something more elegant than "a" dummy var"""
     data["a"] = 1
     survey_design = survey_package.svrepdesign(

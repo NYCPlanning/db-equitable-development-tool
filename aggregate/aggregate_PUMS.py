@@ -11,8 +11,6 @@ from statistical.calculate_counts import calculate_counts
 from utils.make_logger import create_logger
 import time
 
-logger = create_logger("request_logger", "logs/aggregation.log")
-
 
 class BaseAggregator:
     """Placeholder for base aggregator class for when more types of aggregation are added"""
@@ -58,6 +56,9 @@ class PUMSAggregator(BaseAggregator):
         self.logger.info(
             f"PUMS data from download took {PUMS_load_end - PUMS_load_start} seconds"
         )
+        for crosstab in self.crosstabs:
+            self.assign_indicator(crosstab)
+        # Possible to-do: below code goes in call instead of init
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
         for ind in self.indicators:

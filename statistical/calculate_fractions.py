@@ -1,3 +1,4 @@
+from threading import get_ident
 import warnings
 from numpy import single
 
@@ -18,13 +19,21 @@ pandas2ri.activate()
 
 
 def calculate_fractions(
-    data: pd.DataFrame, variable_col, categories, rw_cols, weight_col, geo_col
+    data: pd.DataFrame,
+    variable_col,
+    categories,
+    rw_cols,
+    weight_col,
+    geo_col,
+    crosstab_category=None,
 ):
     """This adds to dataframe so it should receive copy of data"""
 
-    all_fractions = pd.DataFrame(index=data["PUMA"].unique())
+    all_fractions = pd.DataFrame(index=data[geo_col].unique())
     print(f"calculate fractions function called for {variable_col}")
     print(f"variables are {categories}")
+    print(f"crosstab category is {crosstab_category}")
+    print()
     for category in categories:
         data[category] = (data[variable_col] == category).astype(int)
         survey_design = survey_package.svrepdesign(
@@ -42,9 +51,16 @@ def calculate_fractions(
             design=survey_design,
             FUN=survey_package.svymean,
         )
-        single_fraction.drop(columns=["PUMA"], inplace=True)
+        single_fraction.drop(columns=[geo_col], inplace=True)
+        if crosstab_category is None:
+            columns = (f"{category}-fraction", f"{category}-fraction-se")
+        else:
+            columns = (
+                f"{category}-{crosstab_category}-fraction",
+                f"{category}-{crosstab_category}-fraction-se",
+            )
         single_fraction.rename(
-            columns={"V1": f"{category}-fraction", "se": f"{category}-fraction-se"},
+            columns={"V1": columns[0], "se": columns[1]},
             inplace=True,
         )
         all_fractions = all_fractions.merge(
@@ -53,5 +69,38 @@ def calculate_fractions(
     return all_fractions
 
 
-def calculate_fractions_crosstabs():
-    pass
+def calculate_fractions_crosstabs(
+    data,
+    variable_col,
+    var_categories,
+    crosstab,
+    crosstab_categories,
+    rw_cols,
+    weight_col,
+    geo_col,
+):
+    all_fractions = pd.DataFrame(index=data[geo_col].unique())
+    for ct_category in crosstab_categories:
+        print(
+            f"caculating fraction of {ct_category} resondents in each {variable_col} group"
+        )
+        data_filtered = data[data[crosstab] == ct_category]
+        ct_fraction = calculate_fractions(
+            data_filtered,
+            variable_col,
+            var_categories,
+            rw_cols,
+            weight_col,
+            geo_col,
+            ct_category,
+        )
+        print(f"fractions for {variable_col} among {ct_category} are")
+        print(ct_fraction.head(5))
+        print()
+        all_fractions = all_fractions.merge(
+            ct_fraction, left_index=True, right_index=True
+        )
+    print(f"all fractions for {variable_col} by {crosstab} are")
+    print(all_fractions)
+    print()
+    return all_fractions

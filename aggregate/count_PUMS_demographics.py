@@ -1,11 +1,15 @@
 from aggregate.aggregate_PUMS import PUMSAggregator, PUMSCount
-from statistical.calculate_fractions import calculate_fractions
+from statistical.calculate_fractions import (
+    calculate_fractions,
+    calculate_fractions_crosstabs,
+)
 from statistical.calculate_counts import calculate_counts
 
 
 class PUMSCountDemographics(PUMSCount):
     """Medians aggregator has crosstabs in data structure instead of appended as text. This may be better design
     Indicators are being extended multiple times, not good
+    To-do: figure out why this takes so long to import
     """
 
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
@@ -20,13 +24,14 @@ class PUMSCountDemographics(PUMSCount):
                 # "foreign_born_by_race",
                 "age_bucket",
                 # "age_bucket_by_race",
-                "race",  # This is NOT the race used in the final product. This is race from PUMS used to debug
+                # "race",  # This is NOT the race used in the final product. This is race from PUMS used to debug
             ]
         )
 
         self.indicators = list(
             set(self.indicators)
         )  # To-do: figure out problem and undo hot fix
+        self.crosstabs = ["race"]
         self.categories = {}
         PUMSCount.__init__(
             self,
@@ -54,6 +59,20 @@ class PUMSCountDemographics(PUMSCount):
             self.geo_col,
         )
         self.add_aggregated_data(fraction_aggregated)
+        for ct in self.crosstabs:
+            print(f"adding crosstab of {ct} to {indicator}")
+            self.add_category(ct)
+            fraction_aggregated_crosstab = calculate_fractions_crosstabs(
+                self.PUMS.copy(deep=True),
+                indicator,
+                self.categories[indicator],
+                ct,
+                self.categories[ct],
+                self.rw_cols,
+                self.weight_col,
+                self.geo_col,
+            )
+            self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def add_category(self, indicator):
         self.categories[indicator] = list(self.PUMS[indicator].unique())

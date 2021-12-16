@@ -6,6 +6,7 @@ import pytest
 from tests.util import races
 from tests.local_loader import LocalLoader
 import numpy as np
+import itertools
 
 local_loader = LocalLoader()
 
@@ -31,3 +32,19 @@ def test_total_pop_one_no_se():
     aggregator = local_loader.count_aggregator
     assert (aggregator.aggregated["total_pop-fraction"] == 1).all()
     assert (aggregator.aggregated["total_pop-fraction-se"] == 0).all()
+
+
+def test_crosstabs_sum_to_one():
+    aggregator = local_loader.count_aggregator
+    for ind, ct in itertools.product(aggregator.indicators, aggregator.crosstabs):
+        for ct_category in aggregator.categories[ct]:
+            ct_columns = [
+                f"{ind_cat}-{ct_category}-fraction"
+                for ind_cat in aggregator.categories[ind]
+            ]
+            print(aggregator.aggregated[ct_columns])
+            print()
+            assert np.isclose(
+                aggregator.aggregated[ct_columns].sum(axis=1),
+                1,
+            ).all()

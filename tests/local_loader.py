@@ -5,7 +5,9 @@ from aggregate.median_PUMS_demographics import PUMSMedianDemographics
 
 
 class LocalLoader:
-    """To persist a dataset between tests. Each testing module has it's own instance"""
+    """To persist a dataset between tests. Each testing module has it's own instance
+    Possible to-do: return ingestor/aggregator instead of data like load_fraction_aggregator
+    """
 
     def __init__(self) -> None:
         pass
@@ -39,3 +41,7 @@ class LocalLoader:
             raise Exception
         self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated
+
+    def load_count_aggregator(self, all_data):
+        limited_PUMA = not all_data
+        self.count_aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)

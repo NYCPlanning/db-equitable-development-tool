@@ -4,7 +4,9 @@ from statistical.calculate_counts import calculate_counts
 
 
 class PUMSCountDemographics(PUMSCount):
-    """Medians aggregator has crosstabs in data structure instead of appended as text. This may be better design"""
+    """Medians aggregator has crosstabs in data structure instead of appended as text. This may be better design
+    Indicators are being extended multiple times, not good
+    """
 
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
 
@@ -21,6 +23,10 @@ class PUMSCountDemographics(PUMSCount):
                 "race",  # This is NOT the race used in the final product. This is race from PUMS used to debug
             ]
         )
+
+        self.indicators = list(
+            set(self.indicators)
+        )  # To-do: figure out problem and undo hot fix
         self.categories = {}
         PUMSCount.__init__(
             self,
@@ -32,12 +38,11 @@ class PUMSCountDemographics(PUMSCount):
 
     def calculate_add_new_variable(self, indicator):
         self.assign_indicator(indicator)
-        print("warning: skipping counts for debuging of fractions")
+        print("warning: skipping counts for debugging of fractions")
         # new_indicator_aggregated = calculate_counts(
         #     self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
         # )
         # self.add_aggregated_data(new_indicator_aggregated)
-        print(f"calculating fraction for {indicator}")
 
         self.add_category(indicator)
         fraction_aggregated = calculate_fractions(

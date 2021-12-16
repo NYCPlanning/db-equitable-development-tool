@@ -18,9 +18,9 @@ class PUMSCountDemographics(PUMSCount):
         print("WARNING! most indicators excluded for debugging")
         self.indicators.extend(
             [
-                # "LEP",
+                "LEP",
                 # "LEP_by_race",
-                # "foreign_born",
+                "foreign_born",
                 # "foreign_born_by_race",
                 "age_bucket",
                 # "age_bucket_by_race",
@@ -75,7 +75,11 @@ class PUMSCountDemographics(PUMSCount):
             self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def add_category(self, indicator):
-        self.categories[indicator] = list(self.PUMS[indicator].unique())
+        """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
+        categories = list(self.PUMS[indicator].unique())
+        if None in categories:
+            categories.remove(None)
+        self.categories[indicator] = categories
 
     def foreign_born_by_race_assign(self, person):
         fb = self.foreign_born_assign(person)

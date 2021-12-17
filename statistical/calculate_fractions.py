@@ -35,7 +35,7 @@ def calculate_fractions(
     print(f"crosstab category is {crosstab_category}")
     print()
     for category in categories:
-        data[category] = (data[variable_col] == category).astype(int)
+        data.loc[:, category] = (data[variable_col] == category).astype(int)
         survey_design = survey_package.svrepdesign(
             variables=data[[category]],
             repweights=data[rw_cols],

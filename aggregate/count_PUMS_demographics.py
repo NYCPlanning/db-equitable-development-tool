@@ -76,10 +76,7 @@ class PUMSCountDemographics(PUMSCount):
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
-        categories = list(self.PUMS[indicator].unique())
-        if None in categories:
-            categories.remove(None)
-        self.categories[indicator] = categories
+        self.categories[indicator] = list(self.PUMS[indicator].unique())
 
     def foreign_born_by_race_assign(self, person):
         fb = self.foreign_born_assign(person)
@@ -90,7 +87,7 @@ class PUMSCountDemographics(PUMSCount):
     def foreign_born_assign(self, person):
         """Foreign born"""
         if person["NATIVITY"] == "Native":
-            return None
+            return "not_fb"
         return "fb"
 
     def LEP_assign(self, person):
@@ -100,7 +97,7 @@ class PUMSCountDemographics(PUMSCount):
             or person["LANX"] == "No, speaks only English"
             or person["ENG"] == "Very well"
         ):
-            return None
+            return "not_lep"
         return "lep"
 
     def LEP_by_race_assign(self, person):

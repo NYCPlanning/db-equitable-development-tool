@@ -10,21 +10,24 @@ class PUMSCountDemographics(PUMSCount):
     """Medians aggregator has crosstabs in data structure instead of appended as text. This may be better design
     Indicators are being extended multiple times, not good
     To-do: figure out why this takes so long to import
+    To-do: break out calculations into __call__ that can get counts, fractions, or both
     """
 
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
 
-    def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
-        print("WARNING! most indicators excluded for debugging")
+    def __init__(
+        self,
+        limited_PUMA=False,
+        year=2019,
+        requery=False,
+        include_counts=True,
+        include_fractions=True,
+    ) -> None:
         self.indicators.extend(
             [
                 "LEP",
-                # "LEP_by_race",
                 "foreign_born",
-                # "foreign_born_by_race",
                 "age_bucket",
-                # "age_bucket_by_race",
-                # "race",  # This is NOT the race used in the final product. This is race from PUMS used to debug
             ]
         )
 
@@ -33,6 +36,9 @@ class PUMSCountDemographics(PUMSCount):
         )  # To-do: figure out problem and undo hot fix
         self.crosstabs = ["race"]
         self.categories = {}
+        self.include_counts = include_counts
+        self.include_fractions = include_fractions
+
         PUMSCount.__init__(
             self,
             variable_types=["demographics"],
@@ -42,14 +48,32 @@ class PUMSCountDemographics(PUMSCount):
         )
 
     def calculate_add_new_variable(self, indicator):
+        print(f"assigning indicator of {indicator} ")
         self.assign_indicator(indicator)
-        print("warning: skipping counts for debugging of fractions")
-        # new_indicator_aggregated = calculate_counts(
-        #     self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
-        # )
-        # self.add_aggregated_data(new_indicator_aggregated)
-
         self.add_category(indicator)
+        if self.include_counts:
+            self.add_counts(indicator)
+        if self.include_fractions:
+            self.add_fractions(indicator)
+
+    def add_counts(self, indicator):
+        new_indicator_aggregated = calculate_counts(
+            self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
+        )
+        self.add_aggregated_data(new_indicator_aggregated)
+        for ct in self.crosstabs:
+            self.add_category(ct)  # To-do: move higher up, maybe to init
+            count_aggregated_ct = calculate_counts(
+                data=self.PUMS.copy(deep=True),
+                variable_col=indicator,
+                rw_cols=self.rw_cols,
+                weight_col=self.weight_col,
+                geo_col=self.geo_col,
+                crosstab=ct,
+            )
+            self.add_aggregated_data(count_aggregated_ct)
+
+    def add_fractions(self, indicator):
         fraction_aggregated = calculate_fractions(
             self.PUMS.copy(deep=True),
             indicator,
@@ -60,7 +84,6 @@ class PUMSCountDemographics(PUMSCount):
         )
         self.add_aggregated_data(fraction_aggregated)
         for ct in self.crosstabs:
-            print(f"adding crosstab of {ct} to {indicator}")
             self.add_category(ct)
             fraction_aggregated_crosstab = calculate_fractions_crosstabs(
                 self.PUMS.copy(deep=True),

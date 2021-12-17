@@ -18,9 +18,16 @@ from rpy2.robjects import r, pandas2ri
 pandas2ri.activate()
 
 
-def calculate_counts(data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col):
+def calculate_counts(
+    data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col, crosstab=None
+):
     """To do: implement something more elegant than "a" dummy var"""
     data["a"] = 1
+    if crosstab:
+        original_var = variable_col
+        variable_col = f"{variable_col}-{crosstab}"
+        data.loc[:, variable_col] = data[original_var] + "-" + data[crosstab]
+
     survey_design = survey_package.svrepdesign(
         variables=data[["a"]],
         repweights=data[rw_cols],

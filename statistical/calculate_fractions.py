@@ -30,10 +30,6 @@ def calculate_fractions(
     """This adds to dataframe so it should receive copy of data"""
 
     all_fractions = pd.DataFrame(index=data[geo_col].unique())
-    print(f"calculate fractions function called for {variable_col}")
-    print(f"variables are {categories}")
-    print(f"crosstab category is {crosstab_category}")
-    print()
     for category in categories:
         data.loc[:, category] = (data[variable_col] == category).astype(int)
         survey_design = survey_package.svrepdesign(
@@ -81,9 +77,6 @@ def calculate_fractions_crosstabs(
 ):
     all_fractions = pd.DataFrame(index=data[geo_col].unique())
     for ct_category in crosstab_categories:
-        print(
-            f"caculating fraction of {ct_category} resondents in each {variable_col} group"
-        )
         data_filtered = data[data[crosstab] == ct_category]
         ct_fraction = calculate_fractions(
             data_filtered,
@@ -94,13 +87,7 @@ def calculate_fractions_crosstabs(
             geo_col,
             ct_category,
         )
-        print(f"fractions for {variable_col} among {ct_category} are")
-        print(ct_fraction.head(5))
-        print()
         all_fractions = all_fractions.merge(
             ct_fraction, left_index=True, right_index=True
         )
-    print(f"all fractions for {variable_col} by {crosstab} are")
-    print(all_fractions)
-    print()
     return all_fractions

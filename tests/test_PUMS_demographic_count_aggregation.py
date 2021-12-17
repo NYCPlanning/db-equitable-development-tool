@@ -9,10 +9,23 @@ from tests.local_loader import LocalLoader
 local_loader = LocalLoader()
 
 
+@pytest.mark.test_new_crosstabs
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
-    local_loader.load_aggregated_counts(all_data, "demographics")
+    local_loader.load_count_aggregator(all_data)
+
+
+@pytest.mark.test_new_crosstabs
+def test_all_counts_sum_to_total_pop():
+    aggregator = local_loader.count_aggregator
+    for ind in aggregator.indicators:
+        assert (
+            aggregator.aggregated[
+                [f"{category}-count" for category in aggregator.categories[ind]]
+            ].sum(axis=1)
+            == aggregator.aggregated["total_pop-count"]
+        ).all()
 
 
 def test_that_all_races_sum_to_total_within_indicator():

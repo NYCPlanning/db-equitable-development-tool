@@ -1,6 +1,6 @@
 """Possible refactor: abstract the by_race into a single function"""
 
-from aggregate.aggregate_PUMS import PUMSCount
+from aggregate.PUMS.aggregate_PUMS import PUMSCount
 
 
 class PUMSCountEconomics(PUMSCount):

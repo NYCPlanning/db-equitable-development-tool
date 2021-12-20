@@ -1,4 +1,4 @@
-from aggregate.aggregate_PUMS import PUMSAggregator, PUMSCount
+from aggregate.PUMS.aggregate_PUMS import PUMSAggregator, PUMSCount
 from statistical.calculate_fractions import (
     calculate_fractions,
     calculate_fractions_crosstabs,

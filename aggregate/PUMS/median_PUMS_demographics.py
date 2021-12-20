@@ -1,4 +1,4 @@
-from aggregate.aggregate_PUMS import PUMSAggregator
+from aggregate.PUMS.aggregate_PUMS import PUMSAggregator
 from statistical.calculate_medians import (
     calculate_median,
     calculate_median_with_crosstab,

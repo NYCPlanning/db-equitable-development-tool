@@ -1,7 +1,7 @@
 """"""
 
 import pytest
-from tests.local_loader import LocalLoader
+from tests.PUMS_Tests.local_loader import LocalLoader
 
 local_loader = LocalLoader()
 

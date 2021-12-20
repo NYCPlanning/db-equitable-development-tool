@@ -1,6 +1,6 @@
 import pytest
 from ingest.load_data import load_data
-from tests.PUMS_Tests.local_loader import LocalLoader
+from tests.PUMS.local_loader import LocalLoader
 from tests.util import races, race_counts, age_bucket_counts
 
 

@@ -1,4 +1,4 @@
-from ingest.PUMS_data import PUMSData
+from ingest.PUMS.PUMS_data import PUMSData
 from aggregate.count_PUMS_economics import PUMSCountEconomics
 from aggregate.count_PUMS_demographics import PUMSCountDemographics
 from aggregate.median_PUMS_demographics import PUMSMedianDemographics

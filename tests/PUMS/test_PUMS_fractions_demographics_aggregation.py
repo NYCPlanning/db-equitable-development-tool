@@ -4,7 +4,7 @@ should all be close to one for each indicator. categories attribute is dictionar
 
 import pytest
 from tests.util import races
-from tests.PUMS_Tests.local_loader import LocalLoader
+from tests.PUMS.local_loader import LocalLoader
 import numpy as np
 import itertools
 

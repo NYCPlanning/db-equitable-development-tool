@@ -3,7 +3,7 @@
 import pytest
 from aggregate.count_PUMS_demographics import PUMSCountDemographics
 from tests.util import race_counts, age_bucket_counts
-from tests.PUMS_Tests.local_loader import LocalLoader
+from tests.PUMS.local_loader import LocalLoader
 
 
 local_loader = LocalLoader()

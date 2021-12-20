@@ -6,10 +6,10 @@ import numpy as np
 class method for aggregate step to access.  Class method will return cached data or
 initalize a PUMSData object and use it to save a .pkl"""
 
-from ingest.PUMS_request import make_GET_request
-from ingest.PUMS_query_manager import get_variables, get_urls
+from ingest.PUMS.PUMS_request import make_GET_request
+from ingest.PUMS.PUMS_query_manager import get_variables, get_urls
 from ingest.make_cache_fn import make_PUMS_cache_fn
-from ingest.PUMS_cleaner import PUMSCleaner
+from ingest.PUMS.PUMS_cleaner import PUMSCleaner
 
 
 class PUMSData:

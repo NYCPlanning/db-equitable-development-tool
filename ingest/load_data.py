@@ -1,17 +1,11 @@
 """Access to ingestion code"""
 from typing import List, Tuple
-
-from ingest.PUMS_data import PUMSData
-
-"""At this stage all this will do is read data from pickle and call
-get request code if it's not there. Writing logic to do aggregation with 
-samplics comes later https://samplics.readthedocs.io/en/latest/"""
 import pandas as pd
 
 from os.path import exists
 from typing import List
-from ingest.PUMS_data import PUMSData
-from ingest.HVS_ingestion import create_HVS
+from ingest.PUMS.PUMS_data import PUMSData
+from ingest.HVS.HVS_ingestion import create_HVS
 from ingest.make_cache_fn import make_PUMS_cache_fn, make_HVS_cache_fn
 
 from utils.make_logger import create_logger

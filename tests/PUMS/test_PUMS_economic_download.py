@@ -23,14 +23,14 @@ EXPECTED_COLS_VALUES_CATEGORICAL = [
 ]
 
 
-@pytest.mark.download_test
+@pytest.mark.test_download
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
     local_loader.load_by_person(all_data, include_rw=False, variable_set="economics")
 
 
-@pytest.mark.download_test
+@pytest.mark.test_download
 @pytest.mark.parametrize("column, expected_values", EXPECTED_COLS_VALUES_CATEGORICAL)
 def test_categorical_columns_have_expected_values(column, expected_values):
 
@@ -42,7 +42,7 @@ def test_categorical_columns_have_expected_values(column, expected_values):
 EXPECTED_COLS_VALUES_CONTINOUS = [("HINCP", -60000, 99999999), ("WAGP", -1, 999999)]
 
 
-@pytest.mark.download_test
+@pytest.mark.test_download
 @pytest.mark.parametrize("column, min_val, max_val", EXPECTED_COLS_VALUES_CONTINOUS)
 def test_continous_columns_have_expected_values(column, min_val, max_val):
     """These tests aren't great"""
@@ -57,7 +57,7 @@ EXPECTED_COLS_VALUES_RANGE_CATEGORICAL = [
 ]
 
 
-@pytest.mark.download_test
+@pytest.mark.test_download
 @pytest.mark.parametrize(
     "column, old_val, new_val", EXPECTED_COLS_VALUES_RANGE_CATEGORICAL
 )

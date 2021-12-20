@@ -21,12 +21,15 @@ def load_data(
     include_rw: bool = True,
     limited_PUMA: bool = False,
     year: int = 2019,
+    return_ingestor=False,
     requery: bool = False,
     HVS_human_readable: bool = False,
     HVS_output_type: str = ".csv",
 ) -> dict:
     """
-    To-do: break out pums download into it's own function that can be called on its own
+    To-do:
+    - break out pums download into it's own function that can be called on its own
+    - remove return_ingestor flag and always get ingestor object
 
     :param limited_PUMA: only query for first PUMA in each borough. For debugging
     :return: pandas dataframe of PUMS data
@@ -41,15 +44,17 @@ def load_data(
     )
     if requery or not exists(cache_path):
         logger.info(f"Making get request to generate data sent to {cache_path}")
-        PUMSData(
+        ingestor = PUMSData(
             variable_types=PUMS_variable_types,
             year=year,
             limited_PUMA=limited_PUMA,
             include_rw=include_rw,
         )
-
     PUMS_data = pd.read_pickle(cache_path)
-    rv["PUMS"] = PUMS_data
+    if return_ingestor:
+        rv["PUMS"] = ingestor
+    else:
+        rv["PUMS"] = PUMS_data
     logger.info(
         f"PUMS data with {PUMS_data.shape[0]} records loaded, ready for aggregation"
     )

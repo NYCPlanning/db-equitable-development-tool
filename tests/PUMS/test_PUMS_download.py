@@ -10,14 +10,14 @@ import pytest
 local_loader = LocalLoader()
 
 
-@pytest.mark.download_test
+@pytest.mark.test_download
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
     local_loader.load_by_person(all_data, variable_set="demographics")
 
 
-@pytest.mark.download_test
+@pytest.mark.test_download
 def test_PUMS_download(all_data: bool):
     if all_data:
         assert local_loader.by_person.shape[0] > 3 * (10 ** 5)
@@ -25,7 +25,7 @@ def test_PUMS_download(all_data: bool):
         assert local_loader.by_person.shape[0] > 3 * (10 ** 4)
 
 
-@pytest.mark.download_test
+@pytest.mark.test_download
 def test_PUMS_includes_replicate_weights():
     """The full query doesn't work yet so first test limited PUMAs.
     Test that PUMS download gets correct columns"""
@@ -38,11 +38,11 @@ def test_PUMS_includes_replicate_weights():
         ), f"Replicate weight {i} not present"
 
 
-@pytest.mark.download_test
+@pytest.mark.test_download
 def test_PUMA_column_present():
     assert "PUMA" in local_loader.by_person.columns, "PUMA column not present"
 
 
-@pytest.mark.download_test
+@pytest.mark.test_download
 def test_PUMS_data_unique():
     assert local_loader.by_person.index.is_unique, "Duplicates in PUMS data"

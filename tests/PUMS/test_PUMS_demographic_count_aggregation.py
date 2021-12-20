@@ -9,6 +9,7 @@ from tests.PUMS.local_loader import LocalLoader
 local_loader = LocalLoader()
 
 
+@pytest.mark.test_aggregation
 @pytest.mark.test_new_crosstabs
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
@@ -16,6 +17,7 @@ def test_local_loader(all_data):
     local_loader.load_count_aggregator(all_data)
 
 
+@pytest.mark.test_aggregation
 @pytest.mark.test_new_crosstabs
 def test_all_counts_sum_to_total_pop():
     aggregator = local_loader.count_aggregator
@@ -28,6 +30,7 @@ def test_all_counts_sum_to_total_pop():
         ).all()
 
 
+@pytest.mark.test_aggregation
 def test_that_all_races_sum_to_total_within_indicator():
     """Parameterize this to look at nativity, age buckets as well"""
     lep_race_cols = [f"lep_{r}" for r in race_counts]  # Generate this from function
@@ -37,6 +40,7 @@ def test_that_all_races_sum_to_total_within_indicator():
     ).all()
 
 
+@pytest.mark.test_aggregation
 def test_that_all_races_sum_to_total():
 
     assert (
@@ -45,6 +49,7 @@ def test_that_all_races_sum_to_total():
     ).all()
 
 
+@pytest.mark.test_aggregation
 def test_that_all_age_buckets_sum_to_total():
 
     assert (
@@ -53,6 +58,7 @@ def test_that_all_age_buckets_sum_to_total():
     ).all()
 
 
+@pytest.mark.test_aggregation
 def test_total_counts_match():
     citywide_gb = local_loader.by_person.groupby("age_bucket_by_race").agg(
         {"PWGTP": "sum"}
@@ -64,6 +70,7 @@ def test_total_counts_match():
         )
 
 
+@pytest.mark.test_aggregation
 def test_age_bucket_assignment_correct():
     """95 is top coded value for age"""
     by_person_data = local_loader.by_person
@@ -75,6 +82,7 @@ def test_age_bucket_assignment_correct():
     assert max(by_person_data[by_person_data["age_bucket"] == "P65pl"]["AGEP"]) == 95
 
 
+@pytest.mark.test_aggregation
 def test_that_fb_correctly_assigned():
     by_person_data = local_loader.by_person
     assert (
@@ -97,11 +105,13 @@ TEST_CASES = [
 ]
 
 
+@pytest.mark.test_aggregation
 @pytest.mark.parametrize("person_id, expected_val", TEST_CASES)
 def test_that_fb_by_race_correctly_assigned(person_id, expected_val):
     assert local_loader.by_person.loc[person_id]["foreign_born_by_race"] == expected_val
 
 
+@pytest.mark.test_aggregation
 def test_that_native_born_no_fb_by_race():
     by_person_data = local_loader.by_person
     assert (
@@ -120,6 +130,7 @@ TEST_RECORDS = [
 ]
 
 
+@pytest.mark.test_aggregation
 @pytest.mark.parametrize("record_id, expected_val", TEST_RECORDS)
 def test_that_LEP_by_race_correctly_assigned(record_id, expected_val):
     assert local_loader.by_person.loc[record_id]["LEP_by_race"] == expected_val

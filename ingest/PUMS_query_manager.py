@@ -7,6 +7,10 @@ That website provides an interface to construct a query and then see the url to
 access that query via an input.
 
 Refactor: call this from PUMS data init instead of from PUMS_request
+
+Need to rework ingestion process to handle the 2008-2012 5 Year ACS:
+* The 2008-2012 5 year ACS estimates have the PUMA level geography in columns as supposed to the 
+newer ACS 5 year estimates which has it ucgid directly in MDAT
 """
 import os
 from dotenv import load_dotenv
@@ -24,12 +28,12 @@ api_key = os.environ["CENSUS_API_KEY"]
 
 variable_mapper = {
     "demographics": [
-        ("RAC1P", "categorical"),
-        ("HISP", "categorical"),
-        ("NATIVITY", "categorical"),
-        ("LANX", "categorical"),
-        ("ENG", "categorical"),
-        ("AGEP", "continuous"),
+        ("RAC1P", "categorical"), # Recoded detailed race code
+        ("HISP", "categorical"), # Hispanic Origin
+        ("NATIVITY", "categorical"), # Nativity 
+        ("LANX", "categorical"), # Language other than English spoken at home 
+        ("ENG", "categorical"), # Abilty to speak English 
+        ("AGEP", "continuous"), # Age
     ],
     "economics": [
         ("HINCP", "continuous"),  # Household income

@@ -141,5 +141,8 @@ logs/
 # Local Output
 .output/
 
+#Cached data library datasets
+.library/
+
 #
 .vscode/

@@ -10,6 +10,7 @@ from ingest.make_cache_fn import make_PUMS_cache_fn, make_HVS_cache_fn
 
 from utils.make_logger import create_logger
 from utils.setup_directory import setup_directory
+from utils.wd_management import correct_wd
 
 logger = create_logger("load_data_logger", "logs/load_data.log")
 
@@ -34,7 +35,7 @@ def load_data(
     :param limited_PUMA: only query for first PUMA in each borough. For debugging
     :return: pandas dataframe of PUMS data
     """
-
+    assert correct_wd(), "Code is not being run from root directory"
     setup_directory("data/")
 
     rv = {}

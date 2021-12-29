@@ -13,10 +13,10 @@ def find_fraction_PUMA_historic():
     NYC_PUMAs.set_index("PUMA", inplace=True)
 
     hd = load_historic_districts_gdf()
-    NYC_PUMAs[["fraction_area_historic", "total_area_historic"]] = NYC_PUMAs.apply(
-        fraction_area_historic, axis=1, args=(hd,), result_type="expand"
+    NYC_PUMAs["fraction_area_historic"] = NYC_PUMAs.apply(
+        fraction_area_historic, axis=1, args=(hd,)
     )
-    return NYC_PUMAs[["fraction_area_historic", "total_area_historic"]]
+    return NYC_PUMAs["fraction_area_historic"]
 
 
 def NYC_PUMA_geographies():
@@ -27,14 +27,13 @@ def NYC_PUMA_geographies():
 
 
 def fraction_area_historic(PUMA, hd):
-    gdf = gp.GeoDataFrame(geometry=[PUMA.geometry], crs="EPSG:4326")
-    gdf = gdf.to_crs("EPSG:2263")
+    gdf = gp.GeoDataFrame(geometry=[PUMA.geometry])
     overlay = gp.overlay(hd, gdf, "intersection")
     if overlay.empty:
-        return 0, 0
+        return 0
     else:
-        fraction = overlay.area.sum() / gdf.geometry.area.sum()
-    return fraction, overlay.area.sum() / (5280 ** 2)
+        rv = overlay.area.sum() / PUMA.geometry.area
+    return rv
 
 
 def load_historic_districts_gdf():
@@ -43,6 +42,5 @@ def load_historic_districts_gdf():
     hd.set_geometry(col="the_geom", inplace=True, crs="EPSG:4326")
     hd = hd.explode(column="the_geom")
     hd.set_geometry("the_geom", inplace=True)
-    hd = hd.to_crs("EPSG:2263")
     hd = hd.reset_index()
     return hd

@@ -21,6 +21,7 @@ Geographies:
 - [ ] Borough
 - [ ] City
 
+Race and ethnicity breakdown: 
 Denominator:
 
 SME:

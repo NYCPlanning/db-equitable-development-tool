@@ -13,5 +13,6 @@ def correct_wd():
 
 
 def set_wd_root():
+    print(f"called set_wd_root. current working directory is {os.getcwd()}")
     while not correct_wd():
         os.chdir("..")

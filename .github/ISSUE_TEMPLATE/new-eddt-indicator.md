@@ -14,12 +14,14 @@ Logic:
 Source(s):
 
 Year(s):
--[ ]
+- [ ]
 
 Geographies:
--[ ] PUMA
--[ ] Borough
--[ ] City
+- [ ] PUMA
+- [ ] Borough
+- [ ] City
+
+Denominator:
 
 SME:
 

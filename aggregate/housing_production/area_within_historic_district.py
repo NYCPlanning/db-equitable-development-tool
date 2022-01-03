@@ -37,7 +37,7 @@ def fraction_area_historic(PUMA, hd):
     return fraction, overlay.area.sum() / (5280 ** 2)
 
 
-def load_historic_districts_gdf():
+def load_historic_districts_gdf() -> gp.GeoDataFrame:
     hd = gp.read_file(".library/lpc_historic_district_areas.csv")
     hd["the_geom"] = hd["the_geom"].apply(wkt.loads)
     hd.set_geometry(col="the_geom", inplace=True, crs="EPSG:4326")

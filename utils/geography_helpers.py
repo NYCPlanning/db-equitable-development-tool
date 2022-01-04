@@ -29,15 +29,16 @@ PUMAs = NYC_PUMA_geographies()
 
 
 def assign_PUMA_col(df, lat_col, long_col):
+    df[[long_col, lat_col]] = geocode(df)
     gdf = gp.GeoDataFrame(df, geometry=gp.points_from_xy(df[long_col], df[lat_col]))
-    gdf[[long_col, lat_col]] = geocode(gdf)
     gdf["PUMA"] = gdf.apply(find_PUMA, axis=1)
     return gdf
 
 
-def geocode(record):
+def geocode(df):
     """Return latitude, longitude in degrees"""
-    pass
+    print("Note: custom geocoding not implemented yet")
+    return df
 
 
 def find_PUMA(record: gp.GeoDataFrame):

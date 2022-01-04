@@ -2,14 +2,13 @@ from json import load
 import geopandas as gp
 import requests
 from shapely import wkt
-from utils.geography_helpers import borough_code_to_name
+from utils.geography_helpers import borough_code_to_name, NYC_PUMA_geographies
 
-NYC_PUMAS_url = "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
 supported_geographies = ["PUMA", "borough"]
 
 
 def find_fraction_PUMA_historic(geography_level):
-
+    """Main accessor of indicator"""
     gdf = generate_geographies(geography_level)
     hd = load_historic_districts_gdf()
     gdf[["fraction_area_historic", "total_area_historic"]] = gdf.apply(
@@ -19,6 +18,7 @@ def find_fraction_PUMA_historic(geography_level):
 
 
 def generate_geographies(geography_level):
+    """Main accessor of indicator"""
     NYC_PUMAs = NYC_PUMA_geographies()
     if geography_level == "PUMA":
         return NYC_PUMAs.set_index("PUMA")
@@ -29,13 +29,6 @@ def generate_geographies(geography_level):
         by_borough = NYC_PUMAs.dissolve(by="borough")
         return by_borough
     raise Exception(f"Supported geographies are {supported_geographies}")
-
-
-def NYC_PUMA_geographies():
-    res = requests.get(
-        "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
-    )
-    return gp.GeoDataFrame.from_features(res.json()["features"])
 
 
 def fraction_area_historic(PUMA, hd):

@@ -1,4 +1,14 @@
 import pandas as pd
+from utils.geography_helpers import assign_PUMA_col
+
+
+def count_residential_evictions(geography_level):
+    """Main accessor of indicator"""
+    residential_evictions = load_residential_evictions()
+    aggregated_by_geography = aggregate_by_geography(
+        residential_evictions, geography_level
+    )
+    return aggregated_by_geography
 
 
 def load_residential_evictions() -> pd.DataFrame:
@@ -9,14 +19,6 @@ def load_residential_evictions() -> pd.DataFrame:
     return residential_evictions
 
 
-def count_residential_evictions(geography_level):
-    residential_evictions = load_residential_evictions()
-    aggregated_by_geography = aggregate_by_geography(
-        residential_evictions, geography_level
-    )
-    return aggregated_by_geography
-
-
 def aggregate_by_geography(evictions, geography_level):
     if geography_level == "citywide":
         evictions["citywide"] = "citywide"
@@ -24,5 +26,6 @@ def aggregate_by_geography(evictions, geography_level):
     if geography_level == "borough":
         return evictions.groupby(geography_level).size()
     if geography_level == "PUMA":
-        raise Exception("PUMA requires geocoding, not implemented yet")
+        evictions = assign_PUMA_col(evictions, "latitude", "longitude")
+        return evictions.groupby(geography_level).size()
     raise Exception(f"{geography_level} not one of accepted geography levels")

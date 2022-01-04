@@ -146,3 +146,6 @@ logs/
 
 #
 .vscode/
+
+#Local Docker testing
+Dockerfile

@@ -29,7 +29,7 @@ PUMAs = NYC_PUMA_geographies()
 
 
 def assign_PUMA_col(df, lat_col, long_col):
-    df[[long_col, lat_col]] = geocode(df)
+    df = geocode(df)
     gdf = gp.GeoDataFrame(df, geometry=gp.points_from_xy(df[long_col], df[lat_col]))
     gdf["PUMA"] = gdf.apply(find_PUMA, axis=1)
     return gdf

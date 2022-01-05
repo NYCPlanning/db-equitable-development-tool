@@ -20,6 +20,12 @@ def unit_change_borough(df):
 
     results = df.groupby(['job_type', 'boro']).agg({'classa_net': 'sum'}).reset_index()
 
+    for boro in results.boro.unique():
+
+        total = {'job_type': 'All', 'boro': boro, 'classa_net': results.loc[results.boro == boro].classa_net.sum()}
+
+        results = results.append(total, ignore_index=True)
+    #results = results.append(results.groupby['boro'].agg({'classa_net': 'sum'}).reset_index())
     return results
 
 def NYC_PUMA_geographies():
@@ -33,6 +39,12 @@ def unit_change_puma(gdf, puma):
     gdf_ = gdf.sjoin(puma, how='left', predicate='within')        
 
     results = gdf_.groupby(['job_type', 'PUMA']).agg({'classa_net': 'sum'}).reset_index()
+
+    for puma in results.PUMA.unique():
+
+        total = {'job_type': 'All', 'PUMA': puma, 'classa_net': results.loc[results.PUMA == puma].classa_net.sum()}
+
+        results = results.append(total, ignore_index=True)
 
     return results
 

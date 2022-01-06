@@ -17,7 +17,12 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
+#Install R
+RUN apt-get -y install r-base
+# Install poetry
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
 ENV PATH="~/.poetry/bin:$PATH"
 ENV PATH="~/.local/bin:$PATH"
+# RUN poetry add python-geosupport
 
+RUN pip install flake8

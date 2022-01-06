@@ -1,4 +1,7 @@
 import geopandas as gp
+import pandas as pd
+from numpy import add, nan
+import usaddress
 import requests
 
 borough_code_mapper = {
@@ -28,23 +31,35 @@ def NYC_PUMA_geographies() -> gp.GeoDataFrame:
 PUMAs = NYC_PUMA_geographies()
 
 
-def assign_PUMA_col(df, lat_col, long_col):
-    df = geocode(df)
-    gdf = gp.GeoDataFrame(df, geometry=gp.points_from_xy(df[long_col], df[lat_col]))
+def assign_PUMA_col(df: pd.DataFrame, lat_col, long_col, geocode_addresses):
+    df.rename(columns={lat_col: "latitude", long_col: "longitude"}, inplace=True)
+    if geocode_addresses:
+        df[["latitude", "longitude"]] = df.apply(
+            fill_missing_coords, axis=1, result_type="expand"
+        )
+    gdf = gp.GeoDataFrame(df, geometry=gp.points_from_xy(df.latitude, df.longitude))
     gdf["PUMA"] = gdf.apply(find_PUMA, axis=1)
     return gdf
 
 
-def geocode(df):
+def fill_missing_coords(record):
     """Return latitude, longitude in degrees"""
-    print("Note: custom geocoding not implemented yet")
-    return df
+    if pd.notnull(record.latitude) and pd.notnull(record.longitude):
+        return record.latitude, record.longitude
+    parsed = usaddress.parse(record.eviction_address)
+
+    return geocode(parsed)
+
+
+def geocode(parsed_address):
+    """will require docker"""
+    pass
 
 
 def find_PUMA(record: gp.GeoDataFrame):
     matched_PUMA = PUMAs[PUMAs.geometry.contains(record.geometry)]
     if matched_PUMA.empty:
-        print(f"No PUMA found for {record}")
+        # print(f"No PUMA found for {record}")
         return None
     else:
         return matched_PUMA.PUMA.values[0]

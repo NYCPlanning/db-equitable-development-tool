@@ -28,8 +28,6 @@ def aggregate_by_geography(evictions, geography_level):
     if geography_level == "borough":
         return evictions.groupby(geography_level).size()
     if geography_level == "PUMA":
-        evictions = assign_PUMA_col(
-            evictions, "latitude", "longitude", geocode_addresses=True
-        )
+        evictions = assign_PUMA_col(evictions, "latitude", "longitude")
         return evictions.groupby(geography_level).size()
     raise Exception(f"{geography_level} not one of accepted geography levels")

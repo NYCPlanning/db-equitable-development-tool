@@ -23,6 +23,5 @@ RUN apt-get -y install r-base
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
 ENV PATH="~/.poetry/bin:$PATH"
 ENV PATH="~/.local/bin:$PATH"
-# RUN poetry add python-geosupport
 
-RUN pip install flake8
+RUN /usr/local/bin/python3 -m pip install -U flake8

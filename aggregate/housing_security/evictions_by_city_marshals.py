@@ -14,7 +14,7 @@ def count_residential_evictions(geography_level, debug=False):
 def load_residential_evictions(debug) -> pd.DataFrame:
     evictions = pd.read_csv(".library/doi_evictions.csv")
     if debug:
-        evictions = evictions.iloc[:50, :]
+        evictions = evictions.iloc[:1000, :]
     residential_evictions = evictions[
         evictions["residential/commercial"] == "Residential"
     ]

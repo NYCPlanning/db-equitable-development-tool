@@ -36,9 +36,9 @@ PUMAs = NYC_PUMA_geographies()
 
 
 def assign_PUMA_col(df: pd.DataFrame, lat_col, long_col):
-    print(f"got {df.shape[0]} evictions to assign PUMAs to ")
     df.rename(columns={lat_col: "latitude", long_col: "longitude"}, inplace=True)
     df["PUMA"] = df.apply(assign_PUMA, axis=1)
+    print(f"got {df.shape[0]} evictions to assign PUMAs to ")
     print(f"assigned PUMAs to {df['PUMA'].notnull().sum()}")
     return df
 
@@ -56,7 +56,6 @@ def PUMA_from_coord(record):
     matched_PUMA = PUMAs[PUMAs.geometry.contains(record_loc)]
     if matched_PUMA.empty:
         return None
-    print(matched_PUMA)
     return matched_PUMA.PUMA.values[0]
 
 
@@ -101,5 +100,4 @@ def geocode_address(address: dict) -> str:
         return geocoded["PUMA Code"]
     except GeosupportError as e:
         geo = e.result
-        # print(e)
         return None

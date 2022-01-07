@@ -5,7 +5,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--all_data",
         action="store_true",
-        help="Include all data. If false limited_PUMA arg is set to false in load_data",
+        help="Include all data. If false limited_PUMA arg is set to false in load_PUMS",
     )
 
 

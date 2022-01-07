@@ -6,7 +6,7 @@ To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 """
 import os
 import pandas as pd
-from ingest.load_data import load_data
+from ingest.load_data import load_PUMS
 from statistical.calculate_counts import calculate_counts
 from utils.make_logger import create_logger
 import time
@@ -46,12 +46,12 @@ class PUMSAggregator(BaseAggregator):
         self.limited_PUMA = limited_PUMA
         self.year = year
         PUMS_load_start = time.perf_counter()
-        self.PUMS: pd.DataFrame = load_data(
-            PUMS_variable_types=variable_types,
+        self.PUMS: pd.DataFrame = load_PUMS(
+            variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
-        )["PUMS"]
+        )
         PUMS_load_end = time.perf_counter()
         self.logger.info(
             f"PUMS data from download took {PUMS_load_end - PUMS_load_start} seconds"

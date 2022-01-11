@@ -5,6 +5,7 @@ from aggregate.race_assign import HVS_race_assign
 from statistical.calculate_counts import calculate_counts
 from aggregate.clean_aggregated import sort_columns
 from ingest.clean_replicate_weights import rw_cols_clean
+from internal_review.set_internal_review_file import set_internal_review_files
 
 implemeted_years = [2017]
 implemented_geographies = ["Borough"]
@@ -43,4 +44,8 @@ def count_units_three_or_more_deficiencies(
         crosstab=crosstab,
     )
     aggregated = sort_columns(aggregated)
+    aggregated.name = (
+        f"HVS_{year}_{geography_level}_crosstab_by_race_{crosstab_by_race}"
+    )
+    set_internal_review_files([aggregated])
     return aggregated

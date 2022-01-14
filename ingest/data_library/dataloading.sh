@@ -3,3 +3,5 @@ source ingest/data_library/config.sh
 
 import_csv lpc_historic_district_areas
 import_csv doi_evictions
+import_csv dcp_access_subway_SBS
+import_csv dcp_access_ADA_subway

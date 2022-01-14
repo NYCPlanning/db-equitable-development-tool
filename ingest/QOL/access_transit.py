@@ -5,25 +5,32 @@ import pandas as pd
 
 
 def load_access_subway_SBS() -> pd.DataFrame:
-    access = pd.read_csv("ingest/QOL/Access_Subway_SBS.csv")
-    access["PUMA"] = access["PUMA"].apply(remove_state_code_from_PUMA)
+    access = pd.read_csv(".library/dcp_access_subway_SBS.csv")
+    access = new_func(access)
     access.rename(
         columns={
-            "Pop within 1/4 Mile of Subway Stations and SBS Stops": "pop_with_accessible_transit",
-            "Total Pop from Census 2020": "total_pop",
+            "pop_within_1/4_mile_of_subway_stations_and_sbs_stops": "pop_with_access_subway_SBS",
+            "total_pop_from_census_2020": "total_pop",
         },
         inplace=True,
     )
     return access.set_index("PUMA")
 
 
-def load_access_ADA_subway() -> pd.DataFrame:
-    access = pd.read_csv("ingest/QOL/Access_ADA_Subway.csv")
+def new_func(access: pd.DataFrame) -> pd.DataFrame:
+    access.rename(columns={"puma": "PUMA"}, inplace=True)
     access["PUMA"] = access["PUMA"].apply(remove_state_code_from_PUMA)
+    return access
+
+
+def load_access_ADA_subway() -> pd.DataFrame:
+    access = pd.read_csv(".library/dcp_access_ADA_subway.csv")
+
+    access = new_func(access)
     access.rename(
         columns={
-            "Pop within 1/4 Mile of ADA Subway Stations": "pop_with_accessible_ADA_subway",
-            "Total Pop from Census 2020": "total_pop",
+            "pop_within_1/4_mile_of_ada_subway_stations": "pop_with_accessible_ADA_subway",
+            "total_pop_from_census_2020": "total_pop",
         },
         inplace=True,
     )

@@ -14,12 +14,11 @@ def load_access_subway_SBS() -> pd.DataFrame:
         },
         inplace=True,
     )
-    return access.set_index("PUMA")
+    return access.set_index("puma")
 
 
 def new_func(access: pd.DataFrame) -> pd.DataFrame:
-    access.rename(columns={"puma": "PUMA"}, inplace=True)
-    access["PUMA"] = access["PUMA"].apply(remove_state_code_from_PUMA)
+    access["puma"] = access["puma"].apply(remove_state_code_from_PUMA)
     return access
 
 
@@ -34,9 +33,9 @@ def load_access_ADA_subway() -> pd.DataFrame:
         },
         inplace=True,
     )
-    return access.set_index("PUMA")
+    return access.set_index("puma")
 
 
 def remove_state_code_from_PUMA(PUMA):
-    """Leading 360 for NYS should be removed"""
-    return int(str(PUMA)[-4:])
+    """Leading 36 for NYS should be removed"""
+    return str(PUMA)[-5:]

@@ -21,23 +21,20 @@ def set_results_for_internal_review():
 def access_to_subway_or_SBS():
     """Main accessor"""
     access = load_access_subway_SBS()
-    access["fraction_with_accessible_transit"] = (
+    indicator_col_name = "per_pop_subway_sbs_access"
+    access[indicator_col_name] = (
         access["pop_with_access_subway_SBS"] / access["total_pop"]
     )
-    output_cols = ["pop_with_access_subway_SBS", "fraction_with_accessible_transit"]
-    set_internal_review_files([(access[output_cols], "Access_to_subway_SBS")])
-    return access[output_cols]
+    return access[indicator_col_name]
 
 
 def access_to_ADA_subway():
     """Main accessor"""
 
     access = load_access_ADA_subway()
-    access["fraction_with_accessible_ADA_subway"] = (
+    indicator_col_name = "per_pop_ada_subway_access"
+    access[indicator_col_name] = (
         access["pop_with_accessible_ADA_subway"] / access["total_pop"]
     )
-    output_cols = [
-        "pop_with_accessible_ADA_subway",
-        "fraction_with_accessible_ADA_subway",
-    ]
-    return access[output_cols]
+
+    return access[indicator_col_name]

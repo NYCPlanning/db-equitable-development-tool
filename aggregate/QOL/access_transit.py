@@ -12,8 +12,8 @@ def set_results_for_internal_review():
     access_ADA_subway = access_to_ADA_subway()
     set_internal_review_files(
         data=[
-            (access_subway_SBS, "Access_to_subway_or_SBS"),
-            (access_ADA_subway, "Access_to_ADA_subway"),
+            (access_subway_SBS, "Access_to_subway_or_sbs"),
+            (access_ADA_subway, "Access_to_ada_subway"),
         ]
     )
 

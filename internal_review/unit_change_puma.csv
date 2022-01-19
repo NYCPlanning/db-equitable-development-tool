@@ -1,0 +1,221 @@
+job_type,PUMA,classa_net
+Alteration,3701,151.0
+Alteration,3702,398.0
+Alteration,3703,104.0
+Alteration,3704,198.0
+Alteration,3705,273.0
+Alteration,3706,218.0
+Alteration,3707,235.0
+Alteration,3708,345.0
+Alteration,3709,315.0
+Alteration,3710,373.0
+Alteration,3801,161.0
+Alteration,3802,398.0
+Alteration,3803,447.0
+Alteration,3804,709.0
+Alteration,3805,-928.0
+Alteration,3806,-285.0
+Alteration,3807,1523.0
+Alteration,3808,904.0
+Alteration,3809,763.0
+Alteration,3810,4913.0
+Alteration,3901,107.0
+Alteration,3902,260.0
+Alteration,3903,209.0
+Alteration,4001,3102.0
+Alteration,4002,2288.0
+Alteration,4003,1692.0
+Alteration,4004,2091.0
+Alteration,4005,-304.0
+Alteration,4006,1447.0
+Alteration,4007,365.0
+Alteration,4008,217.0
+Alteration,4009,103.0
+Alteration,4010,453.0
+Alteration,4011,595.0
+Alteration,4012,820.0
+Alteration,4013,88.0
+Alteration,4014,215.0
+Alteration,4015,193.0
+Alteration,4016,-20.0
+Alteration,4017,245.0
+Alteration,4018,36.0
+Alteration,4101,1146.0
+Alteration,4102,284.0
+Alteration,4103,1198.0
+Alteration,4104,330.0
+Alteration,4105,480.0
+Alteration,4106,876.0
+Alteration,4107,451.0
+Alteration,4108,132.0
+Alteration,4109,703.0
+Alteration,4110,551.0
+Alteration,4111,256.0
+Alteration,4112,787.0
+Alteration,4113,401.0
+Alteration,4114,-58.0
+Demolition,3701,-215.0
+Demolition,3702,-326.0
+Demolition,3703,-247.0
+Demolition,3704,-238.0
+Demolition,3705,-574.0
+Demolition,3706,-259.0
+Demolition,3707,-220.0
+Demolition,3708,-154.0
+Demolition,3709,-227.0
+Demolition,3710,-209.0
+Demolition,3801,-115.0
+Demolition,3802,-266.0
+Demolition,3803,-583.0
+Demolition,3804,-627.0
+Demolition,3805,-1460.0
+Demolition,3806,-164.0
+Demolition,3807,-1197.0
+Demolition,3808,-697.0
+Demolition,3809,-626.0
+Demolition,3810,-621.0
+Demolition,3901,-869.0
+Demolition,3902,-1047.0
+Demolition,3903,-947.0
+Demolition,4001,-842.0
+Demolition,4002,-562.0
+Demolition,4003,-664.0
+Demolition,4004,-501.0
+Demolition,4005,-612.0
+Demolition,4006,-461.0
+Demolition,4007,-188.0
+Demolition,4008,-234.0
+Demolition,4009,-188.0
+Demolition,4010,-272.0
+Demolition,4011,-303.0
+Demolition,4012,-424.0
+Demolition,4013,-148.0
+Demolition,4014,-962.0
+Demolition,4015,-440.0
+Demolition,4016,-901.0
+Demolition,4017,-428.0
+Demolition,4018,-555.0
+Demolition,4101,-829.0
+Demolition,4102,-369.0
+Demolition,4103,-1318.0
+Demolition,4104,-539.0
+Demolition,4105,-245.0
+Demolition,4106,-304.0
+Demolition,4107,-370.0
+Demolition,4108,-149.0
+Demolition,4109,-471.0
+Demolition,4110,-229.0
+Demolition,4111,-175.0
+Demolition,4112,-400.0
+Demolition,4113,-225.0
+Demolition,4114,-861.0
+New Building,3701,3420.0
+New Building,3702,5836.0
+New Building,3703,2264.0
+New Building,3704,2632.0
+New Building,3705,20256.0
+New Building,3706,5991.0
+New Building,3707,8530.0
+New Building,3708,10209.0
+New Building,3709,6775.0
+New Building,3710,17140.0
+New Building,3801,2636.0
+New Building,3802,3741.0
+New Building,3803,8694.0
+New Building,3804,10298.0
+New Building,3805,7938.0
+New Building,3806,9450.0
+New Building,3807,44096.0
+New Building,3808,8644.0
+New Building,3809,9146.0
+New Building,3810,16006.0
+New Building,3901,6482.0
+New Building,3902,4354.0
+New Building,3903,6375.0
+New Building,4001,31059.0
+New Building,4002,11782.0
+New Building,4003,11713.0
+New Building,4004,27765.0
+New Building,4005,8380.0
+New Building,4006,11009.0
+New Building,4007,9933.0
+New Building,4008,10881.0
+New Building,4009,1834.0
+New Building,4010,4667.0
+New Building,4011,7695.0
+New Building,4012,3507.0
+New Building,4013,1223.0
+New Building,4014,3330.0
+New Building,4015,5225.0
+New Building,4016,3778.0
+New Building,4017,3496.0
+New Building,4018,5769.0
+New Building,4101,16123.0
+New Building,4102,4365.0
+New Building,4103,13034.0
+New Building,4104,1946.0
+New Building,4105,1711.0
+New Building,4106,5131.0
+New Building,4107,4173.0
+New Building,4108,3193.0
+New Building,4109,29575.0
+New Building,4110,2715.0
+New Building,4111,2769.0
+New Building,4112,11616.0
+New Building,4113,1271.0
+New Building,4114,10311.0
+All,3701,3356.0
+All,3702,5908.0
+All,3703,2121.0
+All,3704,2592.0
+All,3705,19955.0
+All,3706,5950.0
+All,3707,8545.0
+All,3708,10400.0
+All,3709,6863.0
+All,3710,17304.0
+All,3801,2682.0
+All,3802,3873.0
+All,3803,8558.0
+All,3804,10380.0
+All,3805,5550.0
+All,3806,9001.0
+All,3807,44422.0
+All,3808,8851.0
+All,3809,9283.0
+All,3810,20298.0
+All,3901,5720.0
+All,3902,3567.0
+All,3903,5637.0
+All,4001,33319.0
+All,4002,13508.0
+All,4003,12741.0
+All,4004,29355.0
+All,4005,7464.0
+All,4006,11995.0
+All,4007,10110.0
+All,4008,10864.0
+All,4009,1749.0
+All,4010,4848.0
+All,4011,7987.0
+All,4012,3903.0
+All,4013,1163.0
+All,4014,2583.0
+All,4015,4978.0
+All,4016,2857.0
+All,4017,3313.0
+All,4018,5250.0
+All,4101,16440.0
+All,4102,4280.0
+All,4103,12914.0
+All,4104,1737.0
+All,4105,1946.0
+All,4106,5703.0
+All,4107,4254.0
+All,4108,3176.0
+All,4109,29807.0
+All,4110,3037.0
+All,4111,2850.0
+All,4112,12003.0
+All,4113,1447.0
+All,4114,9392.0

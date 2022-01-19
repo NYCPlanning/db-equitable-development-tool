@@ -74,8 +74,14 @@ if __name__ == "__main__":
     print('finished puma')
 
     # output everything 
-    results_citywide.to_csv('.output/unit_change_citywide.csv', index=False)
+    #results_citywide.to_csv('.output/unit_change_citywide.csv', index=False)
     
-    results_borough.to_csv('.output/unit_change_borough.csv', index=False)
+    #results_borough.to_csv('.output/unit_change_borough.csv', index=False)
 
-    results_puma.to_csv('.output/unit_change_puma.csv', index=False)
+    #results_puma.to_csv('.output/unit_change_puma.csv', index=False)
+
+    results_citywide.to_csv('internal_review/unit_change_citywide.csv', index=False)
+    
+    results_borough.to_csv('internal_review/unit_change_borough.csv', index=False)
+
+    results_puma.to_csv('internal_review/unit_change_puma.csv', index=False)

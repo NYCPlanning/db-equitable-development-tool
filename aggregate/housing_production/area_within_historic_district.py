@@ -2,9 +2,9 @@ from json import load
 import geopandas as gp
 import requests
 from shapely import wkt
-from utils.geography_helpers import borough_code_to_name, NYC_PUMA_geographies
+from utils.geography_helpers import borough_code_to_abbr, NYC_PUMA_geographies
 
-supported_geographies = ["PUMA", "borough"]
+supported_geographies = ["PUMA", "borough", "citywide"]
 
 
 def find_fraction_PUMA_historic(geography_level):
@@ -18,16 +18,20 @@ def find_fraction_PUMA_historic(geography_level):
 
 
 def generate_geographies(geography_level):
-    """Main accessor of indicator"""
     NYC_PUMAs = NYC_PUMA_geographies()
-    if geography_level == "PUMA":
-        return NYC_PUMAs.set_index("PUMA")
+    if geography_level == "puma":
+        return NYC_PUMAs.set_index("puma")
     if geography_level == "borough":
         NYC_PUMAs["borough"] = (
-            NYC_PUMAs["PUMA"].astype(str).str[0:2].apply(borough_code_to_name)
+            NYC_PUMAs["puma"].astype(str).str[1:3].apply(borough_code_to_abbr)
         )
         by_borough = NYC_PUMAs.dissolve(by="borough")
         return by_borough
+    if geography_level == "citywide":
+        citywide = NYC_PUMAs.dissolve()
+        citywide.index = ["citywide"]
+        return citywide
+
     raise Exception(f"Supported geographies are {supported_geographies}")
 
 

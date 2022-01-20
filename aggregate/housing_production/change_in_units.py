@@ -85,6 +85,8 @@ def unit_change_borough(df, census10):
 
     results_ = pivot_and_flatten_index(results_, 'boro')
 
+    results_['boro'] = results.boro.map({'1': 'MN', '2':'BX', '3': 'BK', '4': 'QN', '5': 'SI'})
+
     return results_
 
 def NYC_PUMA_geographies():
@@ -116,9 +118,11 @@ def unit_change_puma(gdf, puma, census10):
 
     results_ = pivot_and_flatten_index(results_, 'PUMA')
 
+    results_['PUMA'] = results_['PUMA'].apply(lambda x: '0' + x)
+
     return results_
 
-
+    
 if __name__ == "__main__":
 
     df, census10 = load_housing_data()

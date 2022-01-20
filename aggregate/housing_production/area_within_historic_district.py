@@ -1,15 +1,25 @@
+from gettext import find
 from json import load
 import geopandas as gp
 import requests
 from shapely import wkt
 from utils.geography_helpers import borough_code_to_abbr, NYC_PUMA_geographies
+from internal_review.set_internal_review_file import set_internal_review_files
 
 supported_geographies = ["puma", "borough", "citywide"]
 
 
-def set_files_internal_review():
+def area_historic_internal_review():
     citywide = find_fraction_PUMA_historic("citywide")
     by_borough = find_fraction_PUMA_historic("borough")
+    by_puma = find_fraction_PUMA_historic("puma")
+    set_internal_review_files(
+        [
+            (citywide, "area_historic_citywide.csv"),
+            (by_borough, "area_historic_by_borough.csv"),
+            (by_puma, "area_historic_by_puma.csv"),
+        ]
+    )
 
 
 def find_fraction_PUMA_historic(geography_level):

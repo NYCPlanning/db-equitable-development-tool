@@ -1,0 +1,6 @@
+borough,extremely_low_income_units_new_construction,extremely_low_income_units_preservation,very_low_income_units_new_construction,very_low_income_units_preservation,low_income_units_new_construction,low_income_units_preservation,moderate_income_units_new_construction,moderate_income_units_preservation,middle_income_units_new_construction,middle_income_units_preservation,other_income_units_new_construction,other_income_units_preservation
+Bronx,7299,4200,2534,20081,9364,18668,1356,930,869,534,133,236
+Brooklyn,4024,3688,2318,8834,9390,13501,957,1743,4388,870,81,133
+Manhattan,1012,7159,1464,12280,4712,9614,677,3982,1243,7257,32,170
+Queens,1322,1228,1510,9500,3559,3783,1345,890,2316,702,34,17
+Staten Island,192,761,79,199,324,890,11,39,9,29,4,5

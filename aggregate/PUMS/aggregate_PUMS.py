@@ -6,8 +6,10 @@ To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 """
 import os
 import pandas as pd
-from ingest.load_data import load_data
+from ingest.load_data import load_PUMS
 from statistical.calculate_counts import calculate_counts
+from aggregate.race_assign import PUMS_race_assign
+from aggregate.clean_aggregated import sort_columns
 from utils.make_logger import create_logger
 import time
 
@@ -46,12 +48,12 @@ class PUMSAggregator(BaseAggregator):
         self.limited_PUMA = limited_PUMA
         self.year = year
         PUMS_load_start = time.perf_counter()
-        self.PUMS: pd.DataFrame = load_data(
-            PUMS_variable_types=variable_types,
+        self.PUMS: pd.DataFrame = load_PUMS(
+            variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
-        )["PUMS"]
+        )
         PUMS_load_end = time.perf_counter()
         self.logger.info(
             f"PUMS data from download took {PUMS_load_end - PUMS_load_start} seconds"
@@ -72,9 +74,7 @@ class PUMSAggregator(BaseAggregator):
 
     def sort_aggregated_columns_alphabetically(self):
         """Put each variable next to it's standard error"""
-        self.aggregated = self.aggregated.reindex(
-            sorted(self.aggregated.columns), axis=1
-        )
+        self.aggregated = sort_columns(self.aggregated)
 
     def add_aggregated_data(self, new_var):
         self.aggregated = self.aggregated.merge(
@@ -91,17 +91,7 @@ class PUMSAggregator(BaseAggregator):
         return "total_pop"
 
     def race_assign(self, person):
-        if person["HISP"] != "Not Spanish/Hispanic/Latino":
-            return "hsp"
-        else:
-            if person["RAC1P"] == "White alone":
-                return "wnh"
-            elif person["RAC1P"] == "Black or African American alone":
-                return "bnh"
-            elif person["RAC1P"] == "Asian alone":
-                return "anh"
-            else:
-                return "onh"
+        return PUMS_race_assign(person)
 
 
 class PUMSCount(PUMSAggregator):

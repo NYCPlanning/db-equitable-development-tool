@@ -1,4 +1,4 @@
-from ingest.load_data import load_data
+from ingest.load_data import load_PUMS
 from aggregate.PUMS.count_PUMS_economics import PUMSCountEconomics
 from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
 from aggregate.PUMS.median_PUMS_demographics import PUMSMedianDemographics
@@ -16,13 +16,13 @@ class LocalLoader:
         """To be called in first test"""
         limited_PUMA = not all_data
 
-        self.ingestor = load_data(
-            PUMS_variable_types=[variable_set],
+        self.ingestor = load_PUMS(
+            variable_types=[variable_set],
             limited_PUMA=limited_PUMA,
             include_rw=include_rw,
             return_ingestor=True,
             requery=True,
-        )["PUMS"]
+        )
         self.by_person_raw = self.ingestor.vi_data_raw
         self.by_person = self.ingestor.vi_data
 
@@ -47,3 +47,5 @@ class LocalLoader:
     def load_count_aggregator(self, all_data):
         limited_PUMA = not all_data
         self.count_aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)
+        self.by_person = self.count_aggregator.PUMS
+        self.aggregated = self.count_aggregator.aggregated

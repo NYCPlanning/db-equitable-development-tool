@@ -29,6 +29,20 @@ def load_housing_data():
 
     return df, census10_
 
+
+def pivot_and_flatten_index(df, geography):
+
+    df = df.pivot(index=geography, columns='job_type' ,values=['classa_net', 'net_change_pct_2010_census_housing_stock'])
+
+    df.columns = ["_".join(a) for a in df.columns.to_flat_index()]
+
+    df.columns = [col.lower().replace(' ', '_') for col in df.columns]
+
+    df.reset_index(inplace=True)
+
+    return df 
+
+
 def units_change_citywide(df, census10):
     
     #df = pd.read_csv(".library/edm-recipes/datasets/dcp_housing.csv")
@@ -40,6 +54,10 @@ def units_change_citywide(df, census10):
     results['net_change_pct_2010_census_housing_stock'] = results['classa_net'] / results['total_housing_units_2010'] * 100.
 
     results = results.round({'net_change_pct_2010_census_housing_stock': 2})
+
+    results['citywide'] = 'citywide'
+
+    results = pivot_and_flatten_index(results, 'citywide')
 
     return results
 
@@ -64,6 +82,8 @@ def unit_change_borough(df, census10):
     results_['net_change_pct_2010_census_housing_stock'] = results_['classa_net'] / results_['total_housing_units_2010'] * 100.
 
     results_ = results_.round({'net_change_pct_2010_census_housing_stock': 2})   
+
+    results_ = pivot_and_flatten_index(results_, 'boro')
 
     return results_
 
@@ -94,7 +114,10 @@ def unit_change_puma(gdf, puma, census10):
 
     results_ = results_.round({'net_change_pct_2010_census_housing_stock': 2})   
 
+    results_ = pivot_and_flatten_index(results_, 'PUMA')
+
     return results_
+
 
 if __name__ == "__main__":
 
@@ -132,16 +155,9 @@ if __name__ == "__main__":
 
     print('finished puma')
 
-
     # output everything 
-    #results_citywide.to_csv('.output/unit_change_citywide.csv', index=False)
+    results_citywide.to_csv('internal_review/housing_production/citywide/unit_change_citywide.csv', index=False)
     
-    #results_borough.to_csv('.output/unit_change_borough.csv', index=False)
+    results_borough.to_csv('internal_review/housing_production/borough/unit_change_borough.csv', index=False)
 
-    #results_puma.to_csv('.output/unit_change_puma.csv', index=False)
-
-    results_citywide.to_csv('internal_review/unit_change_citywide.csv', index=False)
-    
-    results_borough.to_csv('internal_review/unit_change_borough.csv', index=False)
-
-    results_puma.to_csv('internal_review/unit_change_puma.csv', index=False)
+    results_puma.to_csv('internal_review/housing_production/puma/unit_change_puma.csv', index=False)

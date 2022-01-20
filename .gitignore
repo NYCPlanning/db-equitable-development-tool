@@ -149,3 +149,6 @@ logs/
 
 #Local Docker testing
 Dockerfile
+
+# scratch notebook
+notebooks/scratch.ipynb

@@ -1,22 +1,49 @@
+from unittest import result
 import pandas as pd
 import geopandas as gpd
 import requests
 
 def load_housing_data():
 
-    df = pd.read_csv(".library/dcp_housing/20Q4/dcp_housing.csv", usecols=['job_number', 'job_inactive', 'job_type','boro', 'classa_net','latitude', 'longitude'])
+    df = pd.read_csv(".library/dcp_housing/20Q4/dcp_housing.csv", usecols=['job_number', 'job_inactive', 'job_status','job_type','boro', 'classa_net','latitude', 'longitude'])
 
-    return df 
+    census10 = pd.read_excel('https://www1.nyc.gov/assets/planning/download/office/planning-level/nyc-population/census2010/tothousing_vacant_2010ct.xlsx', 
+        header=4, 
+        usecols=['2010 Census FIPS County Code', '2010 DCP Borough Code', '2010 Census Tract', 'Total Housing Units'],
+        dtype=str)
 
-def units_change_citywide(df):
+    puma_cross = pd.read_excel('https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx',
+        header=3, 
+        dtype=str,
+        usecols=['2010 Census Bureau FIPS County Code','2010 Census Tract', 'PUMA'])
+
+    census10['nycct'] = census10['2010 Census FIPS County Code'] + census10['2010 Census Tract']
+
+    puma_cross['nycct'] = puma_cross['2010 Census Bureau FIPS County Code'] + puma_cross['2010 Census Tract']
+
+    census10_ = census10.merge(puma_cross[['nycct', 'PUMA']], how='left', on='nycct')
+
+    census10_['Total Housing Units'] = census10_['Total Housing Units'].apply(lambda x: pd.to_numeric(x, errors='coerce'))
+
+    census10_.rename(columns={'Total Housing Units': 'total_housing_units_2010'}, inplace=True)
+
+    return df, census10_
+
+def units_change_citywide(df, census10):
     
     #df = pd.read_csv(".library/edm-recipes/datasets/dcp_housing.csv")
 
     results = df.groupby('job_type').agg({'classa_net': 'sum'}).reset_index()
 
+    results['total_housing_units_2010'] = census10['total_housing_units_2010'].sum()
+
+    results['net_change_pct_2010_census_housing_stock'] = results['classa_net'] / results['total_housing_units_2010'] * 100.
+
+    results = results.round({'net_change_pct_2010_census_housing_stock': 2})
+
     return results
 
-def unit_change_borough(df):
+def unit_change_borough(df, census10):
 
     results = df.groupby(['job_type', 'boro']).agg({'classa_net': 'sum'}).reset_index()
 
@@ -25,8 +52,20 @@ def unit_change_borough(df):
         total = {'job_type': 'All', 'boro': boro, 'classa_net': results.loc[results.boro == boro].classa_net.sum()}
 
         results = results.append(total, ignore_index=True)
-    #results = results.append(results.groupby['boro'].agg({'classa_net': 'sum'}).reset_index())
-    return results
+
+    # join with the existing housing stock
+    boro_units = census10.groupby('2010 DCP Borough Code')['total_housing_units_2010'].sum().reset_index()
+
+    results.boro = results.boro.astype(str)
+
+    results_ = results.merge(boro_units, left_on='boro', right_on='2010 DCP Borough Code', how='left')
+
+    # calculate ther percentage change to the 2010 housing stock from census
+    results_['net_change_pct_2010_census_housing_stock'] = results_['classa_net'] / results_['total_housing_units_2010'] * 100.
+
+    results_ = results_.round({'net_change_pct_2010_census_housing_stock': 2})   
+
+    return results_
 
 def NYC_PUMA_geographies():
     res = requests.get(
@@ -34,7 +73,7 @@ def NYC_PUMA_geographies():
     )
     return gpd.GeoDataFrame.from_features(res.json()["features"])
 
-def unit_change_puma(gdf, puma):
+def unit_change_puma(gdf, puma, census10):
 
     gdf_ = gdf.sjoin(puma, how='left', predicate='within')        
 
@@ -46,20 +85,40 @@ def unit_change_puma(gdf, puma):
 
         results = results.append(total, ignore_index=True)
 
-    return results
+    puma_units = census10.groupby('PUMA')['total_housing_units_2010'].sum().reset_index()
+
+    results_ = results.merge(puma_units, on='PUMA', how='left')
+
+    # calculate ther percentage change to the 2010 housing stock from census
+    results_['net_change_pct_2010_census_housing_stock'] = results_['classa_net'] / results_['total_housing_units_2010'] * 100.
+
+    results_ = results_.round({'net_change_pct_2010_census_housing_stock': 2})   
+
+    return results_
 
 if __name__ == "__main__":
 
-    df = load_housing_data()
+    df, census10 = load_housing_data()
 
     # DROP INACTIVATE JOBS ACCRODING TO SAM
     df.drop(df.loc[~df.job_inactive.isnull()].index, axis=0, inplace=True)
 
-    results_citywide = units_change_citywide(df)
+    # drop records where their status is not complete
+    df.drop(df.loc[df.job_status != '5. Completed Construction'].index, axis=0, inplace=True)
+
+    # drop rows where alterations is zero and create two types for alterations
+    df.loc[(df.job_type == 'Alteration') & (df.classa_net < 0), 'job_type'] = 'Alteration_Decrease'
+
+    df.loc[(df.job_type == 'Alteration') & (df.classa_net > 0), 'job_type'] = 'Alteration_Increase'
+
+    df.drop(df.loc[df.job_type == 'Alteration'].index, axis=0, inplace=True)
+
+    # run results for everything
+    results_citywide = units_change_citywide(df, census10)
 
     print('finsihed citywide')
 
-    results_borough = unit_change_borough(df)
+    results_borough = unit_change_borough(df, census10)
 
     print('finished borough')
 
@@ -69,9 +128,10 @@ if __name__ == "__main__":
     gdf = gpd.GeoDataFrame(
         df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
 
-    results_puma = unit_change_puma(gdf, puma)
+    results_puma = unit_change_puma(gdf, puma, census10)
 
     print('finished puma')
+
 
     # output everything 
     #results_citywide.to_csv('.output/unit_change_citywide.csv', index=False)

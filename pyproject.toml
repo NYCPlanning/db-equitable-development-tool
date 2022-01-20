@@ -13,7 +13,13 @@ python-dotenv = "^0.19.1"
 rpy2 = "^3.4.5"
 openpyxl = "^3.0.9"
 geopandas = "^0.10.2"
+<<<<<<< HEAD
 Rtree = "^0.9.7"
+=======
+python-geosupport = "^1.0.8"
+usaddress = "^0.5.10"
+Shapely = "^1.8.0"
+>>>>>>> 5e5a16eecdedd3d87484b6a327696b1194c9889f
 
 [tool.poetry.dev-dependencies]
 

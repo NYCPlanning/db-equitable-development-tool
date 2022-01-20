@@ -1,29 +1,53 @@
+from gettext import find
 from json import load
 import geopandas as gp
 import requests
 from shapely import wkt
+from utils.geography_helpers import borough_code_to_abbr, NYC_PUMA_geographies
+from internal_review.set_internal_review_file import set_internal_review_files
 
-NYC_PUMAS_url = "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
+supported_geographies = ["puma", "borough", "citywide"]
 
 
-def find_fraction_PUMA_historic():
+def area_historic_internal_review():
+    citywide = find_fraction_PUMA_historic("citywide")
+    by_borough = find_fraction_PUMA_historic("borough")
+    by_puma = find_fraction_PUMA_historic("puma")
+    set_internal_review_files(
+        [
+            (citywide, "area_historic_citywide.csv"),
+            (by_borough, "area_historic_by_borough.csv"),
+            (by_puma, "area_historic_by_puma.csv"),
+        ]
+    )
 
-    NYC_PUMAs_geojson = NYC_PUMA_geographies()
-    NYC_PUMAs = gp.GeoDataFrame.from_features(NYC_PUMAs_geojson["features"])
-    NYC_PUMAs.set_index("PUMA", inplace=True)
 
+def find_fraction_PUMA_historic(geography_level):
+    """Main accessor of indicator"""
+    gdf = generate_geographies(geography_level)
     hd = load_historic_districts_gdf()
-    NYC_PUMAs[["fraction_area_historic", "total_area_historic"]] = NYC_PUMAs.apply(
+    gdf[["fraction_area_historic", "total_area_historic"]] = gdf.apply(
         fraction_area_historic, axis=1, args=(hd,), result_type="expand"
     )
-    return NYC_PUMAs[["fraction_area_historic", "total_area_historic"]]
+    return gdf[["fraction_area_historic", "total_area_historic"]]
 
 
-def NYC_PUMA_geographies():
-    res = requests.get(
-        "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
-    )
-    return res.json()
+def generate_geographies(geography_level):
+    NYC_PUMAs = NYC_PUMA_geographies()
+    if geography_level == "puma":
+        return NYC_PUMAs.set_index("puma")
+    if geography_level == "borough":
+        NYC_PUMAs["borough"] = (
+            NYC_PUMAs["puma"].astype(str).str[1:3].apply(borough_code_to_abbr)
+        )
+        by_borough = NYC_PUMAs.dissolve(by="borough")
+        return by_borough
+    if geography_level == "citywide":
+        citywide = NYC_PUMAs.dissolve()
+        citywide.index = ["citywide"]
+        return citywide
+
+    raise Exception(f"Supported geographies are {supported_geographies}")
 
 
 def fraction_area_historic(PUMA, hd):
@@ -37,7 +61,7 @@ def fraction_area_historic(PUMA, hd):
     return fraction, overlay.area.sum() / (5280 ** 2)
 
 
-def load_historic_districts_gdf():
+def load_historic_districts_gdf() -> gp.GeoDataFrame:
     hd = gp.read_file(".library/lpc_historic_district_areas.csv")
     hd["the_geom"] = hd["the_geom"].apply(wkt.loads)
     hd.set_geometry(col="the_geom", inplace=True, crs="EPSG:4326")

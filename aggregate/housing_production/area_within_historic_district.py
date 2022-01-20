@@ -4,7 +4,12 @@ import requests
 from shapely import wkt
 from utils.geography_helpers import borough_code_to_abbr, NYC_PUMA_geographies
 
-supported_geographies = ["PUMA", "borough", "citywide"]
+supported_geographies = ["puma", "borough", "citywide"]
+
+
+def set_files_internal_review():
+    citywide = find_fraction_PUMA_historic("citywide")
+    by_borough = find_fraction_PUMA_historic("borough")
 
 
 def find_fraction_PUMA_historic(geography_level):

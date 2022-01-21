@@ -446,7 +446,6 @@ pandas = ["numpy", "pandas"]
 test = ["pytest"]
 
 [[package]]
-<<<<<<< HEAD
 name = "rtree"
 version = "0.9.7"
 description = "R-Tree spatial index for Python GIS"
@@ -455,8 +454,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-=======
->>>>>>> 5e5a16eecdedd3d87484b6a327696b1194c9889f
 name = "shapely"
 version = "1.8.0"
 description = "Geometric objects, predicates, and operations"

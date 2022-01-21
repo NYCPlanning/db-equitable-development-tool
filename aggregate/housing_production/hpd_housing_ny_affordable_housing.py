@@ -1,8 +1,7 @@
 import pandas as pd 
 import os
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__),'../../'))
 from utils.geography_helpers import assign_PUMA_col
+
 
 """"We need to download the data, separate the data by construction type (New Construction vs. Preservation)
 as these will be two separate indicators, unit income level, and the various citywide reporting geography 
@@ -25,6 +24,8 @@ def load_housing_ny():
 'street', 'borough', 'latitude_(internal)', 'longitude_(internal)', 'building_completion_date', 
 'reporting_construction_type', 'extremely_low_income_units', 'very_low_income_units', 'low_income_units',
 'moderate_income_units', 'middle_income_units', 'other_income_units'])
+    df = df.replace({'borough' : { 'Bronx': 'BX', 'Brooklyn': 'BK', 'Manhattan': 'MN',
+ 'Queens': 'QN', 'Staten Island': 'SI'}})
 
     return df
 
@@ -73,9 +74,10 @@ def PUMA_hny_units_con_type (df):
 
     puma_df = assign_PUMA_col(filter_df, 'latitude_(internal)', 'longitude_(internal)')
 
-    results = puma_df.groupby(['reporting_construction_type', 'PUMA'])[unit_income_levels].sum().reset_index()
+    results = puma_df.groupby(['reporting_construction_type', 'puma'])[unit_income_levels].sum().reset_index()
     
-    results = pivot_and_flatten_index(results, 'PUMA')
+    results = pivot_and_flatten_index(results, 'puma')
+
     return results
 
 

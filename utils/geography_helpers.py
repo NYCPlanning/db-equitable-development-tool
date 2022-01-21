@@ -5,19 +5,20 @@ from numpy import add, nan
 import usaddress
 import requests
 from geosupport import Geosupport, GeosupportError
+from ingest.ingestion_helpers import add_leading_zero_PUMA
 
-g = Geosupport()
+# g = Geosupport()
 
 borough_code_mapper = {
-    37: "Bronx",
-    38: "Manhattan",
-    39: "Staten Island",
-    40: "Brooklyn",
-    41: "Queens",
+    37: "BX",
+    38: "MN",
+    39: "SI",
+    40: "BK",
+    41: "QN",
 }
 
 
-def borough_code_to_name(borough_code) -> str:
+def borough_code_to_abbr(borough_code) -> str:
     borough_code = int(borough_code)
     return borough_code_mapper[borough_code]
 
@@ -29,7 +30,10 @@ def NYC_PUMA_geographies() -> gp.GeoDataFrame:
     res = requests.get(
         "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
     )
-    return gp.GeoDataFrame.from_features(res.json()["features"])
+    gdf = gp.GeoDataFrame.from_features(res.json()["features"])
+    gdf.rename(columns={"PUMA": "puma"}, inplace=True)
+    gdf = add_leading_zero_PUMA(gdf)
+    return gdf
 
 
 PUMAs = NYC_PUMA_geographies()
@@ -37,9 +41,9 @@ PUMAs = NYC_PUMA_geographies()
 
 def assign_PUMA_col(df: pd.DataFrame, lat_col, long_col):
     df.rename(columns={lat_col: "latitude", long_col: "longitude"}, inplace=True)
-    df["PUMA"] = df.apply(assign_PUMA, axis=1)
+    df["puma"] = df.apply(assign_PUMA, axis=1)
     print(f"got {df.shape[0]} evictions to assign PUMAs to ")
-    print(f"assigned PUMAs to {df['PUMA'].notnull().sum()}")
+    print(f"assigned PUMAs to {df['puma'].notnull().sum()}")
     return df
 
 
@@ -56,7 +60,7 @@ def PUMA_from_coord(record):
     matched_PUMA = PUMAs[PUMAs.geometry.contains(record_loc)]
     if matched_PUMA.empty:
         return None
-    return matched_PUMA.PUMA.values[0]
+    return matched_PUMA.puma.values[0]
 
 
 def PUMA_from_address(record) -> str:

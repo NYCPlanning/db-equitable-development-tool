@@ -32,5 +32,5 @@ for g in subfolders:
     
     merged.rename(columns={'index': 'geography'}, inplace=True)
 
-    merged.to_csv('external_review/housing_production/' + g + '_merged.csv', index=False)
+    merged.to_csv('external_review/housing_production/housing_production' + g + '.csv', index=False)
  

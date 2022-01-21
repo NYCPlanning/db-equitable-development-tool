@@ -5,6 +5,7 @@ function set_env {
     if [ -f $envfile ];
     then
         export $(cat $envfile | xargs)
+        mc config host add spaces $AWS_S3_ENDPOINT $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --api S3v4
     fi
 }
 # Set Environmental variables

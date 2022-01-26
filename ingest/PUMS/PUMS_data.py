@@ -2,6 +2,8 @@ from typing import List
 import pandas as pd
 import numpy as np
 
+from utils.geography_helpers import assign_PUMA
+
 """To do: make this central module from which all other code is called. Write 
 class method for aggregate step to access.  Class method will return cached data or
 initalize a PUMSData object and use it to save a .pkl"""
@@ -73,14 +75,40 @@ class PUMSData:
         )
 
     def populate_dataframes(self):
-        for k, i in self.urls.items():
-            data_region_one = make_GET_request(i[0], f"get request for {k} region one")
-            data_region_two = make_GET_request(i[1], f"get request for {k} region two")
-            data = data_region_one.append(data_region_two)
-            attr_name = f"{k}_data"
-            self.__setattr__(attr_name, data)
-            self.assign_identifier(attr_name)
+        if self.year == 2019:
+            for k, i in self.urls.items():
+                data_region_one = make_GET_request(
+                    i[0], f"get request for {k} region one"
+                )
+                data_region_two = make_GET_request(
+                    i[1], f"get request for {k} region two"
+                )
+                data = data_region_one.append(data_region_two)
+                self.assign_data_to_attr(k, data)
+        if self.year == 2012:
+            for k, i in self.urls.items():
+                r1_2000 = make_GET_request(i[0], f"get req for {k} region 1 2000 PUMAs")
+                r1_2000 = rename_PUMA_col(r1_2000, "PUMA00")
+
+                r1_2010 = make_GET_request(i[1], f"get req for {k} region 1 2010 PUMAs")
+                r1_2010 = rename_PUMA_col(r1_2010, "PUMA10")
+
+                r2_2000 = make_GET_request(i[2], f"get req for {k} region 2 2000 PUMAs")
+                r2_2000 = rename_PUMA_col(r2_2000, "PUMA00")
+
+                r2_2010 = make_GET_request(i[3], f"get req for {k} region 2 2010 PUMAs")
+                r2_2010 = rename_PUMA_col(r2_2010, "PUMA10")
+                data = r1_2000.append(r1_2010)
+                data = data.append(r2_2000)
+                data = data.append(r2_2010)
+                self.assign_data_to_attr(k, data)
+
         self.vi_data_raw = self.vi_data.copy(deep=True)
+
+    def assign_data_to_attr(self, k, data):
+        attr_name = f"{k}_data"
+        self.__setattr__(attr_name, data)
+        self.assign_identifier(attr_name)
 
     def download_and_cache(self):
         self.populate_dataframes()
@@ -119,3 +147,8 @@ class PUMSData:
     def merge_vi_rw(self):
         """Add replicate weights to the dataframe with variables of interest"""
         self.vi_data = self.vi_data.merge(self.rw, left_index=True, right_index=True)
+
+
+def rename_PUMA_col(df, PUMA_col_name):
+    df.rename(columns={PUMA_col_name: "PUMA"}, inplace=True)
+    return df

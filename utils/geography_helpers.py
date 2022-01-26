@@ -6,7 +6,7 @@ import usaddress
 import requests
 from geosupport import Geosupport, GeosupportError
 
-g = Geosupport()
+# g = Geosupport()
 
 borough_code_mapper = {
     37: "Bronx",

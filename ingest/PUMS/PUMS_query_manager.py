@@ -55,7 +55,7 @@ geo_ids = [
 ]
 
 allowed_variable_types = ["demographics", "economics"]
-allowed_years = [2019]
+allowed_years = [2019, 2012]
 
 
 def get_variables(variable_types: List) -> None:
@@ -68,32 +68,43 @@ def get_variables(variable_types: List) -> None:
     return rv
 
 
-def get_urls(variables: List, year: int, limited_PUMA=False, include_rw=True) -> dict:
+def get_urls(
+    year: int,
+    variable_types: List = [],
+    variables: List = [],
+    limited_PUMA=False,
+    include_rw=True,
+) -> dict:
     """
     :Limited_PUMA: for testing with single UCGID from each borough.
     :return:  dictionary of lists of urls. Each list is a set of of geographic regions
     associated with a group of GET variables. Each item is a set of a GET variables (either variables of interest of replicate weights)"""
     identifiers = "SERIALNO,SPORDER,"
 
-    geo_queries = generate_geo_queries(limited_PUMA)
+    geo_queries = generate_geo_queries(limited_PUMA, year)
 
     url_start = construct_url_start(year)
     base_weights_section = f"{url_start}?get={identifiers}"
-    # geo_ids_key_section = f"&ucgid={geo_ids}&key={api_key}"
 
     variable_queries = {}
-
-    variable_queries["vi"] = f"PWGTP,{vars_as_params(variables)}"
+    if variables is None:
+        variables = get_variables(variable_types)
+    variable_queries["vi"] = var_query_string(variables, year)
 
     if include_rw:
         for x, k in ((1, "rw_one"), (41, "rw_two")):
             variable_queries[k] = ",".join([f"PWGTP{x}" for x in range(x, x + 40)])
 
-    urls = generate_urls(base_weights_section, geo_queries, variable_queries)
+    urls = generate_urls(base_weights_section, geo_queries, variable_queries, year)
     return urls
 
 
-def generate_urls(base: str, geos: List, variable_queries: List):
+def var_query_string(variables, year) -> str:
+    base = f"PWGTP,{vars_as_params(variables)}"
+    return base
+
+
+def generate_urls(base: str, geos: List, variable_queries: List, year: int):
     """Generate three urls, one for querying variables of interest
     and two for querying replicate weights
 
@@ -108,21 +119,28 @@ def generate_urls(base: str, geos: List, variable_queries: List):
     for k, query in variable_queries.items():
         region_urls = []
         for geo_ids in geos:
-            region_urls.append(f"{base}{query}&ucgid={geo_ids}")
+            if year == 2019:
+                region_urls.append(f"{base}{query}&ucgid={geo_ids}")
+            if year == 2012:
+                region_urls.append(f"{base}{query}&ucgid=0400000US36&PUMA00={geo_ids}")
+                region_urls.append(f"{base}{query}&ucgid=0400000US36&PUMA10={geo_ids}")
+
         rv[k] = region_urls
     return rv
 
 
-def generate_geo_queries(limited_PUMA):
+def generate_geo_queries(limited_PUMA, year):
     """Geographic regions are Brooklyn, Bronx and
     Queens, Manhattan and Staten Island. These regions split the city into
     roughly two halves"""
     rv = []
-
     for region in geo_ids:
         all_ids = []
         for b in region:
-            geo_ids_full = [NYC_PUMA_base + str(p) for p in b]
+            if year == 2019:
+                geo_ids_full = [NYC_PUMA_base + str(p) for p in b]
+            else:
+                geo_ids_full = [str(p) for p in b]
 
             if limited_PUMA:
                 all_ids.extend(geo_ids_full[0:1])

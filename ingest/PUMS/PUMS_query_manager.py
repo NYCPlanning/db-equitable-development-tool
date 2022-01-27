@@ -11,7 +11,7 @@ Refactor: call this from PUMS data init instead of from PUMS_request
 import os
 from dotenv import load_dotenv
 from typing import List
-
+from ingest.PUMS.variable_generator import variables_for_url
 from utils.make_logger import create_logger
 
 
@@ -21,24 +21,6 @@ load_dotenv()
 
 api_key = os.environ["CENSUS_API_KEY"]
 
-variable_mapper = {
-    "demographics": [
-        ("RAC1P", "clean_simple_cateogorical"),
-        ("HISP", "clean_simple_cateogorical"),
-        ("NATIVITY", "clean_simple_cateogorical"),
-        ("LANX", "clean_simple_cateogorical"),
-        ("ENG", "clean_simple_cateogorical"),
-        ("AGEP", "clean_continous"),
-    ],
-    "economics": [
-        ("HINCP", "clean_continous"),  # Household income
-        ("ESR", "clean_simple_cateogorical"),  # Employment status
-        ("WAGP", "clean_continous"),  # Wages
-        ("SCHL", "clean_simple_cateogorical"),  # Educational achievement
-        ("INDP", "clean_range_categorical"),  # Industry
-        ("OCCP", "clean_range_categorical"),  # Occupation
-    ],
-}
 
 NYC_PUMA_base = "7950000US360"
 
@@ -54,24 +36,12 @@ geo_ids = [
     ),
 ]
 
-allowed_variable_types = ["demographics", "economics"]
 allowed_years = [2019, 2012]
-
-
-def get_variables(variable_types: List) -> None:
-    rv = []
-    for var_type in variable_types:
-        if var_type not in allowed_variable_types:
-            logger.error(f"{var_type} not one of {allowed_variable_types}")
-        else:
-            rv.extend(variable_mapper[var_type])
-    return rv
 
 
 def get_urls(
     year: int,
     variable_types: List = [],
-    variables: List = [],
     limited_PUMA=False,
     include_rw=True,
 ) -> dict:
@@ -87,9 +57,9 @@ def get_urls(
     base_weights_section = f"{url_start}?get={identifiers}"
 
     variable_queries = {}
-    if variables is None:
-        variables = get_variables(variable_types)
-    variable_queries["vi"] = var_query_string(variables, year)
+
+    variables = variables_for_url(variable_types, year)
+    variable_queries["vi"] = var_query_string(variables)
 
     if include_rw:
         for x, k in ((1, "rw_one"), (41, "rw_two")):
@@ -99,8 +69,8 @@ def get_urls(
     return urls
 
 
-def var_query_string(variables, year) -> str:
-    base = f"PWGTP,{vars_as_params(variables)}"
+def var_query_string(variables) -> str:
+    base = f"PWGTP,{variables}"
     return base
 
 
@@ -156,7 +126,3 @@ def construct_url_start(year):
         raise Exception("Unallowed year")
     base_url = f"https://api.census.gov/data/{year}/acs/acs5/pums"
     return base_url
-
-
-def vars_as_params(variables: List) -> str:
-    return ",".join([v[0] for v in variables])

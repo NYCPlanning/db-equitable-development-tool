@@ -70,17 +70,14 @@ EXPECTED_COLS_VALUES_RANGE_CATEGORICAL = [
 ]
 
 
-@pytest.mark.parametrize("local_loader", local_loaders)
 @pytest.mark.test_download
 @pytest.mark.parametrize(
     "column, old_val, new_val", EXPECTED_COLS_VALUES_RANGE_CATEGORICAL
 )
-def test_categorical_range_variables_have_expected_values(
-    column, old_val, new_val, local_loader
-):
+def test_categorical_range_variables_have_expected_values(column, old_val, new_val):
 
-    ids = local_loader.by_person_raw[
-        local_loader.by_person_raw[column] == old_val
+    ids = local_loader_2019.by_person_raw[
+        local_loader_2019.by_person_raw[column] == old_val
     ].index
 
-    sum(local_loader.by_person.loc[ids][column] == new_val) == len(ids)
+    sum(local_loader_2019.by_person.loc[ids][column] == new_val) == len(ids)

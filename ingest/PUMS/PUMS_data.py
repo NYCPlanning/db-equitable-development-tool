@@ -9,7 +9,8 @@ class method for aggregate step to access.  Class method will return cached data
 initalize a PUMSData object and use it to save a .pkl"""
 
 from ingest.PUMS.PUMS_request import make_GET_request
-from ingest.PUMS.PUMS_query_manager import get_variables, get_urls
+from ingest.PUMS.PUMS_query_manager import get_urls
+from ingest.PUMS.variable_generator import variables_for_processing
 from ingest.make_cache_fn import make_PUMS_cache_fn
 from ingest.PUMS.PUMS_cleaner import PUMSCleaner
 
@@ -48,12 +49,11 @@ class PUMSData:
         self.cache_path = self.get_cache_fn(
             variable_types, limited_PUMA, year, include_rw
         )
-        self.variable_types = variable_types
-        self.variables = get_variables(self.variable_types)
+        self.variables = variables_for_processing(variable_types=variable_types)
         self.limited_PUMA = limited_PUMA
         self.year = year
         urls = get_urls(
-            variables=self.variables,
+            variable_types=variable_types,
             year=year,
             limited_PUMA=limited_PUMA,
             include_rw=self.include_rw,

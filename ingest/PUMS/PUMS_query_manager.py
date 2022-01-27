@@ -109,7 +109,7 @@ def generate_geo_queries(limited_PUMA, year):
         for b in region:
             if year == 2019:
                 geo_ids_full = [NYC_PUMA_base + str(p) for p in b]
-            else:
+            elif year == 2012:
                 geo_ids_full = [str(p) for p in b]
 
             if limited_PUMA:

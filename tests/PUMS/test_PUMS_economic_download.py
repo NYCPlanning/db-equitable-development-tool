@@ -75,7 +75,7 @@ EXPECTED_COLS_VALUES_RANGE_CATEGORICAL = [
     "column, old_val, new_val", EXPECTED_COLS_VALUES_RANGE_CATEGORICAL
 )
 def test_categorical_range_variables_have_expected_values(column, old_val, new_val):
-
+    """This test only works for 2019 as 2012 has differently named OCCP"""
     ids = local_loader_2019.by_person_raw[
         local_loader_2019.by_person_raw[column] == old_val
     ].index

@@ -67,10 +67,12 @@ class PUMSAggregator(BaseAggregator):
         # Possible to-do: below code goes in call instead of init
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
-        for ind in self.indicators:
+        for ind_denom in self.indicators_denom:
             agg_start = time.perf_counter()
-            self.calculate_add_new_variable(ind)
-            self.logger.info(f"aggregating {ind} took {time.perf_counter()-agg_start}")
+            self.calculate_add_new_variable(ind_denom)
+            self.logger.info(
+                f"aggregating {ind_denom[0]} took {time.perf_counter()-agg_start}"
+            )
         try:
             self.sort_aggregated_columns_alphabetically()
         except:
@@ -91,16 +93,22 @@ class PUMSAggregator(BaseAggregator):
                 axis=1, func=self.__getattribute__(f"{indicator}_assign")
             )
 
-    def calculate_add_new_variable(self, indicator):
+    def calculate_add_new_variable(self, ind_denom):
+        indicator = ind_denom[0]
         print(f"assigning indicator of {indicator} ")
         self.assign_indicator(indicator)
         self.add_category(indicator)
-        if self.include_counts:
-            self.add_counts(indicator)
-        if self.include_fractions:
-            self.add_fractions(indicator)
+        if len(ind_denom) == 1:
+            subset = self.PUMS.copy()
+        else:
+            subset = self.__getattribute__(ind_denom[1])(self.PUMS)
 
-    def add_counts(self, indicator):
+        if self.include_counts:
+            self.add_counts(indicator, subset)
+        if self.include_fractions:
+            self.add_fractions(indicator, subset)
+
+    def add_counts(self, indicator, subset):
         new_indicator_aggregated = calculate_counts(
             self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
         )
@@ -108,7 +116,7 @@ class PUMSAggregator(BaseAggregator):
         for ct in self.crosstabs:
             self.add_category(ct)  # To-do: move higher up, maybe to init
             count_aggregated_ct = calculate_counts(
-                data=self.PUMS.copy(deep=True),
+                data=subset,
                 variable_col=indicator,
                 rw_cols=self.rw_cols,
                 weight_col=self.weight_col,
@@ -117,14 +125,14 @@ class PUMSAggregator(BaseAggregator):
             )
             self.add_aggregated_data(count_aggregated_ct)
 
-    def add_fractions(self, indicator):
+    def add_fractions(self, indicator, subset):
         fraction_aggregated = calculate_fractions(
-            self.PUMS.copy(deep=True),
-            indicator,
-            self.categories[indicator],
-            self.rw_cols,
-            self.weight_col,
-            self.geo_col,
+            data=subset,
+            variable_col=indicator,
+            categories=self.categories[indicator],
+            rw_cols=self.rw_cols,
+            weight_col=self.weight_col,
+            geo_col=self.geo_col,
         )
         self.add_aggregated_data(fraction_aggregated)
         for ct in self.crosstabs:
@@ -155,4 +163,4 @@ class PUMSAggregator(BaseAggregator):
 class PUMSCount(PUMSAggregator):
     """Need some way to introduce total pop indicator here"""
 
-    indicators = ["total_pop"]
+    indicators_denom = ["total_pop"]

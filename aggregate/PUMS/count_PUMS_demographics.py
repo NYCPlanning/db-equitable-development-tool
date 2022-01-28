@@ -17,7 +17,7 @@ class PUMSCountDemographics(PUMSCount):
         include_counts=True,
         include_fractions=True,
     ) -> None:
-        self.indicators.extend(
+        self.indicators_denom.extend(
             [
                 "LEP",
                 "foreign_born",
@@ -25,8 +25,8 @@ class PUMSCountDemographics(PUMSCount):
             ]
         )
 
-        self.indicators = list(
-            set(self.indicators)
+        self.indicators_denom = list(
+            set(self.indicators_denom)
         )  # To-do: figure out problem and undo hot fix
         self.crosstabs = ["race"]
         self.categories = {}

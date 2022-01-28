@@ -1,15 +1,11 @@
 from aggregate.PUMS.aggregate_PUMS import PUMSAggregator, PUMSCount
-from statistical.calculate_fractions import (
-    calculate_fractions,
-    calculate_fractions_crosstabs,
-)
+
 from statistical.calculate_counts import calculate_counts
 
 
 class PUMSCountDemographics(PUMSCount):
     """Medians aggregator has crosstabs in data structure instead of appended as text. This may be better design
     Indicators are being extended multiple times, not good
-    To-do: figure out why this takes so long to import
     To-do: break out calculations into __call__ that can get counts, fractions, or both
     """
 
@@ -46,56 +42,6 @@ class PUMSCountDemographics(PUMSCount):
             year=year,
             requery=requery,
         )
-
-    def calculate_add_new_variable(self, indicator):
-        print(f"assigning indicator of {indicator} ")
-        self.assign_indicator(indicator)
-        self.add_category(indicator)
-        if self.include_counts:
-            self.add_counts(indicator)
-        if self.include_fractions:
-            self.add_fractions(indicator)
-
-    def add_counts(self, indicator):
-        new_indicator_aggregated = calculate_counts(
-            self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
-        )
-        self.add_aggregated_data(new_indicator_aggregated)
-        for ct in self.crosstabs:
-            self.add_category(ct)  # To-do: move higher up, maybe to init
-            count_aggregated_ct = calculate_counts(
-                data=self.PUMS.copy(deep=True),
-                variable_col=indicator,
-                rw_cols=self.rw_cols,
-                weight_col=self.weight_col,
-                geo_col=self.geo_col,
-                crosstab=ct,
-            )
-            self.add_aggregated_data(count_aggregated_ct)
-
-    def add_fractions(self, indicator):
-        fraction_aggregated = calculate_fractions(
-            self.PUMS.copy(deep=True),
-            indicator,
-            self.categories[indicator],
-            self.rw_cols,
-            self.weight_col,
-            self.geo_col,
-        )
-        self.add_aggregated_data(fraction_aggregated)
-        for ct in self.crosstabs:
-            self.add_category(ct)
-            fraction_aggregated_crosstab = calculate_fractions_crosstabs(
-                self.PUMS.copy(deep=True),
-                indicator,
-                self.categories[indicator],
-                ct,
-                self.categories[ct],
-                self.rw_cols,
-                self.weight_col,
-                self.geo_col,
-            )
-            self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""

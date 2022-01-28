@@ -6,12 +6,16 @@ To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 """
 import os
 import pandas as pd
+import time
 from ingest.load_data import load_PUMS
 from statistical.calculate_counts import calculate_counts
 from aggregate.race_assign import PUMS_race_assign
 from aggregate.clean_aggregated import sort_columns
 from utils.make_logger import create_logger
-import time
+from statistical.calculate_fractions import (
+    calculate_fractions,
+    calculate_fractions_crosstabs,
+)
 
 
 class BaseAggregator:
@@ -86,6 +90,56 @@ class PUMSAggregator(BaseAggregator):
             self.PUMS[indicator] = self.PUMS.apply(
                 axis=1, func=self.__getattribute__(f"{indicator}_assign")
             )
+
+    def calculate_add_new_variable(self, indicator):
+        print(f"assigning indicator of {indicator} ")
+        self.assign_indicator(indicator)
+        self.add_category(indicator)
+        if self.include_counts:
+            self.add_counts(indicator)
+        if self.include_fractions:
+            self.add_fractions(indicator)
+
+    def add_counts(self, indicator):
+        new_indicator_aggregated = calculate_counts(
+            self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
+        )
+        self.add_aggregated_data(new_indicator_aggregated)
+        for ct in self.crosstabs:
+            self.add_category(ct)  # To-do: move higher up, maybe to init
+            count_aggregated_ct = calculate_counts(
+                data=self.PUMS.copy(deep=True),
+                variable_col=indicator,
+                rw_cols=self.rw_cols,
+                weight_col=self.weight_col,
+                geo_col=self.geo_col,
+                crosstab=ct,
+            )
+            self.add_aggregated_data(count_aggregated_ct)
+
+    def add_fractions(self, indicator):
+        fraction_aggregated = calculate_fractions(
+            self.PUMS.copy(deep=True),
+            indicator,
+            self.categories[indicator],
+            self.rw_cols,
+            self.weight_col,
+            self.geo_col,
+        )
+        self.add_aggregated_data(fraction_aggregated)
+        for ct in self.crosstabs:
+            self.add_category(ct)
+            fraction_aggregated_crosstab = calculate_fractions_crosstabs(
+                self.PUMS.copy(deep=True),
+                indicator,
+                self.categories[indicator],
+                ct,
+                self.categories[ct],
+                self.rw_cols,
+                self.weight_col,
+                self.geo_col,
+            )
+            self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def total_pop_assign(self, person):
         return "total_pop"

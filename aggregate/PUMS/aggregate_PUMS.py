@@ -141,6 +141,10 @@ class PUMSAggregator(BaseAggregator):
             )
             self.add_aggregated_data(fraction_aggregated_crosstab)
 
+    def add_category(self, indicator):
+        """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
+        self.categories[indicator] = list(self.PUMS[indicator].unique())
+
     def total_pop_assign(self, person):
         return "total_pop"
 

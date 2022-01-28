@@ -1,7 +1,5 @@
 from aggregate.PUMS.aggregate_PUMS import PUMSAggregator, PUMSCount
 
-from statistical.calculate_counts import calculate_counts
-
 
 class PUMSCountDemographics(PUMSCount):
     """Medians aggregator has crosstabs in data structure instead of appended as text. This may be better design
@@ -42,10 +40,6 @@ class PUMSCountDemographics(PUMSCount):
             year=year,
             requery=requery,
         )
-
-    def add_category(self, indicator):
-        """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
-        self.categories[indicator] = list(self.PUMS[indicator].unique())
 
     def foreign_born_by_race_assign(self, person):
         fb = self.foreign_born_assign(person)

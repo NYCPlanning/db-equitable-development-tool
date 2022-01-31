@@ -15,7 +15,7 @@ local_loader = LocalLoader()
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
-    local_loader.load_count_aggregator(all_data)
+    local_loader.load_count_aggregator(all_data, variance_measure="SE")
 
 
 @pytest.mark.test_aggregation

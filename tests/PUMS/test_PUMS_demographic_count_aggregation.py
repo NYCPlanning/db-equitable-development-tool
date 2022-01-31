@@ -21,7 +21,7 @@ def test_local_loader(all_data):
 @pytest.mark.test_new_crosstabs
 def test_all_counts_sum_to_total_pop():
     aggregator = local_loader.count_aggregator
-    for ind in aggregator.indicators:
+    for ind in aggregator.indicators_denom:
         assert (
             aggregator.aggregated[
                 [f"{category}-count" for category in aggregator.categories[ind]]

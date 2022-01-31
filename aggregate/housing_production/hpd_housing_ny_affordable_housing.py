@@ -88,7 +88,7 @@ def citywide_hny_units_con_type(df):
 
     results = pivot_and_flatten_index(results, "citywide")
 
-    return results
+    return results.set_index("citywide")
 
 
 def borough_hny_units_con_type(df):

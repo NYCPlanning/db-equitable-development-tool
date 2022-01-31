@@ -10,6 +10,8 @@ import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.vectors import StrVector
 
+from statistical.margin_of_error import SE_to_MOE
+
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
 
@@ -19,7 +21,13 @@ pandas2ri.activate()
 
 
 def calculate_counts(
-    data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col, crosstab=None
+    data: pd.DataFrame,
+    variable_col,
+    rw_cols,
+    weight_col,
+    geo_col,
+    crosstab=None,
+    variance_measure="MOE",
 ):
     """To do: implement something more elegant than "a" dummy var"""
     data["a"] = 1
@@ -45,9 +53,14 @@ def calculate_counts(
         FUN=survey_package.svytotal,
     )
 
-    aggregated.rename(columns={"V1": "count"}, inplace=True)
+    aggregated.rename(columns={"V1": "count", "se": "count-se"}, inplace=True)
     pivot_table = pd.pivot_table(
-        data=aggregated, values=["count", "se"], columns=variable_col, index=geo_col
+        data=aggregated,
+        values=["count", "count-se"],
+        columns=variable_col,
+        index=geo_col,
     )
     pivot_table.columns = [f"{var}-{stat}" for stat, var in pivot_table.columns]
+    if variance_measure == "MOE":
+        pivot_table = SE_to_MOE(pivot_table)
     return pivot_table

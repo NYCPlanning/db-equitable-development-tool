@@ -1,3 +1,5 @@
+from statistics import variance
+from numpy import var
 from ingest.load_data import load_PUMS
 from aggregate.PUMS.count_PUMS_economics import PUMSCountEconomics
 from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
@@ -44,8 +46,10 @@ class LocalLoader:
         self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated
 
-    def load_count_aggregator(self, all_data):
+    def load_count_aggregator(self, all_data, variance_measure="MOE"):
         limited_PUMA = not all_data
-        self.count_aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)
+        self.count_aggregator = PUMSCountDemographics(
+            limited_PUMA=limited_PUMA, variance_measure=variance_measure
+        )
         self.by_person = self.count_aggregator.PUMS
         self.aggregated = self.count_aggregator.aggregated

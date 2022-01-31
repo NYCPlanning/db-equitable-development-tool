@@ -22,6 +22,7 @@ class PUMSCountDemographics(PUMSCount):
         requery=False,
         include_counts=True,
         include_fractions=True,
+        variance_measure="MOE",
     ) -> None:
         self.indicators.extend(
             [
@@ -38,7 +39,7 @@ class PUMSCountDemographics(PUMSCount):
         self.categories = {}
         self.include_counts = include_counts
         self.include_fractions = include_fractions
-
+        self.variance_measure = variance_measure
         PUMSCount.__init__(
             self,
             variable_types=["demographics"],
@@ -70,6 +71,7 @@ class PUMSCountDemographics(PUMSCount):
                 weight_col=self.weight_col,
                 geo_col=self.geo_col,
                 crosstab=ct,
+                variance_measure=self.variance_measure,
             )
             self.add_aggregated_data(count_aggregated_ct)
 

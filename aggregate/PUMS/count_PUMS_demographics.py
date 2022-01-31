@@ -19,9 +19,9 @@ class PUMSCountDemographics(PUMSCount):
     ) -> None:
         self.indicators_denom.extend(
             [
-                "LEP",
-                "foreign_born",
-                "age_bucket",
+                ("LEP",),
+                ("foreign_born",),
+                ("age_bucket",),
             ]
         )
 

@@ -98,15 +98,19 @@ class PUMSAggregator(BaseAggregator):
         print(f"assigning indicator of {indicator} ")
         self.assign_indicator(indicator)
         self.add_category(indicator)
-        if len(ind_denom) == 1:
-            subset = self.PUMS.copy()
-        else:
-            subset = self.__getattribute__(ind_denom[1])(self.PUMS)
+        subset = self.apply_denominator(ind_denom)
 
         if self.include_counts:
             self.add_counts(indicator, subset)
         if self.include_fractions:
             self.add_fractions(indicator, subset)
+
+    def apply_denominator(self, ind_denom):
+        if len(ind_denom) == 1:
+            subset = self.PUMS.copy()
+        else:
+            subset = self.__getattribute__(ind_denom[1])(self.PUMS)
+        return subset
 
     def add_counts(self, indicator, subset):
         new_indicator_aggregated = calculate_counts(
@@ -163,4 +167,4 @@ class PUMSAggregator(BaseAggregator):
 class PUMSCount(PUMSAggregator):
     """Need some way to introduce total pop indicator here"""
 
-    indicators_denom = ["total_pop"]
+    indicators_denom = [("total_pop",)]

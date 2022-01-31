@@ -70,7 +70,6 @@ class PUMSCountEconomics(PUMSCount):
 
     def civilian_employed_pop_filter(self, PUMS: pd.DataFrame):
         """Filter to return subset of all people ages 16-64 who are employed as civilians"""
-        print(f"records in PUMS dataset passed to filter: {PUMS.shape[0]}")
         age_subset = PUMS[(PUMS["AGEP"] >= 16) & (PUMS["AGEP"] <= 64)]
         civilian_subset = age_subset[
             age_subset["ESR"].isin(
@@ -80,5 +79,4 @@ class PUMSCountEconomics(PUMSCount):
                 ]
             )
         ]
-        print(f"records in subset: {civilian_subset.shape[0]}")
         return civilian_subset

@@ -9,6 +9,7 @@ import rpy2
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.vectors import DataFrame, StrVector
+from statistical.margin_of_error import SE_to_MOE
 
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
@@ -26,6 +27,7 @@ def calculate_fractions(
     weight_col,
     geo_col,
     crosstab_category=None,
+    variance_measure="MOE",
 ):
     """This adds to dataframe so it should receive copy of data"""
 
@@ -62,6 +64,8 @@ def calculate_fractions(
         all_fractions = all_fractions.merge(
             single_fraction, left_index=True, right_index=True
         )
+    if variance_measure == "MOE":
+        all_fractions = SE_to_MOE(all_fractions)
     return all_fractions
 
 
@@ -74,6 +78,7 @@ def calculate_fractions_crosstabs(
     rw_cols,
     weight_col,
     geo_col,
+    variance_measure="MOE",
 ):
     all_fractions = pd.DataFrame(index=data[geo_col].unique())
     for ct_category in crosstab_categories:
@@ -86,6 +91,7 @@ def calculate_fractions_crosstabs(
             weight_col,
             geo_col,
             ct_category,
+            variance_measure=variance_measure,
         )
         all_fractions = all_fractions.merge(
             ct_fraction, left_index=True, right_index=True

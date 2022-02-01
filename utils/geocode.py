@@ -2,7 +2,18 @@ from geosupport import Geosupport, GeosupportError
 import pandas as pd
 import usaddress
 
-g = Geosupport()
+
+class GW:
+    """Geosupport wrapper"""
+
+    def __init__(self) -> None:
+        self.g = None
+
+    @property
+    def geosupport(self):
+        if not self.g:
+            self.g = Geosupport()
+        return self.g
 
 
 def from_eviction_address(record) -> str:
@@ -13,7 +24,7 @@ def from_eviction_address(record) -> str:
     return geocode_address(address)
 
 
-def eviction_record_to_address(self, record) -> dict:
+def eviction_record_to_address(record) -> dict:
     """Using these docs as guide https://usaddress.readthedocs.io/en/latest/"""
     parsed = usaddress.parse(record.eviction_address)
     parsed = {k: v for v, k in parsed}
@@ -34,10 +45,10 @@ def eviction_record_to_address(self, record) -> dict:
     return rv
 
 
-def geocode_address(self, address: dict) -> str:
+def geocode_address(address: dict) -> str:
     """Requires docker"""
     try:
-        geocoded = g["1"](
+        geocoded = GW.geosupport["1"](
             street_name=address["street_name"],
             house_number=address["address_num"],
             borough=address["borough"],

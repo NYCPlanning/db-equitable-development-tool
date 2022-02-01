@@ -17,7 +17,9 @@ class PUMSCountDemographics(PUMSCount):
         include_counts=True,
         include_fractions=True,
         variance_measure="MOE",
+        single_indicator=False,
     ) -> None:
+        print("PUMSCountDemographics init called")
         self.indicators_denom.extend(
             [
                 ("LEP",),
@@ -25,7 +27,8 @@ class PUMSCountDemographics(PUMSCount):
                 ("age_bucket",),
             ]
         )
-
+        if single_indicator:
+            self.indicators_denom = self.indicators_denom[0:1]
         self.indicators_denom = list(
             set(self.indicators_denom)
         )  # To-do: figure out problem and undo hot fix

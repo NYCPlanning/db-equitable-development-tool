@@ -11,6 +11,8 @@ from rpy2.robjects.vectors import StrVector
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
 
+from statistical.margin_of_error import SE_to_MOE
+
 from rpy2.robjects import r, pandas2ri
 
 pandas2ri.activate()
@@ -46,7 +48,7 @@ def calculate_median(data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_
     aggregated.rename(
         columns={
             variable_col: f"{variable_col}-median",
-            f"se.{variable_col}": f"{variable_col}-se",
+            f"se.{variable_col}": f"{variable_col}-SE",
         },
         inplace=True,
     )
@@ -70,7 +72,7 @@ def calculate_median_with_crosstab(
         **{"interval.type": "quantile"},
     )
     median_col_name = f"{variable_col}-median"
-    se_col_name = f"{variable_col}-se"
+    se_col_name = f"{variable_col}-SE"
     aggregated.rename(
         columns={
             variable_col: median_col_name,

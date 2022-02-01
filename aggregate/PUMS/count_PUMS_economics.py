@@ -17,7 +17,9 @@ class PUMSCountEconomics(PUMSCount):
         ("industry",),  # Termed "Employment by industry sector" in data matrix
     ]
 
-    def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
+    def __init__(
+        self, limited_PUMA=False, year=2019, requery=False, variance_measure="MOE"
+    ) -> None:
         self.crosstabs = ["race"]
         self.include_fractions = True
         self.include_counts = True

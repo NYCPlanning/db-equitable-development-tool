@@ -17,6 +17,8 @@ from statistical.calculate_fractions import (
     calculate_fractions_crosstabs,
 )
 
+allowed_variance_measures = ["SE", "MOE"]
+
 
 class BaseAggregator:
     """Placeholder for base aggregator class for when more types of aggregation are added"""
@@ -28,6 +30,9 @@ class BaseAggregator:
         self.logger = create_logger(
             f"{self.__class__.__name__}_logger", f"logs/{self.__class__.__name__}.log"
         )
+        assert (
+            self.variance_measure in allowed_variance_measures
+        ), f"{self.variance_measure} not one of allowed variance measures: {allowed_variance_measures}"
 
     def cache_flat_csv(self):
         """For debugging and collaborating. This is where .csv's for"""
@@ -68,6 +73,7 @@ class PUMSAggregator(BaseAggregator):
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
         for ind_denom in self.indicators_denom:
+            print(f"iterated to {ind_denom[0]}")
             agg_start = time.perf_counter()
             self.calculate_add_new_variable(ind_denom)
             self.logger.info(
@@ -113,8 +119,14 @@ class PUMSAggregator(BaseAggregator):
         return subset
 
     def add_counts(self, indicator, subset):
+
         new_indicator_aggregated = calculate_counts(
-            self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
+            self.PUMS,
+            indicator,
+            self.rw_cols,
+            self.weight_col,
+            self.geo_col,
+            variance_measure=self.variance_measure,
         )
         self.add_aggregated_data(new_indicator_aggregated)
         for ct in self.crosstabs:

@@ -52,11 +52,10 @@ def calculate_counts(
         design=survey_design,
         FUN=survey_package.svytotal,
     )
-
-    aggregated.rename(columns={"V1": "count", "se": "count-se"}, inplace=True)
+    aggregated.rename(columns={"V1": "count", "se": "count-SE"}, inplace=True)
     pivot_table = pd.pivot_table(
         data=aggregated,
-        values=["count", "count-se"],
+        values=["count", "count-SE"],
         columns=variable_col,
         index=geo_col,
     )

@@ -51,11 +51,11 @@ def calculate_fractions(
         )
         single_fraction.drop(columns=[geo_col], inplace=True)
         if crosstab_category is None:
-            columns = (f"{category}-fraction", f"{category}-fraction-se")
+            columns = (f"{category}-fraction", f"{category}-fraction-SE")
         else:
             columns = (
                 f"{category}-{crosstab_category}-fraction",
-                f"{category}-{crosstab_category}-fraction-se",
+                f"{category}-{crosstab_category}-fraction-SE",
             )
         single_fraction.rename(
             columns={"V1": columns[0], "se": columns[1]},

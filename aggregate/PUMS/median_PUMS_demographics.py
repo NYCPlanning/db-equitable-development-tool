@@ -8,7 +8,7 @@ from statistical.calculate_medians import (
 class PUMSMedianDemographics(PUMSAggregator):
     """Crosstabs on idicators work differently for this aggregator.
     Instead of combining crosstab and original indicator into one, crosstabs are
-    included as interable. Indiactors list has elements of (indicator, iterable of crosstabs)"""
+    included as iterable. Indicators list has elements of (indicator, iterable of crosstabs)"""
 
     indicators = [("age", ("race",))]
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree

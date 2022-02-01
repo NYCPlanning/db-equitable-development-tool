@@ -6,8 +6,9 @@ import usaddress
 import requests
 from geosupport import Geosupport, GeosupportError
 from ingest.ingestion_helpers import add_leading_zero_PUMA
-from utils.geocode import Geocoder
+from utils.geocode import from_eviction_address
 
+geocode_functions = {"from_eviction_address": from_eviction_address}
 
 borough_code_mapper = {
     37: "BX",
@@ -51,7 +52,7 @@ def assign_PUMA(record: gp.GeoDataFrame, geocode_process):
     if pd.notnull(record.latitude) and pd.notnull(record.longitude):
         return PUMA_from_coord(record)
     if geocode_process:
-        return Geocoder.__getattribute__(geocode_process)(record)
+        return geocode_functions[geocode_process]
 
 
 def PUMA_from_coord(record):

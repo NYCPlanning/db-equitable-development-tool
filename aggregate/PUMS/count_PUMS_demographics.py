@@ -96,6 +96,7 @@ class PUMSCountDemographics(PUMSCount):
                 self.rw_cols,
                 self.weight_col,
                 self.geo_col,
+                variance_measure=self.variance_measure,
             )
             self.add_aggregated_data(fraction_aggregated_crosstab)
 

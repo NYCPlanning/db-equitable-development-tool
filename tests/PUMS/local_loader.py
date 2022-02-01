@@ -12,7 +12,9 @@ class LocalLoader:
     def __init__(self) -> None:
         pass
 
-    def load_by_person(self, all_data, include_rw=True, variable_set="demographic"):
+    def load_by_person(
+        self, all_data, include_rw=True, variable_set="demographic", year=2019
+    ):
         """To be called in first test"""
         limited_PUMA = not all_data
 
@@ -22,6 +24,7 @@ class LocalLoader:
             include_rw=include_rw,
             return_ingestor=True,
             requery=True,
+            year=year,
         )
         self.by_person_raw = self.ingestor.vi_data_raw
         self.by_person = self.ingestor.vi_data

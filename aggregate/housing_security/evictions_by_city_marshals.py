@@ -1,5 +1,5 @@
 import pandas as pd
-from utils.geography_helpers import assign_PUMA_col
+from utils.assign_PUMA import assign_PUMA_col
 
 
 def count_residential_evictions(geography_level, debug=False):
@@ -28,6 +28,8 @@ def aggregate_by_geography(evictions, geography_level):
     if geography_level == "borough":
         return evictions.groupby(geography_level).size()
     if geography_level == "PUMA":
-        evictions = assign_PUMA_col(evictions, "latitude", "longitude")
+        evictions = assign_PUMA_col(
+            evictions, "latitude", "longitude", geocode_process="from_eviction_address"
+        )
         return evictions.groupby(geography_level).size()
     raise Exception(f"{geography_level} not one of accepted geography levels")

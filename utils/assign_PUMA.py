@@ -6,8 +6,8 @@ import usaddress
 import requests
 from geosupport import Geosupport, GeosupportError
 from ingest.ingestion_helpers import add_leading_zero_PUMA
+from utils.geocode import Geocoder
 
-# g = Geosupport()
 
 borough_code_mapper = {
     37: "BX",
@@ -39,18 +39,19 @@ def NYC_PUMA_geographies() -> gp.GeoDataFrame:
 PUMAs = NYC_PUMA_geographies()
 
 
-def assign_PUMA_col(df: pd.DataFrame, lat_col, long_col):
+def assign_PUMA_col(df: pd.DataFrame, lat_col, long_col, geocode_process=None):
     df.rename(columns={lat_col: "latitude", long_col: "longitude"}, inplace=True)
-    df["puma"] = df.apply(assign_PUMA, axis=1)
+    df["puma"] = df.apply(assign_PUMA, axis=1, args=(geocode_process,))
     print(f"got {df.shape[0]} evictions to assign PUMAs to ")
     print(f"assigned PUMAs to {df['puma'].notnull().sum()}")
     return df
 
 
-def assign_PUMA(record: gp.GeoDataFrame):
+def assign_PUMA(record: gp.GeoDataFrame, geocode_process):
     if pd.notnull(record.latitude) and pd.notnull(record.longitude):
         return PUMA_from_coord(record)
-    return PUMA_from_address(record)
+    if geocode_process:
+        return Geocoder.__getattribute__(geocode_process)(record)
 
 
 def PUMA_from_coord(record):
@@ -61,47 +62,3 @@ def PUMA_from_coord(record):
     if matched_PUMA.empty:
         return None
     return matched_PUMA.puma.values[0]
-
-
-def PUMA_from_address(record) -> str:
-    """Return latitude, longitude in degrees"""
-    if pd.notnull(record.latitude) and pd.notnull(record.longitude):
-        return record.latitude, record.longitude
-    address = record_to_address(record)
-    return geocode_address(address)
-
-
-def record_to_address(record) -> dict:
-    """Using these docs as guide https://usaddress.readthedocs.io/en/latest/"""
-    parsed = usaddress.parse(record.eviction_address)
-    parsed = {k: v for v, k in parsed}
-    rv = {}
-    rv["address_num"] = parsed.get("AddressNumber", "")
-    street_name_components = [
-        parsed.get("StreetNamePreModifier"),
-        parsed.get("StreetNamePreDirectional"),
-        parsed.get("StreetNamePreType"),
-        parsed.get("StreetName"),
-        parsed.get("StreetNamePostModifier"),
-        parsed.get("StreetNamePostDirectional"),
-        parsed.get("StreetNamePostType"),
-    ]
-    rv["street_name"] = " ".join([s for s in street_name_components if s])
-    rv["borough"] = record.borough
-    rv["zip"] = record.eviction_postcode
-    return rv
-
-
-def geocode_address(address: dict) -> str:
-    """Requires docker"""
-    try:
-        geocoded = g["1"](
-            street_name=address["street_name"],
-            house_number=address["address_num"],
-            borough=address["borough"],
-            mode="extended",
-        )
-        return geocoded["PUMA Code"]
-    except GeosupportError as e:
-        geo = e.result
-        return None

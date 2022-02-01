@@ -30,9 +30,6 @@ class BaseAggregator:
         self.logger = create_logger(
             f"{self.__class__.__name__}_logger", f"logs/{self.__class__.__name__}.log"
         )
-        assert (
-            self.variance_measure in allowed_variance_measures
-        ), f"{self.variance_measure} not one of allowed variance measures: {allowed_variance_measures}"
 
     def cache_flat_csv(self):
         """For debugging and collaborating. This is where .csv's for"""
@@ -121,11 +118,11 @@ class PUMSAggregator(BaseAggregator):
     def add_counts(self, indicator, subset):
 
         new_indicator_aggregated = calculate_counts(
-            self.PUMS,
-            indicator,
-            self.rw_cols,
-            self.weight_col,
-            self.geo_col,
+            data=subset,
+            variable_col=indicator,
+            rw_cols=self.rw_cols,
+            weight_col=self.weight_col,
+            geo_col=self.geo_col,
             variance_measure=self.variance_measure,
         )
         self.add_aggregated_data(new_indicator_aggregated)

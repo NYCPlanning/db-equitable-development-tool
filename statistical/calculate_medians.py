@@ -11,7 +11,7 @@ from rpy2.robjects.vectors import StrVector
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
 
-from statistical.margin_of_error import SE_to_MOE
+from statistical.variance_measures import SE_to_MOE, remove_SE
 
 from rpy2.robjects import r, pandas2ri
 
@@ -32,7 +32,9 @@ def get_design_object(data, variable_col, rw_cols, weight_col):
     return survey_design
 
 
-def calculate_median(data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col):
+def calculate_median(
+    data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col, add_MOE, keep_SE
+):
     """Became attribute and now gets aggregator passed as first variable which I don't want"""
     survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
     aggregated: pd.DataFrame
@@ -48,17 +50,32 @@ def calculate_median(data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_
     aggregated.rename(
         columns={
             variable_col: f"{variable_col}-median",
-            f"se.{variable_col}": f"{variable_col}-SE",
+            f"se.{variable_col}": f"{variable_col}-median-SE",
         },
         inplace=True,
     )
     aggregated.drop(columns=geo_col, inplace=True)
+    aggregated = variance_measures(add_MOE, keep_SE, aggregated)
+    return aggregated
 
+
+def variance_measures(add_MOE, keep_SE, aggregated):
+    if add_MOE:
+        aggregated = SE_to_MOE(aggregated)
+    if not keep_SE:
+        aggregated = remove_SE(aggregated)
     return aggregated
 
 
 def calculate_median_with_crosstab(
-    data: pd.DataFrame, variable_col, crosstab_col, rw_cols, weight_col, geo_col
+    data: pd.DataFrame,
+    variable_col,
+    crosstab_col,
+    rw_cols,
+    weight_col,
+    geo_col,
+    add_MOE,
+    keep_SE,
 ):
     """Can only do one crosstab at a time for now"""
     survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
@@ -89,5 +106,6 @@ def calculate_median_with_crosstab(
     pivot_table.columns = [
         f"{crosstab_var}-{stat}" for stat, crosstab_var in pivot_table.columns
     ]
+    pivot_table = variance_measures(add_MOE, keep_SE, pivot_table)
 
     return pivot_table

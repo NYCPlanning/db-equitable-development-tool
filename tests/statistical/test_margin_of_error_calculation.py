@@ -20,14 +20,17 @@ def test_local_loader(all_data):
 
 
 demographic_indicators = ["lep", "fb-anh"]
-calculation_types = ["count", "fraction", "median"]
+calculation_types = ["count", "fraction"]
 
 
 @pytest.mark.parametrize("ind", demographic_indicators)
 @pytest.mark.parametrize("calculation_type", calculation_types)
-def test_SE_to_MOE_demographic_indicators(ind, calculation_type):
+def test_SE_to_MOE_demographic_indicators_counts_fractions(ind, calculation_type):
     """Don't have to test each indicator. Test one crosstabbed by race and one not crosstabbed by race"""
     assert np.allclose(
         local_loader_SE.aggregated[f"{ind}-{calculation_type}-SE"].values * z_score,
         local_loader_MOE.aggregated[f"{ind}-{calculation_type}-MOE"].values,
     )
+
+@pytest.mark.parametrize('ind')
+def test_SE_to_MOE_demographic_indicators_median(ind):

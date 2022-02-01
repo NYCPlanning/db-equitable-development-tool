@@ -8,6 +8,7 @@ import typer
 from aggregate.housing_production.area_within_historic_district import (
     find_fraction_PUMA_historic,
 )
+from aggregate.housing_production.change_in_units import change_in_units
 
 from aggregate.housing_production.hpd_housing_ny_affordable_housing import (
     affordable_housing,
@@ -21,6 +22,7 @@ accessors = {
             find_fraction_PUMA_historic,
         ),
         ("affordable housing construction/preservation", affordable_housing),
+        ("change in units", change_in_units),
     ]
 }
 
@@ -45,9 +47,10 @@ def collate(geography_level, category):
             print(
                 f"Error merging indicator {ind_name} at geography level {geography_level}"
             )
-            print(e)
+            # raise e
     print("after all merging")
     print(final_df)
+    final_df.index.rename(geography_level, inplace=True)
     final_df.to_csv(f"external_review/{category}/{category}_{geography_level}_test.csv")
     return final_df
 

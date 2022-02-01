@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from utils.geography_helpers import assign_PUMA_col
+from utils.assign_PUMA import assign_PUMA_col
 
 
 """"We need to download the data, separate the data by construction type (New Construction vs. Preservation)
@@ -101,7 +101,7 @@ def borough_hny_units_con_type(df):
 
     results = pivot_and_flatten_index(results, "borough")
 
-    return results
+    return results.set_index("borough")
 
 
 def PUMA_hny_units_con_type(df):
@@ -113,7 +113,9 @@ def PUMA_hny_units_con_type(df):
 
     filter_df.dropna(subset=["latitude_(internal)", "longitude_(internal)"])
 
-    puma_df = assign_PUMA_col(filter_df, "latitude_(internal)", "longitude_(internal)")
+    puma_df = assign_PUMA_col(
+        filter_df, "latitude_(internal)", "longitude_(internal)", geocode_process=None
+    )
 
     results = (
         puma_df.groupby(["reporting_construction_type", "puma"])[unit_income_levels]
@@ -123,18 +125,18 @@ def PUMA_hny_units_con_type(df):
 
     results = pivot_and_flatten_index(results, "puma")
 
-    return results
+    return results.set_index("puma")
 
 
-def affordable_housing(geography_level: str) -> pd.DataFrame:
+def affordable_housing(geography: str) -> pd.DataFrame:
     """Main accessor for this variable"""
-    assert geography_level in ["citywide", "borough", "PUMA"]
+    assert geography in ["citywide", "borough", "puma"]
     housing_ny = load_housing_ny()
-    if geography_level == "citywide":
+    if geography == "citywide":
         return citywide_hny_units_con_type(housing_ny)
-    if geography_level == "borough":
+    if geography == "borough":
         return borough_hny_units_con_type(housing_ny)
-    if geography_level == "PUMA":
+    if geography == "puma":
         return PUMA_hny_units_con_type(housing_ny)
 
 

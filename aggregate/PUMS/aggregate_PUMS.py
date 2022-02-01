@@ -6,12 +6,16 @@ To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 """
 import os
 import pandas as pd
+import time
 from ingest.load_data import load_PUMS
 from statistical.calculate_counts import calculate_counts
 from aggregate.race_assign import PUMS_race_assign
 from aggregate.clean_aggregated import sort_columns
 from utils.make_logger import create_logger
-import time
+from statistical.calculate_fractions import (
+    calculate_fractions,
+    calculate_fractions_crosstabs,
+)
 
 
 class BaseAggregator:
@@ -63,10 +67,12 @@ class PUMSAggregator(BaseAggregator):
         # Possible to-do: below code goes in call instead of init
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
-        for ind in self.indicators:
+        for ind_denom in self.indicators_denom:
             agg_start = time.perf_counter()
-            self.calculate_add_new_variable(ind)
-            self.logger.info(f"aggregating {ind} took {time.perf_counter()-agg_start}")
+            self.calculate_add_new_variable(ind_denom)
+            self.logger.info(
+                f"aggregating {ind_denom[0]} took {time.perf_counter()-agg_start}"
+            )
         try:
             self.sort_aggregated_columns_alphabetically()
         except:
@@ -87,6 +93,73 @@ class PUMSAggregator(BaseAggregator):
                 axis=1, func=self.__getattribute__(f"{indicator}_assign")
             )
 
+    def calculate_add_new_variable(self, ind_denom):
+        indicator = ind_denom[0]
+        print(f"assigning indicator of {indicator} ")
+        self.assign_indicator(indicator)
+        self.add_category(indicator)
+        subset = self.apply_denominator(ind_denom)
+
+        if self.include_counts:
+            self.add_counts(indicator, subset)
+        if self.include_fractions:
+            self.add_fractions(indicator, subset)
+
+    def apply_denominator(self, ind_denom):
+        if len(ind_denom) == 1:
+            subset = self.PUMS.copy()
+        else:
+            subset = self.__getattribute__(ind_denom[1])(self.PUMS)
+        return subset
+
+    def add_counts(self, indicator, subset):
+        new_indicator_aggregated = calculate_counts(
+            self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
+        )
+        self.add_aggregated_data(new_indicator_aggregated)
+        for ct in self.crosstabs:
+            self.add_category(ct)  # To-do: move higher up, maybe to init
+            count_aggregated_ct = calculate_counts(
+                data=subset,
+                variable_col=indicator,
+                rw_cols=self.rw_cols,
+                weight_col=self.weight_col,
+                geo_col=self.geo_col,
+                crosstab=ct,
+                variance_measure=self.variance_measure,
+            )
+            self.add_aggregated_data(count_aggregated_ct)
+
+    def add_fractions(self, indicator, subset):
+        fraction_aggregated = calculate_fractions(
+            data=subset,
+            variable_col=indicator,
+            categories=self.categories[indicator],
+            rw_cols=self.rw_cols,
+            weight_col=self.weight_col,
+            geo_col=self.geo_col,
+            variance_measure=self.variance_measure,
+        )
+        self.add_aggregated_data(fraction_aggregated)
+        for ct in self.crosstabs:
+            self.add_category(ct)
+            fraction_aggregated_crosstab = calculate_fractions_crosstabs(
+                self.PUMS.copy(deep=True),
+                indicator,
+                self.categories[indicator],
+                ct,
+                self.categories[ct],
+                self.rw_cols,
+                self.weight_col,
+                self.geo_col,
+                variance_measure=self.variance_measure,
+            )
+            self.add_aggregated_data(fraction_aggregated_crosstab)
+
+    def add_category(self, indicator):
+        """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
+        self.categories[indicator] = list(self.PUMS[indicator].unique())
+
     def total_pop_assign(self, person):
         return "total_pop"
 
@@ -97,4 +170,4 @@ class PUMSAggregator(BaseAggregator):
 class PUMSCount(PUMSAggregator):
     """Need some way to introduce total pop indicator here"""
 
-    indicators = ["total_pop"]
+    indicators_denom = [("total_pop",)]

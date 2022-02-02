@@ -33,7 +33,7 @@ calculation_types = ["count", "fraction"]
 
 @pytest.mark.parametrize("ind", demographic_indicators)
 @pytest.mark.parametrize("calculation_type", calculation_types)
-def test__add_MOE_and_SE_flags(ind, calculation_type):
+def test_counts_fractions_demo_add_MOE_and_SE_flags(ind, calculation_type):
     assert (
         f"{ind}-{calculation_type}-SE"
         in counts_fractions_dem_loader_SE.aggregated.columns
@@ -85,7 +85,7 @@ median_indicators = ["age-median", "hsp-age-median"]
 
 
 @pytest.mark.parametrize("ind", median_indicators)
-def test_median_add_MOE_and_SE_flags(ind):
+def test_demo_median_add_MOE_and_SE_flags(ind):
     assert f"{ind}-SE" in median_demographics_loader_only_SE.aggregated.columns
     assert f"{ind}-MOE" not in median_demographics_loader_only_SE.aggregated.columns
 
@@ -94,7 +94,7 @@ def test_median_add_MOE_and_SE_flags(ind):
 
 
 @pytest.mark.parametrize("ind", median_indicators)
-def test_median_MOE_calculation_correct(ind):
+def test_demo_median_MOE_calculation_correct(ind):
     aggregated = median_loader_demographics_with_ME_and_SE.aggregated
     assert np.allclose(
         aggregated[f"{ind}-SE"].values * z_score,
@@ -102,20 +102,59 @@ def test_median_MOE_calculation_correct(ind):
     )
 
 
-# counts_fraction_eco_loader_only_SE = LocalLoader()
-# counts_fraction_eco_loader_only_MOE = LocalLoader()
-# counts_fraction_eco_loader_with_ME_and_SE = LocalLoader()
+counts_fraction_eco_loader_only_SE = LocalLoader()
+counts_fraction_eco_loader_only_MOE = LocalLoader()
+counts_fraction_eco_loader_with_ME_and_SE = LocalLoader()
 
 
-# def test_local_counts_fractions_eco_loader(all_data):
-#     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
-#     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
-#     counts_fraction_eco_loader_only_SE.load_aggregated_counts(
-#         all_data, type="demographics", keep_SE=True, add_MOE=False
-#     )
-#     counts_fraction_eco_loader_only_MOE.load_count_aggregator(
-#         all_data, type="demographics", keep_SE=False, add_MOE=True
-#     )
-#     counts_fraction_eco_loader_with_ME_and_SE.load_count_aggregator(
-#         all_data, type="demographics", keep_SE=True, add_MOE=True
-#     )
+@pytest.mark.current_dev
+def test_local_counts_fractions_eco_loader(all_data):
+    """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
+    This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
+    counts_fraction_eco_loader_only_SE.load_aggregated_counts(
+        all_data, type="economics", keep_SE=True, add_MOE=False
+    )
+    counts_fraction_eco_loader_only_MOE.load_aggregated_counts(
+        all_data, type="economics", keep_SE=False, add_MOE=True
+    )
+    counts_fraction_eco_loader_with_ME_and_SE.load_aggregated_counts(
+        all_data, type="economics", keep_SE=True, add_MOE=True
+    )
+
+
+economic_indicators = ["occupation-srvc", "lf-wnh"]
+
+
+@pytest.mark.current_dev
+@pytest.mark.parametrize("ind", economic_indicators)
+@pytest.mark.parametrize("calculation_type", calculation_types)
+def test_eco_counts_fractions_MOE_and_SE_flags(ind, calculation_type):
+    assert (
+        f"{ind}-{calculation_type}-SE"
+        in counts_fraction_eco_loader_only_SE.aggregated.columns
+    )
+    assert (
+        f"{ind}-{calculation_type}-MOE"
+        not in counts_fraction_eco_loader_only_SE.aggregated.columns
+    )
+
+    assert (
+        f"{ind}-{calculation_type}-SE"
+        not in counts_fraction_eco_loader_only_MOE.aggregated.columns
+    )
+    assert (
+        f"{ind}-{calculation_type}-MOE"
+        in counts_fraction_eco_loader_only_MOE.aggregated.columns
+    )
+
+
+@pytest.mark.current_dev
+@pytest.mark.parametrize("ind", economic_indicators)
+@pytest.mark.parametrize("calculation_type", calculation_types)
+def test_SE_to_MOE_demographic_indicators_counts_fractions(ind, calculation_type):
+    """Don't have to test each indicator. Test one crosstabbed by race and one not crosstabbed by race"""
+    aggregated = counts_fraction_eco_loader_with_ME_and_SE.aggregated
+    assert np.allclose(
+        aggregated[f"{ind}-{calculation_type}-SE"].values * z_score,
+        aggregated[f"{ind}-{calculation_type}-MOE"].values,
+    )

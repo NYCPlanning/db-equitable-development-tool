@@ -18,12 +18,14 @@ class PUMSCountEconomics(PUMSCount):
     ]
 
     def __init__(
-        self, limited_PUMA=False, year=2019, requery=False, variance_measure="MOE"
+        self, limited_PUMA=False, year=2019, requery=False, add_MOE=True, keep_SE=False
     ) -> None:
         self.crosstabs = ["race"]
         self.include_fractions = True
         self.include_counts = True
         self.categories = {}
+        self.add_MOE = add_MOE
+        self.keep_SE = keep_SE
         PUMSCount.__init__(
             self,
             variable_types=["economics", "demographics"],

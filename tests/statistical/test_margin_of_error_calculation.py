@@ -8,15 +8,23 @@ from scipy import stats
 
 z_score = stats.norm.ppf(0.9)
 
-local_loader_SE = LocalLoader()
-local_loader_MOE = LocalLoader()
+counts_fractions_dem_loader_SE = LocalLoader()
+counts_fractions_dem_loader_MOE = LocalLoader()
+counts_fractions_dem_loader_SE_and_MOE = LocalLoader()
 
 
-def test_local_loader(all_data):
+def test_local_counts_fractions_demo_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
-    local_loader_SE.load_count_aggregator(all_data, variance_measure="SE")
-    local_loader_MOE.load_count_aggregator(all_data, variance_measure="MOE")
+    counts_fractions_dem_loader_SE.load_count_aggregator(
+        all_data, keep_SE=True, add_MOE=False
+    )
+    counts_fractions_dem_loader_MOE.load_count_aggregator(
+        all_data, keep_SE=False, add_MOE=True
+    )
+    counts_fractions_dem_loader_SE_and_MOE.load_count_aggregator(
+        all_data, keep_SE=True, add_MOE=True
+    )
 
 
 demographic_indicators = ["lep", "fb-anh"]
@@ -25,12 +33,89 @@ calculation_types = ["count", "fraction"]
 
 @pytest.mark.parametrize("ind", demographic_indicators)
 @pytest.mark.parametrize("calculation_type", calculation_types)
-def test_SE_to_MOE_demographic_indicators_counts_fractions(ind, calculation_type):
-    """Don't have to test each indicator. Test one crosstabbed by race and one not crosstabbed by race"""
-    assert np.allclose(
-        local_loader_SE.aggregated[f"{ind}-{calculation_type}-SE"].values * z_score,
-        local_loader_MOE.aggregated[f"{ind}-{calculation_type}-MOE"].values,
+def test__add_MOE_and_SE_flags(ind, calculation_type):
+    assert (
+        f"{ind}-{calculation_type}-SE"
+        in counts_fractions_dem_loader_SE.aggregated.columns
+    )
+    assert (
+        f"{ind}-{calculation_type}-MOE"
+        not in counts_fractions_dem_loader_SE.aggregated.columns
     )
 
-@pytest.mark.parametrize('ind')
-def test_SE_to_MOE_demographic_indicators_median(ind):
+    assert (
+        f"{ind}-{calculation_type}-SE"
+        not in counts_fractions_dem_loader_MOE.aggregated.columns
+    )
+    assert (
+        f"{ind}-{calculation_type}-MOE"
+        in counts_fractions_dem_loader_MOE.aggregated.columns
+    )
+
+
+@pytest.mark.parametrize("ind", demographic_indicators)
+@pytest.mark.parametrize("calculation_type", calculation_types)
+def test_SE_to_MOE_demographic_indicators_counts_fractions(ind, calculation_type):
+    """Don't have to test each indicator. Test one crosstabbed by race and one not crosstabbed by race"""
+    aggregated = counts_fractions_dem_loader_SE_and_MOE.aggregated
+    assert np.allclose(
+        aggregated[f"{ind}-{calculation_type}-SE"].values * z_score,
+        aggregated[f"{ind}-{calculation_type}-MOE"].values,
+    )
+
+
+median_demographics_loader_only_SE = LocalLoader()
+median_demographics_loader_only_MOE = LocalLoader()
+median_loader_demographics_with_ME_and_SE = LocalLoader()
+
+
+def test_local_median_loader(all_data):
+    median_demographics_loader_only_SE.load_aggregated_medians(
+        all_data=all_data, type="demographics", add_MOE=False, keep_SE=True
+    )
+    median_demographics_loader_only_MOE.load_aggregated_medians(
+        all_data, type="demographics", add_MOE=True, keep_SE=False
+    )
+    median_loader_demographics_with_ME_and_SE.load_aggregated_medians(
+        all_data=all_data, type="demographics", add_MOE=True, keep_SE=True
+    )
+
+
+median_indicators = ["age-median", "hsp-age-median"]
+
+
+@pytest.mark.parametrize("ind", median_indicators)
+def test_median_add_MOE_and_SE_flags(ind):
+    assert f"{ind}-SE" in median_demographics_loader_only_SE.aggregated.columns
+    assert f"{ind}-MOE" not in median_demographics_loader_only_SE.aggregated.columns
+
+    assert f"{ind}-SE" not in median_demographics_loader_only_MOE.aggregated.columns
+    assert f"{ind}-MOE" in median_demographics_loader_only_MOE.aggregated.columns
+
+
+@pytest.mark.parametrize("ind", median_indicators)
+def test_median_MOE_calculation_correct(ind):
+    aggregated = median_loader_demographics_with_ME_and_SE.aggregated
+    assert np.allclose(
+        aggregated[f"{ind}-SE"].values * z_score,
+        aggregated[f"{ind}-MOE"].values,
+    )
+
+
+# counts_fraction_eco_loader_only_SE = LocalLoader()
+# counts_fraction_eco_loader_only_MOE = LocalLoader()
+# counts_fraction_eco_loader_with_ME_and_SE = LocalLoader()
+
+
+# def test_local_counts_fractions_eco_loader(all_data):
+#     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
+#     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
+#     counts_fraction_eco_loader_only_SE.load_aggregated_counts(
+#         all_data, type="demographics", keep_SE=True, add_MOE=False
+#     )
+#     counts_fraction_eco_loader_only_MOE.load_count_aggregator(
+#         all_data, type="demographics", keep_SE=False, add_MOE=True
+#     )
+#     counts_fraction_eco_loader_with_ME_and_SE.load_count_aggregator(
+#         all_data, type="demographics", keep_SE=True, add_MOE=True
+#     )

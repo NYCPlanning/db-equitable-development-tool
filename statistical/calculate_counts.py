@@ -10,7 +10,7 @@ import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.vectors import StrVector
 
-from statistical.margin_of_error import SE_to_MOE
+from statistical.variance_measures import variance_measures
 
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
@@ -26,8 +26,9 @@ def calculate_counts(
     rw_cols,
     weight_col,
     geo_col,
+    add_MOE,
+    keep_SE,
     crosstab=None,
-    variance_measure="MOE",
 ):
     """To do: implement something more elegant than "a" dummy var"""
     data["a"] = 1
@@ -60,6 +61,5 @@ def calculate_counts(
         index=geo_col,
     )
     pivot_table.columns = [f"{var}-{stat}" for stat, var in pivot_table.columns]
-    if variance_measure == "MOE":
-        pivot_table = SE_to_MOE(pivot_table)
+    pivot_table = variance_measures(pivot_table, add_MOE, keep_SE)
     return pivot_table

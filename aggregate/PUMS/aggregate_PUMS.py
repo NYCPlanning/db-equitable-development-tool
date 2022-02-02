@@ -123,7 +123,8 @@ class PUMSAggregator(BaseAggregator):
             rw_cols=self.rw_cols,
             weight_col=self.weight_col,
             geo_col=self.geo_col,
-            variance_measure=self.variance_measure,
+            add_MOE=self.add_MOE,
+            keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(new_indicator_aggregated)
         for ct in self.crosstabs:
@@ -135,7 +136,8 @@ class PUMSAggregator(BaseAggregator):
                 weight_col=self.weight_col,
                 geo_col=self.geo_col,
                 crosstab=ct,
-                variance_measure=self.variance_measure,
+                add_MOE=self.add_MOE,
+                keep_SE=self.keep_SE,
             )
             self.add_aggregated_data(count_aggregated_ct)
 
@@ -147,21 +149,23 @@ class PUMSAggregator(BaseAggregator):
             rw_cols=self.rw_cols,
             weight_col=self.weight_col,
             geo_col=self.geo_col,
-            variance_measure=self.variance_measure,
+            add_MOE=self.add_MOE,
+            keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(fraction_aggregated)
         for ct in self.crosstabs:
             self.add_category(ct)
             fraction_aggregated_crosstab = calculate_fractions_crosstabs(
-                self.PUMS.copy(deep=True),
-                indicator,
-                self.categories[indicator],
-                ct,
-                self.categories[ct],
-                self.rw_cols,
-                self.weight_col,
-                self.geo_col,
-                variance_measure=self.variance_measure,
+                data=subset,
+                variable_col=indicator,
+                var_categories=self.categories[indicator],
+                crosstab=ct,
+                crosstab_categories=self.categories[ct],
+                rw_cols=self.rw_cols,
+                weight_col=self.weight_col,
+                geo_col=self.geo_col,
+                add_MOE=self.add_MOE,
+                keep_SE=self.keep_SE,
             )
             self.add_aggregated_data(fraction_aggregated_crosstab)
 

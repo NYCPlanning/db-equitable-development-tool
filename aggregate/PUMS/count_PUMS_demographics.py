@@ -16,7 +16,8 @@ class PUMSCountDemographics(PUMSCount):
         requery=False,
         include_counts=True,
         include_fractions=True,
-        variance_measure="MOE",
+        add_MOE=True,
+        keep_SE=False,
         single_indicator=False,
     ) -> None:
         print("PUMSCountDemographics init called")
@@ -36,7 +37,8 @@ class PUMSCountDemographics(PUMSCount):
         self.categories = {}
         self.include_counts = include_counts
         self.include_fractions = include_fractions
-        self.variance_measure = variance_measure
+        self.add_MOE = add_MOE
+        self.keep_SE = keep_SE
         PUMSCount.__init__(
             self,
             variable_types=["demographics"],

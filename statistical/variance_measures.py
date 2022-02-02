@@ -8,6 +8,14 @@ from scipy import stats
 z_score = stats.norm.ppf(0.9)
 
 
+def variance_measures(df, add_MOE, keep_SE):
+    if add_MOE:
+        df = SE_to_MOE(df)
+    if not keep_SE:
+        df = remove_SE(df)
+    return df
+
+
 def SE_to_MOE(df):
     for c in df.columns:
         if "-SE" == c[-3:]:

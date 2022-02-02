@@ -28,28 +28,36 @@ class LocalLoader:
         self.by_person_raw = self.ingestor.vi_data_raw
         self.by_person = self.ingestor.vi_data
 
-    def load_aggregated_counts(self, all_data, type):
+    def load_aggregated_counts(self, all_data, type, add_MOE=False, keep_SE=True):
         limited_PUMA = not all_data
         if type == "demographics":
             aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)
         elif type == "economics":
-            aggregator = PUMSCountEconomics(limited_PUMA=limited_PUMA)
+            aggregator = PUMSCountEconomics(
+                limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+            )
         self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated
 
-    def load_aggregated_medians(self, all_data, type):
+    def load_aggregated_medians(self, all_data, type, add_MOE=False, keep_SE=True):
         limited_PUMA = not all_data
         if type == "demographics":
-            aggregator = PUMSMedianDemographics(limited_PUMA=limited_PUMA)
+            aggregator = PUMSMedianDemographics(
+                limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+            )
         elif type == "economics":
-            raise Exception
+            raise Exception("economics medians not implemented yet")
+        else:
+            raise Exception("type must be demographics or economics")
+
         self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated
 
-    def load_count_aggregator(self, all_data, variance_measure="MOE"):
+    def load_count_aggregator(self, all_data, add_MOE=False, keep_SE=True):
+        """How is this different from load_aggregated_counts?"""
         limited_PUMA = not all_data
         self.count_aggregator = PUMSCountDemographics(
-            limited_PUMA=limited_PUMA, variance_measure=variance_measure
+            limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
         )
         self.by_person = self.count_aggregator.PUMS
         self.aggregated = self.count_aggregator.aggregated

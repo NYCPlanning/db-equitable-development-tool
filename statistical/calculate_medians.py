@@ -11,7 +11,7 @@ from rpy2.robjects.vectors import StrVector
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
 
-from statistical.variance_measures import SE_to_MOE, remove_SE
+from statistical.variance_measures import variance_measures
 
 from rpy2.robjects import r, pandas2ri
 
@@ -55,15 +55,7 @@ def calculate_median(
         inplace=True,
     )
     aggregated.drop(columns=geo_col, inplace=True)
-    aggregated = variance_measures(add_MOE, keep_SE, aggregated)
-    return aggregated
-
-
-def variance_measures(add_MOE, keep_SE, aggregated):
-    if add_MOE:
-        aggregated = SE_to_MOE(aggregated)
-    if not keep_SE:
-        aggregated = remove_SE(aggregated)
+    aggregated = variance_measures(aggregated, add_MOE, keep_SE)
     return aggregated
 
 
@@ -89,7 +81,7 @@ def calculate_median_with_crosstab(
         **{"interval.type": "quantile"},
     )
     median_col_name = f"{variable_col}-median"
-    se_col_name = f"{variable_col}-SE"
+    se_col_name = f"{variable_col}-median-SE"
     aggregated.rename(
         columns={
             variable_col: median_col_name,
@@ -106,6 +98,6 @@ def calculate_median_with_crosstab(
     pivot_table.columns = [
         f"{crosstab_var}-{stat}" for stat, crosstab_var in pivot_table.columns
     ]
-    pivot_table = variance_measures(add_MOE, keep_SE, pivot_table)
+    pivot_table = variance_measures(pivot_table, add_MOE, keep_SE)
 
     return pivot_table

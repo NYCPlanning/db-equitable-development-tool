@@ -46,17 +46,20 @@ def calculate_counts(
         scale=4 / 80,
         rscales=1,
     )
-
     aggregated = survey_package.svyby(
         formula=data["a"],
         by=data[[geo_col, variable_col]],
         design=survey_design,
         FUN=survey_package.svytotal,
+        vartype=base.c("se", "ci", "var", "cv"),
     )
-    aggregated.rename(columns={"V1": "count", "se": "count-SE"}, inplace=True)
+    print(aggregated)
+    aggregated.rename(
+        columns={"V1": "count", "se": "count-SE", "cv": "count-CV"}, inplace=True
+    )
     pivot_table = pd.pivot_table(
         data=aggregated,
-        values=["count", "count-SE"],
+        values=["count", "count-SE", "count-CV"],
         columns=variable_col,
         index=geo_col,
     )

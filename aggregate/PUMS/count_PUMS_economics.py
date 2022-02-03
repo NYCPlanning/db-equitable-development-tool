@@ -51,7 +51,7 @@ class PUMSCountEconomics(PUMSCount):
             "Production, Transportation, and Material Moving Occupations": "prdtrn",
         }
 
-        return f'occupation-{occupation_mapper.get(person["OCCP"], None)}'
+        return f'occupation-{occupation_mapper.get(person["OCCP"], "none")}'
 
     def industry_assign(self, person):
         industry_mapper = {

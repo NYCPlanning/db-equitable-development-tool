@@ -1,3 +1,4 @@
+from email.errors import CloseBoundaryNotFoundDefect
 from threading import get_ident
 import warnings
 from numpy import single
@@ -32,7 +33,7 @@ def calculate_fractions(
 ):
     """This adds to dataframe so it should receive copy of data
     Parent category is only used in crosstabs, this is the original variable being crosstabbed on."""
-
+    print(f"all categories: {categories}")
     all_fractions = pd.DataFrame(index=data[geo_col].unique())
     for category in categories:
         data.loc[:, category] = (data[variable_col] == category).astype(int)

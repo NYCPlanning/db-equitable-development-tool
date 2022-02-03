@@ -17,7 +17,6 @@ from aggregate.clean_aggregated import sort_columns
 from utils.make_logger import create_logger
 from statistical.calculate_fractions import (
     calculate_fractions,
-    calculate_fractions_crosstabs,
 )
 
 allowed_variance_measures = ["SE", "MOE"]
@@ -148,6 +147,9 @@ class PUMSAggregator(BaseAggregator):
             self.add_aggregated_data(count_aggregated_ct, none_to_zero=True)
 
     def add_fractions(self, indicator, subset):
+        print(
+            f"number of records to be passed to calculate fractions:{subset.shape[0]}"
+        )
         fraction_aggregated = calculate_fractions(
             data=subset.copy(),
             variable_col=indicator,
@@ -161,25 +163,31 @@ class PUMSAggregator(BaseAggregator):
         self.add_aggregated_data(fraction_aggregated)
         for category in self.categories[indicator]:
             records_in_category = subset[subset[indicator] == category]
-            print(f"{records_in_category.shape[0]} respondents in category")
-            for ct in self.crosstabs:
-                self.add_category(ct)
-                fraction_aggregated_crosstab = calculate_fractions(
-                    data=records_in_category,
-                    variable_col=ct,
-                    categories=self.categories[ct],
-                    rw_cols=self.rw_cols,
-                    weight_col=self.weight_col,
-                    geo_col=self.geo_col,
-                    add_MOE=self.add_MOE,
-                    keep_SE=self.keep_SE,
-                    parent_category=category,
-                )
-                self.add_aggregated_data(fraction_aggregated_crosstab)
+            print(f"crosstab {category}")
+            print(
+                f"number of records to be passed to calculate fractions: {records_in_category.shape[0]}"
+            )
+            print(subset.groupby(indicator).size())
+            if not records_in_category.empty:
+                for ct in self.crosstabs:
+                    self.add_category(ct)
+                    fraction_aggregated_crosstab = calculate_fractions(
+                        data=records_in_category.copy(),
+                        variable_col=ct,
+                        categories=self.categories[ct],
+                        rw_cols=self.rw_cols,
+                        weight_col=self.weight_col,
+                        geo_col=self.geo_col,
+                        add_MOE=self.add_MOE,
+                        keep_SE=self.keep_SE,
+                        parent_category=category,
+                    )
+                    self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
-        self.categories[indicator] = list(self.PUMS[indicator].unique())
+        categories = list(self.PUMS[indicator].unique())
+        self.categories[indicator] = categories
 
     def total_pop_assign(self, person):
         return "total_pop"

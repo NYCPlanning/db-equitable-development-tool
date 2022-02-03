@@ -21,7 +21,7 @@ def test_counts_have_coefficient_of_variation(loader):
     df = loader.aggregated
     for c in df.columns:
         if c[-6:] == "-count":
-            assert c[:-6] + "-CV" in df.columns
+            assert c + "-CV" in df.columns
 
 
 @pytest.mark.parametrize("loader", count_loaders)
@@ -29,7 +29,7 @@ def test_fractions_have_coefficient_of_variation(loader):
     df = loader.aggregated
     for c in df.columns:
         if c[-9:] == "-fraction":
-            assert c[:-8] + "-CV" in df.columns
+            assert c + "-CV" in df.columns
 
 
 @pytest.mark.parametrize(

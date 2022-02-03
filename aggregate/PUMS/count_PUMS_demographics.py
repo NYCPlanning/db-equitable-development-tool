@@ -20,7 +20,6 @@ class PUMSCountDemographics(PUMSCount):
         keep_SE=False,
         single_indicator=False,
     ) -> None:
-        print("PUMSCountDemographics init called")
         self.indicators_denom.extend(
             [
                 ("LEP",),

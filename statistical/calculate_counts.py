@@ -5,6 +5,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import pandas as pd
+import numpy as np
 import rpy2
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
@@ -53,10 +54,10 @@ def calculate_counts(
         FUN=survey_package.svytotal,
         vartype=base.c("se", "ci", "var", "cv"),
     )
-    print(aggregated)
     aggregated.rename(
         columns={"V1": "count", "se": "count-SE", "cv": "count-CV"}, inplace=True
     )
+
     pivot_table = pd.pivot_table(
         data=aggregated,
         values=["count", "count-SE", "count-CV"],

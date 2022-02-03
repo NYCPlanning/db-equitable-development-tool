@@ -28,9 +28,10 @@ def calculate_fractions(
     geo_col,
     add_MOE,
     keep_SE,
-    crosstab_category=None,
+    parent_category=None,
 ):
-    """This adds to dataframe so it should receive copy of data"""
+    """This adds to dataframe so it should receive copy of data
+    Parent category is only used in crosstabs, this is the original variable being crosstabbed on."""
 
     all_fractions = pd.DataFrame(index=data[geo_col].unique())
     for category in categories:
@@ -49,54 +50,27 @@ def calculate_fractions(
             by=data[[geo_col]],
             design=survey_design,
             FUN=survey_package.svymean,
+            vartype=base.c("se", "ci", "var", "cv"),
         )
         single_fraction.drop(columns=[geo_col], inplace=True)
-        if crosstab_category is None:
-            columns = (f"{category}-fraction", f"{category}-fraction-SE")
+        if parent_category is None:
+            columns = [
+                f"{category}-fraction",
+                f"{category}-fraction-SE",
+                f"{category}-fraction-CV",
+            ]
         else:
-            columns = (
-                f"{category}-{crosstab_category}-fraction",
-                f"{category}-{crosstab_category}-fraction-SE",
-            )
+            columns = [
+                f"{parent_category}-{category}-fraction",
+                f"{parent_category}-{category}-fraction-SE",
+                f"{parent_category}-{category}-fraction-CV",
+            ]
         single_fraction.rename(
-            columns={"V1": columns[0], "se": columns[1]},
+            columns={"V1": columns[0], "se": columns[1], "cv": columns[2]},
             inplace=True,
         )
         all_fractions = all_fractions.merge(
-            single_fraction, left_index=True, right_index=True
+            single_fraction[columns], left_index=True, right_index=True
         )
     all_fractions = variance_measures(all_fractions, add_MOE, keep_SE)
-    return all_fractions
-
-
-def calculate_fractions_crosstabs(
-    data,
-    variable_col,
-    var_categories,
-    crosstab,
-    crosstab_categories,
-    rw_cols,
-    weight_col,
-    geo_col,
-    add_MOE,
-    keep_SE,
-):
-    """This can be refactored with kwargs, good improvement"""
-    all_fractions = pd.DataFrame(index=data[geo_col].unique())
-    for ct_category in crosstab_categories:
-        data_filtered = data[data[crosstab] == ct_category]
-        ct_fraction = calculate_fractions(
-            data=data_filtered,
-            variable_col=variable_col,
-            categories=var_categories,
-            rw_cols=rw_cols,
-            weight_col=weight_col,
-            geo_col=geo_col,
-            crosstab_category=ct_category,
-            add_MOE=add_MOE,
-            keep_SE=keep_SE,
-        )
-        all_fractions = all_fractions.merge(
-            ct_fraction, left_index=True, right_index=True
-        )
     return all_fractions

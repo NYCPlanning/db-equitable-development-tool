@@ -1,4 +1,5 @@
 import warnings
+from numpy import var
 
 warnings.filterwarnings("ignore")
 
@@ -44,18 +45,20 @@ def calculate_median(
         design=survey_design,
         quantiles=base.c(0.5),
         FUN=survey_package.svyquantile,
+        vartype=base.c("se", "ci", "var", "cv"),
         **{"interval.type": "quantile"},
     )
-
     aggregated.rename(
         columns={
             variable_col: f"{variable_col}-median",
             f"se.{variable_col}": f"{variable_col}-median-SE",
+            f"cv.{variable_col}": f"{variable_col}-median-cv",
         },
         inplace=True,
     )
     aggregated.drop(columns=geo_col, inplace=True)
     aggregated = variance_measures(aggregated, add_MOE, keep_SE)
+    print("to do here: specify the columns we want")
     return aggregated
 
 
@@ -78,20 +81,23 @@ def calculate_median_with_crosstab(
         design=survey_design,
         quantiles=base.c(0.5),
         FUN=survey_package.svyquantile,
+        vartype=base.c("se", "ci", "var", "cv"),
         **{"interval.type": "quantile"},
     )
     median_col_name = f"{variable_col}-median"
     se_col_name = f"{variable_col}-median-SE"
+    cv_col_name = f"{variable_col}-median-cv"
     aggregated.rename(
         columns={
             variable_col: median_col_name,
             f"se.{variable_col}": se_col_name,
+            f"cv.{variable_col}": cv_col_name,
         },
         inplace=True,
     )
     pivot_table = pd.pivot_table(
         data=aggregated,
-        values=[median_col_name, se_col_name],
+        values=[median_col_name, se_col_name, cv_col_name],
         columns=crosstab_col,
         index=geo_col,
     )

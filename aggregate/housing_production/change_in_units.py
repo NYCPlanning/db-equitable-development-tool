@@ -5,7 +5,7 @@ import requests
 
 def load_housing_data():
 
-    df = pd.read_csv(".library/dcp_housing/20Q4/dcp_housing.csv", usecols=['job_number', 'job_inactive', 'job_status','job_type','boro', 'classa_net','latitude', 'longitude'])
+    df = pd.read_csv(".library/dcp_housing/20Q4/dcp_housing.csv", usecols=['job_number', 'job_inactive', 'job_status','complete_year','job_type','boro', 'classa_net','latitude', 'longitude'])
 
     census10 = pd.read_excel('https://www1.nyc.gov/assets/planning/download/office/planning-level/nyc-population/census2010/tothousing_vacant_2010ct.xlsx', 
         header=4, 
@@ -45,9 +45,11 @@ def pivot_and_flatten_index(df, geography):
 
 def units_change_citywide(df, census10):
     
-    #df = pd.read_csv(".library/edm-recipes/datasets/dcp_housing.csv")
-
     results = df.groupby('job_type').agg({'classa_net': 'sum'}).reset_index()
+
+    total = {'job_type': 'All', 'classa_net': results.classa_net.sum()}
+
+    results = results.append(total, ignore_index=True)
 
     results['total_housing_units_2010'] = census10['total_housing_units_2010'].sum()
 
@@ -127,11 +129,15 @@ if __name__ == "__main__":
 
     df, census10 = load_housing_data()
 
+    # only post 2010
+    df.drop(df.loc[df.complete_year < 2010].index, axis=0, inplace=True)
+
     # DROP INACTIVATE JOBS ACCRODING TO SAM
     df.drop(df.loc[~df.job_inactive.isnull()].index, axis=0, inplace=True)
 
     # drop records where their status is not complete
     df.drop(df.loc[df.job_status != '5. Completed Construction'].index, axis=0, inplace=True)
+
 
     # drop rows where alterations is zero and create two types for alterations
     df.loc[(df.job_type == 'Alteration') & (df.classa_net < 0), 'job_type'] = 'Alteration_Decrease'

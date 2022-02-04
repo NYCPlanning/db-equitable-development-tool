@@ -5,14 +5,9 @@ import pandas as pd
 import os
 
 
-def set_internal_review_files(data: List[Tuple[pd.DataFrame, str]]):
+def set_internal_review_files(data: List[Tuple[pd.DataFrame, str, str]], category):
     """Save list of dataframes as csv."""
-    previous = os.listdir("internal_review/")
 
-    for item in previous:
-        if item.endswith(".csv"):
-            os.remove(os.path.join("internal_review/", item))
-
-    for df, name in data:
+    for df, name, geography in data:
         print(f"Writing {name} to internal review folder")
-        df.to_csv(f"internal_review/{name}.csv")
+        df.to_csv(f"internal_review/{category}/{geography}/{name}")

@@ -1,7 +1,10 @@
 """Possible refactor: abstract the by_race into a single function"""
 
+from typing import Tuple, List
 from aggregate.PUMS.aggregate_PUMS import PUMSCount
 import numpy as np
+import pandas as pd
+
 
 class PUMSCountEconomics(PUMSCount):
     """Indicators refer to variables in Field Specifications page of data matrix"""
@@ -17,6 +20,10 @@ class PUMSCountEconomics(PUMSCount):
     ]
 
     def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
+        self.crosstabs = ["race"]
+        self.include_fractions = True
+        self.include_counts = True
+        self.categories = {}
         PUMSCount.__init__(
             self,
             variable_types=["economics", "demographics"],
@@ -30,14 +37,8 @@ class PUMSCountEconomics(PUMSCount):
             person["ESR"] == "N/A (less than 16 years old)"
             or person["ESR"] == "Not in labor force"
         ):
-            return None
+            return "not-lf"
         return "lf"
-
-    def lf_by_race_assign(self, person):
-        lf = self.lf_assign(person)
-        if lf is None:
-            return lf
-        return f"{lf}_{self.race_assign(person)}"
 
     def occupation_assign(self, person):
         occupation_mapper = {
@@ -48,13 +49,7 @@ class PUMSCountEconomics(PUMSCount):
             "Production, Transportation, and Material Moving Occupations": "prdtrn",
         }
 
-        return occupation_mapper.get(person["OCCP"], None)
-
-    def occupation_by_race_assign(self, person):
-        occu = self.occupation_assign(person)
-        if occu is None:
-            return occu
-        return f"{occu}_{self.race_assign(person)}"
+        return f'occupation-{occupation_mapper.get(person["OCCP"], None)}'
 
     def industry_assign(self, person):
         industry_mapper = {
@@ -73,7 +68,7 @@ class PUMSCountEconomics(PUMSCount):
             "Public Administration": "PbAdm",
             "Military": "Mil",  # Note that this wasn't in field specifications but it can't hurt to add
         }
-        return industry_mapper.get(person["INDP"], None)
+        return f'industry-{industry_mapper.get(person["INDP"], None)}'
 
     def industry_by_race_assign(self, person):
         ind = self.industry_assign(person)
@@ -114,3 +109,16 @@ class PUMSCountEconomics(PUMSCount):
         idx = np.digitize(person["HINCP"], income_bands[person["NPF"]])
 
         return labels[idx - 1]
+        
+    def civilian_employed_pop_filter(self, PUMS: pd.DataFrame):
+        """Filter to return subset of all people ages 16-64 who are employed as civilians"""
+        age_subset = PUMS[(PUMS["AGEP"] >= 16) & (PUMS["AGEP"] <= 64)]
+        civilian_subset = age_subset[
+            age_subset["ESR"].isin(
+                [
+                    "Civilian employed, with a job but not at work",
+                    "Civilian employed, at work",
+                ]
+            )
+        ]
+        return civilian_subset

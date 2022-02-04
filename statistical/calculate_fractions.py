@@ -1,4 +1,5 @@
 from email.errors import CloseBoundaryNotFoundDefect
+from operator import ge
 from threading import get_ident
 import warnings
 from numpy import single
@@ -33,7 +34,6 @@ def calculate_fractions(
 ):
     """This adds to dataframe so it should receive copy of data
     Parent category is only used in crosstabs, this is the original variable being crosstabbed on."""
-    print(f"all categories: {categories}")
     all_fractions = pd.DataFrame(index=data[geo_col].unique())
     for category in categories:
         data.loc[:, category] = (data[variable_col] == category).astype(int)
@@ -70,8 +70,19 @@ def calculate_fractions(
             columns={"V1": columns[0], "se": columns[1], "cv": columns[2]},
             inplace=True,
         )
+        single_fraction = single_fraction.apply(
+            SE_to_zero_no_respondents, axis=1, result_type="expand"
+        )
         all_fractions = all_fractions.merge(
             single_fraction[columns], left_index=True, right_index=True
         )
     all_fractions = variance_measures(all_fractions, add_MOE, keep_SE)
     return all_fractions
+
+
+def SE_to_zero_no_respondents(geography):
+    """If fraction is zero then no respodents in this category for this geography.
+    In this situation variance measures should be set to null"""
+    if not geography.iloc[0]:
+        geography.iloc[1:] = None
+    return geography

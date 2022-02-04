@@ -23,8 +23,8 @@ class PUMSCountDemographics(PUMSCount):
         self.indicators_denom.extend(
             [
                 ("LEP",),
-                ("foreign_born",),
-                ("age_bucket",),
+                # ("foreign_born",),
+                # ("age_bucket",),
             ]
         )
         if single_indicator:

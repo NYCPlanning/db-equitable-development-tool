@@ -51,7 +51,7 @@ def calculate_median(
     columns = [
         f"{variable_col}-median",
         f"{variable_col}-median-SE",
-        f"{variable_col}-median-cv",
+        f"{variable_col}-median-CV",
     ]
     aggregated.rename(
         columns={
@@ -90,7 +90,7 @@ def calculate_median_with_crosstab(
     )
     median_col_name = f"{variable_col}-median"
     se_col_name = f"{variable_col}-median-SE"
-    cv_col_name = f"{variable_col}-median-cv"
+    cv_col_name = f"{variable_col}-median-CV"
     aggregated.rename(
         columns={
             variable_col: median_col_name,

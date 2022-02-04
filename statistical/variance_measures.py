@@ -4,6 +4,7 @@ For debugging want both
 """
 import pandas as pd
 from scipy import stats
+import numpy as np
 
 z_score = stats.norm.ppf(0.9)
 

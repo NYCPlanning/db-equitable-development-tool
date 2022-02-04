@@ -1,5 +1,6 @@
 """Generalized code to get counts and associated variances"""
 
+from itertools import count
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -65,5 +66,15 @@ def calculate_counts(
         index=geo_col,
     )
     pivot_table.columns = [f"{var}-{stat}" for stat, var in pivot_table.columns]
+    counts_to_zero(pivot_table)
     pivot_table = variance_measures(pivot_table, add_MOE, keep_SE)
     return pivot_table
+
+
+def counts_to_zero(df: pd.DataFrame):
+    """If not respondents for a certain category live in a particular geography,
+    convert corresponding value from NA to zero. For example there are were no black
+    non-hispanic respondents in 3901 with limited english proficiency in 2019"""
+    for c in df.columns:
+        if c[-6:] == "-count":
+            df[c].replace({np.NaN: 0}, inplace=True)

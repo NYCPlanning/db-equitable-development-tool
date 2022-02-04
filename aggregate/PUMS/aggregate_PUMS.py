@@ -82,19 +82,16 @@ class PUMSAggregator(BaseAggregator):
             self.sort_aggregated_columns_alphabetically()
         except:
             print("couldn't sort columns alphabetically")
+        self.clean_aggregated()
 
     def sort_aggregated_columns_alphabetically(self):
         """Put each variable next to it's standard error"""
         self.aggregated = sort_columns(self.aggregated)
 
-    def add_aggregated_data(self, new_var: pd.DataFrame, none_to_zero=False):
+    def add_aggregated_data(self, new_var: pd.DataFrame):
         self.aggregated = self.aggregated.merge(
             new_var, left_index=True, right_index=True
         )
-        if none_to_zero:
-            self.aggregated[new_var.columns] = self.aggregated[new_var.columns].replace(
-                {np.NaN: 0}
-            )
 
     def assign_indicator(self, indicator) -> pd.DataFrame:
         if indicator not in self.PUMS.columns:
@@ -131,7 +128,7 @@ class PUMSAggregator(BaseAggregator):
             add_MOE=self.add_MOE,
             keep_SE=self.keep_SE,
         )
-        self.add_aggregated_data(new_indicator_aggregated, none_to_zero=True)
+        self.add_aggregated_data(new_indicator_aggregated)
         for ct in self.crosstabs:
             self.add_category(ct)  # To-do: move higher up, maybe to init
             count_aggregated_ct = calculate_counts(
@@ -144,7 +141,7 @@ class PUMSAggregator(BaseAggregator):
                 add_MOE=self.add_MOE,
                 keep_SE=self.keep_SE,
             )
-            self.add_aggregated_data(count_aggregated_ct, none_to_zero=True)
+            self.add_aggregated_data(count_aggregated_ct)
 
     def add_fractions(self, indicator, subset):
         print(
@@ -163,11 +160,6 @@ class PUMSAggregator(BaseAggregator):
         self.add_aggregated_data(fraction_aggregated)
         for category in self.categories[indicator]:
             records_in_category = subset[subset[indicator] == category]
-            print(f"crosstab {category}")
-            print(
-                f"number of records to be passed to calculate fractions: {records_in_category.shape[0]}"
-            )
-            print(subset.groupby(indicator).size())
             if not records_in_category.empty:
                 for ct in self.crosstabs:
                     self.add_category(ct)
@@ -194,6 +186,20 @@ class PUMSAggregator(BaseAggregator):
 
     def race_assign(self, person):
         return PUMS_race_assign(person)
+
+    def clean_aggregated(self):
+        """Not efficient, this is called for median base class which is uneccessary
+        The NA handling is for when when 0 survey respondents fall in a particular category.
+        For example in the 2015-2019 PUMS there are 0 black non-hispanic survey respondents
+        with limited english proficiency in PUMA 3901 in southern staten island.
+        There are different ways to handle this based on the type of data point.
+        For counts and fractions the associated value should be set to 0 and the associated measures of variance set to NA
+        If the count is a median then the value should be NA along with the measures of variance
+        """
+        for measure in ["count", "fraction"]:
+            for c in self.aggregated:
+                if c[-len(measure) :] == measure:
+                    self.aggregated[c].replace({np.NaN: 0}, inplace=True)
 
 
 class PUMSCount(PUMSAggregator):

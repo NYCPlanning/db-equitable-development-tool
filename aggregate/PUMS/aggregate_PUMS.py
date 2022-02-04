@@ -178,28 +178,13 @@ class PUMSAggregator(BaseAggregator):
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
-        categories = list(self.PUMS[indicator].unique())
-        self.categories[indicator] = categories
+        self.categories[indicator] = list(self.PUMS[indicator].unique())
 
     def total_pop_assign(self, person):
         return "total_pop"
 
     def race_assign(self, person):
         return PUMS_race_assign(person)
-
-    def clean_aggregated(self):
-        """Not efficient, this is called for median base class which is uneccessary
-        The NA handling is for when when 0 survey respondents fall in a particular category.
-        For example in the 2015-2019 PUMS there are 0 black non-hispanic survey respondents
-        with limited english proficiency in PUMA 3901 in southern staten island.
-        There are different ways to handle this based on the type of data point.
-        For counts and fractions the associated value should be set to 0 and the associated measures of variance set to NA
-        If the count is a median then the value should be NA along with the measures of variance
-        """
-        for measure in ["count", "fraction"]:
-            for c in self.aggregated:
-                if c[-len(measure) :] == measure:
-                    self.aggregated[c].replace({np.NaN: 0}, inplace=True)
 
 
 class PUMSCount(PUMSAggregator):

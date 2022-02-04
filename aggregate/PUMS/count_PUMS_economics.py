@@ -99,7 +99,7 @@ class PUMSCountEconomics(PUMSCount):
         '''
 
         income_bands = {
-            1: [-9999999, 20901, 34835, 55735, 83602, 114952, 9999999],
+            1: [-9999999, 20900, 34835, 55735, 83602, 114952, 9999999],
             2: [-9999999, 23904, 39840, 63744, 95616, 131473, 9999999],
             3: [-9999999, 26876, 44794, 71671, 107506, 147821, 9999999],
             4: [-9999999, 29849, 49748, 79597, 119395, 164169, 9999999],
@@ -113,4 +113,4 @@ class PUMSCountEconomics(PUMSCount):
 
         idx = np.digitize(person["HINCP"], income_bands[person["NPF"]])
 
-        return labels[idx]
+        return labels[idx - 1]

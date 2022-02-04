@@ -12,7 +12,7 @@ class LocalLoader:
     def __init__(self) -> None:
         pass
 
-    def load_by_person(self, all_data, include_rw=True, variable_set="demographic"):
+    def load_by_person(self, all_data, include_rw=True, variable_set="demographics"):
         """To be called in first test"""
         limited_PUMA = not all_data
 

@@ -37,6 +37,7 @@ variable_mapper = {
         ("SCHL", "clean_simple_cateogorical"),  # Educational achievement
         ("INDP", "clean_range_categorical"),  # Industry
         ("OCCP", "clean_range_categorical"),  # Occupation
+        ("NPF", "clean_continous")
     ],
 }
 

@@ -96,10 +96,10 @@ class PUMSData:
         self.vi_data.to_pickle(self.cache_path)
 
     def assign_identifier(self, attr_name):
-        df = self.__getattribute__(attr_name)
+        df = self.__getattribute__(attr_name) #
         df["person_id"] = df["SERIALNO"] + df["SPORDER"]
         df.set_index("person_id", inplace=True)
-        df.drop(columns=["SERIALNO", "SPORDER"], inplace=True)
+        df.drop(columns=["SPORDER"], inplace=True) # don't drop serialno so use for household indicator
 
     def clean_data(self):
         self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
@@ -109,12 +109,12 @@ class PUMSData:
 
     def merge_rw(self):
         """Merge two dataframes of replicate weights into one"""
-        cols_to_drop = ["ST", "PUMA"]
+        cols_to_drop = ["ST", "PUMA", "SERIALNO", ] # add serial number to drop before the merge 
         self.rw_one_data.drop(columns=cols_to_drop, inplace=True)
         self.rw_two_data.drop(columns=cols_to_drop, inplace=True)
         self.rw = self.rw_one_data.merge(
             self.rw_two_data, left_index=True, right_index=True
-        ).astype(int)
+        ).astype(str)
 
     def merge_vi_rw(self):
         """Add replicate weights to the dataframe with variables of interest"""

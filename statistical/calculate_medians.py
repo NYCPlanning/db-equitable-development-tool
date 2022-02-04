@@ -12,7 +12,7 @@ from rpy2.robjects.vectors import StrVector
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
 
-from statistical.variance_measures import variance_measures
+from statistical.MOE import variance_measures
 
 from rpy2.robjects import r, pandas2ri
 

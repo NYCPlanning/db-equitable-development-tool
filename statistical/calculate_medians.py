@@ -48,17 +48,21 @@ def calculate_median(
         vartype=base.c("se", "ci", "var", "cv"),
         **{"interval.type": "quantile"},
     )
+    columns = [
+        f"{variable_col}-median",
+        f"{variable_col}-median-SE",
+        f"{variable_col}-median-cv",
+    ]
     aggregated.rename(
         columns={
-            variable_col: f"{variable_col}-median",
-            f"se.{variable_col}": f"{variable_col}-median-SE",
-            f"cv.{variable_col}": f"{variable_col}-median-cv",
+            variable_col: columns[0],
+            f"se.{variable_col}": columns[1],
+            f"cv.{variable_col}": columns[2],
         },
         inplace=True,
     )
-    aggregated.drop(columns=geo_col, inplace=True)
+    aggregated = aggregated[columns]
     aggregated = variance_measures(aggregated, add_MOE, keep_SE)
-    print("to do here: specify the columns we want")
     return aggregated
 
 

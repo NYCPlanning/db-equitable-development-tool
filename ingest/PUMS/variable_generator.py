@@ -14,18 +14,19 @@ load_dotenv()
 
 variable_mapper = {
     "demographics": [
-        ("RAC1P", "clean_simple_cateogorical"),
-        ("HISP", "clean_simple_cateogorical"),
-        ("NATIVITY", "clean_simple_cateogorical"),
-        ("LANX", "clean_simple_cateogorical"),
-        ("ENG", "clean_simple_cateogorical"),
+        ("RAC1P", "clean_simple_categorical"),
+        ("HISP", "clean_simple_categorical"),
+        ("NATIVITY", "clean_simple_categorical"),
+        ("LANX", "clean_simple_categorical"),
+        ("ENG", "clean_simple_categorical"),
         ("AGEP", "clean_continous"),
+        ("LANX", "clean_simple_categorical"),
     ],
     "economics": [
         ("HINCP", "clean_continous"),  # Household income
-        ("ESR", "clean_simple_cateogorical"),  # Employment status
+        ("ESR", "clean_simple_categorical"),  # Employment status
         ("WAGP", "clean_continous"),  # Wages
-        ("SCHL", "clean_simple_cateogorical"),  # Educational achievement
+        ("SCHL", "clean_simple_categorical"),  # Educational achievement
         ("INDP", "clean_range_categorical"),  # Industry
         ("OCCP", "occupation_clean_range_categorical"),  # Occupation
     ],

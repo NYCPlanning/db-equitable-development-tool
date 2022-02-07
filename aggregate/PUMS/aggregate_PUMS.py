@@ -82,7 +82,6 @@ class PUMSAggregator(BaseAggregator):
             self.sort_aggregated_columns_alphabetically()
         except:
             print("couldn't sort columns alphabetically")
-        self.clean_aggregated()
 
     def sort_aggregated_columns_alphabetically(self):
         """Put each variable next to it's standard error"""

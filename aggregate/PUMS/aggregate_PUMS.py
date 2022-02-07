@@ -144,9 +144,7 @@ class PUMSAggregator(BaseAggregator):
             self.add_aggregated_data(count_aggregated_ct)
 
     def add_fractions(self, indicator, subset):
-        print(
-            f"number of records to be passed to calculate fractions:{subset.shape[0]}"
-        )
+
         fraction_aggregated = calculate_fractions(
             data=subset.copy(),
             variable_col=indicator,

@@ -85,9 +85,8 @@ def calculate_median_with_crosstab(
         design=survey_design,
         quantiles=base.c(0.5),
         FUN=survey_package.svyquantile,
-        vartype="cv"
-        # vartype=base.c("se", "ci", "var", "cv"),
-        ** {"interval.type": "quantile"},
+        vartype=base.c("se", "ci", "var", "cv"),
+        **{"interval.type": "quantile"},
     )
     median_col_name = f"{variable_col}-median"
     se_col_name = f"{variable_col}-median-SE"

@@ -20,7 +20,6 @@ variable_mapper = {
         ("LANX", "clean_simple_categorical"),
         ("ENG", "clean_simple_categorical"),
         ("AGEP", "clean_continous"),
-        ("LANX", "clean_simple_categorical"),
     ],
     "economics": [
         ("HINCP", "clean_continous"),  # Household income

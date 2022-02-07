@@ -1,3 +1,5 @@
+from numpy import var
+from pandas import crosstab
 from aggregate.PUMS.aggregate_PUMS import PUMSAggregator
 from statistical.calculate_medians import (
     calculate_median,
@@ -8,13 +10,22 @@ from statistical.calculate_medians import (
 class PUMSMedianDemographics(PUMSAggregator):
     """Crosstabs on idicators work differently for this aggregator.
     Instead of combining crosstab and original indicator into one, crosstabs are
-    included as interable. Indiactors list has elements of (indicator, iterable of crosstabs)"""
+    included as iterable. Indicators list has elements of (indicator, iterable of crosstabs)"""
 
-    indicators = [("age", ("race",))]
+    indicators_denom = [("age",)]
+    crosstabs = ["race"]
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
 
-    def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
-
+    def __init__(
+        self,
+        limited_PUMA=False,
+        year=2019,
+        requery=False,
+        add_MOE=True,
+        keep_SE=False,
+    ) -> None:
+        self.add_MOE = add_MOE
+        self.keep_SE = keep_SE
         PUMSAggregator.__init__(
             self,
             variable_types=["demographics"],
@@ -26,18 +37,24 @@ class PUMSMedianDemographics(PUMSAggregator):
     def age_assign(self, person):
         return person["AGEP"]
 
-    def calculate_add_new_variable(self, indicator_crosstab):
-        """Overwrites from parent class"""
-        indicator = indicator_crosstab[0]
-        crosstabs = indicator_crosstab[1]
+    def calculate_add_new_variable(self, ind_denom):
+        """Overwrites from parent class. This needs to"""
+        indicator = ind_denom[0]
         self.assign_indicator(indicator)
+        subset = self.apply_denominator(ind_denom)
 
         new_indicator_aggregated = calculate_median(
-            self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
+            data=subset,
+            variable_col=indicator,
+            rw_cols=self.rw_cols,
+            weight_col=self.weight_col,
+            geo_col=self.geo_col,
+            add_MOE=self.add_MOE,
+            keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(new_indicator_aggregated)
 
-        for crosstab in crosstabs:
+        for crosstab in self.crosstabs:
             self.assign_indicator(crosstab)
             new_indicator_aggregated_with_crosstab = calculate_median_with_crosstab(
                 self.PUMS,
@@ -46,5 +63,7 @@ class PUMSMedianDemographics(PUMSAggregator):
                 self.rw_cols,
                 self.weight_col,
                 self.geo_col,
+                add_MOE=self.add_MOE,
+                keep_SE=self.keep_SE,
             )
             self.add_aggregated_data(new_indicator_aggregated_with_crosstab)

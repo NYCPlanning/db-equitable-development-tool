@@ -33,7 +33,9 @@ def test_all_counts_sum_to_total_pop():
 @pytest.mark.test_aggregation
 def test_that_all_races_sum_to_total_within_indicator():
     """Parameterize this to look at nativity, age buckets as well"""
-    lep_race_cols = [f"lep-{r}" for r in race_counts]  # Generate this from function
+    lep_race_cols = [
+        f"lep-{r}-count" for r in race_counts
+    ]  # Generate this from function
     assert (
         local_loader.aggregated[lep_race_cols].sum(axis=1)
         == local_loader.aggregated["lep-count"]

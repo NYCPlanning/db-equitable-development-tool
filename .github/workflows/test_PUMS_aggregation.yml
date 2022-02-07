@@ -1,13 +1,14 @@
 name: Test PUMS Aggregation
 
 on:
-  push:
-    paths:
-      - "aggregate/PUMS/**.py"
-      - "tests/PUMS/**.py"
-      - ".github/workflows/test_PUMS_aggregation.yml"
-      - "poetry.lock"
-      - "pyproject.toml"
+  workflow_dispatch:
+  # push:
+  #   paths:
+  #     - "aggregate/PUMS/**.py"
+  #     - "tests/PUMS/**.py"
+  #     - ".github/workflows/test_PUMS_aggregation.yml"
+  #     - "poetry.lock"
+  #     - "pyproject.toml"
 
 jobs:
   test:

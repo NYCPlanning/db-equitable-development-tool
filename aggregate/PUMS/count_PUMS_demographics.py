@@ -16,6 +16,9 @@ class PUMSCountDemographics(PUMSCount):
         requery=False,
         include_counts=True,
         include_fractions=True,
+        add_MOE=True,
+        keep_SE=False,
+        single_indicator=False,
     ) -> None:
         self.indicators_denom.extend(
             [
@@ -24,7 +27,8 @@ class PUMSCountDemographics(PUMSCount):
                 ("age_bucket",),
             ]
         )
-
+        if single_indicator:
+            self.indicators_denom = self.indicators_denom[0:1]
         self.indicators_denom = list(
             set(self.indicators_denom)
         )  # To-do: figure out problem and undo hot fix
@@ -32,7 +36,8 @@ class PUMSCountDemographics(PUMSCount):
         self.categories = {}
         self.include_counts = include_counts
         self.include_fractions = include_fractions
-
+        self.add_MOE = add_MOE
+        self.keep_SE = keep_SE
         PUMSCount.__init__(
             self,
             variable_types=["demographics"],

@@ -20,9 +20,9 @@ class PUMSCountDemographics(PUMSCount):
     ) -> None:
         self.indicators_denom.extend(
             [
-                ("LEP",),
-                ("foreign_born",),
-                ("age_bucket",),
+                ("LEP", "speak_other_language_and_over_five_filter"),
+                # ("foreign_born",),
+                # ("age_bucket",),
             ]
         )
 
@@ -85,4 +85,5 @@ class PUMSCountDemographics(PUMSCount):
         return f"{age_bucket}_{race}"
 
     def speak_other_language_and_over_five_filter(self, PUMS: pd.DataFrame):
-        return PUMS
+        subset = PUMS[PUMS["LANX"] == "Yes, speaks another language"]
+        return subset

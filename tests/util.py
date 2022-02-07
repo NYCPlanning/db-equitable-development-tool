@@ -1,6 +1,6 @@
 races = ["anh", "wnh", "bnh", "onh", "hsp"]
 
-age_buckets = ["PopU16", "P16t65", "P65pl"]
+age_buckets = ["PopU16", "P16t64", "P65pl"]
 
 
 def add_counts(columns):

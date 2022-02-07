@@ -4,9 +4,12 @@ Reference for applying weights: https://www2.census.gov/programs-surveys/acs/tec
 
 To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 """
+from hashlib import new
 import os
+from re import sub
 import pandas as pd
 import time
+import numpy as np
 from ingest.load_data import load_PUMS
 from statistical.calculate_counts import calculate_counts
 from aggregate.race_assign import PUMS_race_assign
@@ -14,8 +17,9 @@ from aggregate.clean_aggregated import sort_columns
 from utils.make_logger import create_logger
 from statistical.calculate_fractions import (
     calculate_fractions,
-    calculate_fractions_crosstabs,
 )
+
+allowed_variance_measures = ["SE", "MOE"]
 
 
 class BaseAggregator:
@@ -68,6 +72,7 @@ class PUMSAggregator(BaseAggregator):
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
         for ind_denom in self.indicators_denom:
+            print(f"iterated to {ind_denom[0]}")
             agg_start = time.perf_counter()
             self.calculate_add_new_variable(ind_denom)
             self.logger.info(
@@ -82,7 +87,7 @@ class PUMSAggregator(BaseAggregator):
         """Put each variable next to it's standard error"""
         self.aggregated = sort_columns(self.aggregated)
 
-    def add_aggregated_data(self, new_var):
+    def add_aggregated_data(self, new_var: pd.DataFrame):
         self.aggregated = self.aggregated.merge(
             new_var, left_index=True, right_index=True
         )
@@ -99,7 +104,6 @@ class PUMSAggregator(BaseAggregator):
         self.assign_indicator(indicator)
         self.add_category(indicator)
         subset = self.apply_denominator(ind_denom)
-
         if self.include_counts:
             self.add_counts(indicator, subset)
         if self.include_fractions:
@@ -113,8 +117,15 @@ class PUMSAggregator(BaseAggregator):
         return subset
 
     def add_counts(self, indicator, subset):
+
         new_indicator_aggregated = calculate_counts(
-            self.PUMS, indicator, self.rw_cols, self.weight_col, self.geo_col
+            data=subset,
+            variable_col=indicator,
+            rw_cols=self.rw_cols,
+            weight_col=self.weight_col,
+            geo_col=self.geo_col,
+            add_MOE=self.add_MOE,
+            keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(new_indicator_aggregated)
         for ct in self.crosstabs:
@@ -126,32 +137,41 @@ class PUMSAggregator(BaseAggregator):
                 weight_col=self.weight_col,
                 geo_col=self.geo_col,
                 crosstab=ct,
+                add_MOE=self.add_MOE,
+                keep_SE=self.keep_SE,
             )
             self.add_aggregated_data(count_aggregated_ct)
 
     def add_fractions(self, indicator, subset):
+
         fraction_aggregated = calculate_fractions(
-            data=subset,
+            data=subset.copy(),
             variable_col=indicator,
             categories=self.categories[indicator],
             rw_cols=self.rw_cols,
             weight_col=self.weight_col,
             geo_col=self.geo_col,
+            add_MOE=self.add_MOE,
+            keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(fraction_aggregated)
-        for ct in self.crosstabs:
-            self.add_category(ct)
-            fraction_aggregated_crosstab = calculate_fractions_crosstabs(
-                self.PUMS.copy(deep=True),
-                indicator,
-                self.categories[indicator],
-                ct,
-                self.categories[ct],
-                self.rw_cols,
-                self.weight_col,
-                self.geo_col,
-            )
-            self.add_aggregated_data(fraction_aggregated_crosstab)
+        for category in self.categories[indicator]:
+            records_in_category = subset[subset[indicator] == category]
+            if not records_in_category.empty:
+                for ct in self.crosstabs:
+                    self.add_category(ct)
+                    fraction_aggregated_crosstab = calculate_fractions(
+                        data=records_in_category.copy(),
+                        variable_col=ct,
+                        categories=self.categories[ct],
+                        rw_cols=self.rw_cols,
+                        weight_col=self.weight_col,
+                        geo_col=self.geo_col,
+                        add_MOE=self.add_MOE,
+                        keep_SE=self.keep_SE,
+                        parent_category=category,
+                    )
+                    self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""

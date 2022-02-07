@@ -17,11 +17,15 @@ class PUMSCountEconomics(PUMSCount):
         ("industry",),  # Termed "Employment by industry sector" in data matrix
     ]
 
-    def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
+    def __init__(
+        self, limited_PUMA=False, year=2019, requery=False, add_MOE=True, keep_SE=False
+    ) -> None:
         self.crosstabs = ["race"]
         self.include_fractions = True
         self.include_counts = True
         self.categories = {}
+        self.add_MOE = add_MOE
+        self.keep_SE = keep_SE
         PUMSCount.__init__(
             self,
             variable_types=["economics", "demographics"],
@@ -47,7 +51,7 @@ class PUMSCountEconomics(PUMSCount):
             "Production, Transportation, and Material Moving Occupations": "prdtrn",
         }
 
-        return f'occupation-{occupation_mapper.get(person["OCCP"], None)}'
+        return f'occupation-{occupation_mapper.get(person["OCCP"], "none")}'
 
     def industry_assign(self, person):
         industry_mapper = {

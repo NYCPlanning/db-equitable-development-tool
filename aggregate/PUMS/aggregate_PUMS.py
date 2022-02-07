@@ -109,7 +109,7 @@ class PUMSAggregator(BaseAggregator):
         if self.include_fractions:
             self.add_fractions(indicator, subset)
 
-    def apply_denominator(self, ind_denom):
+    def apply_denominator(self, ind_denom) -> pd.DataFrame:
         if len(ind_denom) == 1:
             subset = self.PUMS.copy()
         else:
@@ -143,9 +143,10 @@ class PUMSAggregator(BaseAggregator):
             self.add_aggregated_data(count_aggregated_ct)
 
     def add_fractions(self, indicator, subset):
-
+        print(f"calculating fraction for {indicator}")
+        print(f"subset has {subset.shape[0]} records")
         fraction_aggregated = calculate_fractions(
-            data=subset.copy(),
+            data=subset,
             variable_col=indicator,
             categories=self.categories[indicator],
             rw_cols=self.rw_cols,

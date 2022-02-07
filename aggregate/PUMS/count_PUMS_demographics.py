@@ -24,8 +24,8 @@ class PUMSCountDemographics(PUMSCount):
         self.indicators_denom.extend(
             [
                 ("LEP", "speak_other_language_and_over_five_filter"),
-                # ("foreign_born",),
-                # ("age_bucket",),
+                ("foreign_born",),
+                ("age_bucket",),
             ]
         )
         if single_indicator:
@@ -61,11 +61,7 @@ class PUMSCountDemographics(PUMSCount):
 
     def LEP_assign(self, person):
         """Limited english proficiency"""
-        if (
-            person["AGEP"] < 5
-            or person["LANX"] == "No, speaks only English"
-            or person["ENG"] == "Very well"
-        ):
+        if person["ENG"] == "Very well":
             return "not_lep"
         return "lep"
 

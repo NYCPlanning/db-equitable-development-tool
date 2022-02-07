@@ -71,10 +71,10 @@ class PUMSCountDemographics(PUMSCount):
         return f"lep_{self.race_assign(person)}"
 
     def age_bucket_assign(self, person):
-        if person["AGEP"] <= 16:
+        if person["AGEP"] < 16:
             return "PopU16"
-        if person["AGEP"] > 16 and person["AGEP"] < 65:
-            return "P16t65"
+        if person["AGEP"] >= 16 and person["AGEP"] < 65:
+            return "P16t64"
         if person["AGEP"] >= 65:
             return "P65pl"
 

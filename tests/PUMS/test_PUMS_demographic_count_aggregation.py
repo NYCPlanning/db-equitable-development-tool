@@ -75,9 +75,9 @@ def test_age_bucket_assignment_correct():
     """95 is top coded value for age"""
     by_person_data = local_loader.by_person
     assert min(by_person_data[by_person_data["age_bucket"] == "PopU16"]["AGEP"]) == 0
-    assert max(by_person_data[by_person_data["age_bucket"] == "PopU16"]["AGEP"]) == 16
-    assert min(by_person_data[by_person_data["age_bucket"] == "P16t65"]["AGEP"]) == 17
-    assert max(by_person_data[by_person_data["age_bucket"] == "P16t65"]["AGEP"]) == 64
+    assert max(by_person_data[by_person_data["age_bucket"] == "PopU16"]["AGEP"]) == 15
+    assert min(by_person_data[by_person_data["age_bucket"] == "P16t64"]["AGEP"]) == 16
+    assert max(by_person_data[by_person_data["age_bucket"] == "P16t64"]["AGEP"]) == 64
     assert min(by_person_data[by_person_data["age_bucket"] == "P65pl"]["AGEP"]) == 65
     assert max(by_person_data[by_person_data["age_bucket"] == "P65pl"]["AGEP"]) == 95
 

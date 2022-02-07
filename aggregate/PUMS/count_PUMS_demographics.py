@@ -1,4 +1,5 @@
 from aggregate.PUMS.aggregate_PUMS import PUMSAggregator, PUMSCount
+import pandas as pd
 
 
 class PUMSCountDemographics(PUMSCount):
@@ -82,3 +83,6 @@ class PUMSCountDemographics(PUMSCount):
         age_bucket = self.age_bucket_assign(person)
         race = self.race_assign(person)
         return f"{age_bucket}_{race}"
+
+    def speak_other_language_and_over_five_filter(self, PUMS: pd.DataFrame):
+        return PUMS

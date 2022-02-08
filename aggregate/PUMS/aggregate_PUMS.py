@@ -143,8 +143,7 @@ class PUMSAggregator(BaseAggregator):
             self.add_aggregated_data(count_aggregated_ct)
 
     def add_fractions(self, indicator, subset):
-        print(f"calculating fraction for {indicator}")
-        print(f"subset has {subset.shape[0]} records")
+        subset = subset[subset[indicator].notna()]
         fraction_aggregated = calculate_fractions(
             data=subset,
             variable_col=indicator,

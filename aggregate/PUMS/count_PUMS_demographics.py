@@ -23,9 +23,9 @@ class PUMSCountDemographics(PUMSCount):
     ) -> None:
         self.indicators_denom.extend(
             [
-                ("LEP", "speak_other_language_and_over_five_filter"),
-                ("foreign_born",),
-                ("age_bucket",),
+                ("LEP",)  # "speak_other_language_and_over_five_filter"),
+                # ("foreign_born",),
+                # ("age_bucket",),
             ]
         )
         if single_indicator:
@@ -61,16 +61,11 @@ class PUMSCountDemographics(PUMSCount):
 
     def LEP_assign(self, person):
         """Limited english proficiency"""
-        if person["ENG"] == "Very well":
+        if person["ENG"] == "N/A (less than 5 years old/speaks only English)":
+            return None
+        elif person["ENG"] == "Very well":
             return "not_lep"
         return "lep"
-
-    def LEP_by_race_assign(self, person):
-        """Limited english proficiency by race"""
-        lep = self.LEP_assign(person)
-        if lep is None:
-            return lep
-        return f"lep_{self.race_assign(person)}"
 
     def age_bucket_assign(self, person):
         if person["AGEP"] < 16:
@@ -85,6 +80,7 @@ class PUMSCountDemographics(PUMSCount):
         race = self.race_assign(person)
         return f"{age_bucket}_{race}"
 
-    def speak_other_language_and_over_five_filter(self, PUMS: pd.DataFrame):
-        subset = PUMS[PUMS["LANX"] == "Yes, speaks another language"]
-        return subset
+    # def speak_other_language_and_over_five_filter(self, PUMS: pd.DataFrame):
+    #     # subset = PUMS[PUMS["LANX"] == "Yes, speaks another language"]
+    #     subset = PUMS[PUMS['']]
+    #     return subset

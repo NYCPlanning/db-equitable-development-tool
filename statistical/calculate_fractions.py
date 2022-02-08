@@ -2,7 +2,7 @@ from email.errors import CloseBoundaryNotFoundDefect
 from operator import ge
 from threading import get_ident
 import warnings
-from numpy import single
+from numpy import single, var
 
 warnings.filterwarnings("ignore")
 
@@ -36,9 +36,10 @@ def calculate_fractions(
     Parent category is only used in crosstabs, this is the original variable being crosstabbed on."""
     all_fractions = pd.DataFrame(index=data[geo_col].unique())
     for category in categories:
-        data.loc[:, category] = (data[variable_col] == category).astype(int)
+        category_col = f"{variable_col}-{category}"
+        data.loc[:, category_col] = (data[variable_col] == category).astype(int)
         survey_design = survey_package.svrepdesign(
-            variables=data[[category]],
+            variables=data[[category_col]],
             repweights=data[rw_cols],
             weights=data[weight_col],
             combined_weights=True,
@@ -47,7 +48,7 @@ def calculate_fractions(
             rscales=1,
         )
         single_fraction: pd.DataFrame = survey_package.svyby(
-            formula=data[category],
+            formula=data[category_col],
             by=data[[geo_col]],
             design=survey_design,
             FUN=survey_package.svymean,
@@ -59,15 +60,25 @@ def calculate_fractions(
                 f"{category}-fraction",
                 f"{category}-fraction-SE",
                 f"{category}-fraction-CV",
+                f"{category}-fraction-denom",
             ]
         else:
             columns = [
                 f"{parent_category}-{category}-fraction",
                 f"{parent_category}-{category}-fraction-SE",
                 f"{parent_category}-{category}-fraction-CV",
+                f"{parent_category}-{category}-fraction-denom",
             ]
+
+        denom = data.groupby([variable_col, geo_col]).sum()["PWGTP"].unstack()[category]
+        single_fraction["denominator"] = denom
         single_fraction.rename(
-            columns={"V1": columns[0], "se": columns[1], "cv": columns[2]},
+            columns={
+                "V1": columns[0],
+                "se": columns[1],
+                "cv": columns[2],
+                "denominator": columns[3],
+            },
             inplace=True,
         )
         single_fraction = single_fraction.apply(

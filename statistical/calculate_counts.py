@@ -1,6 +1,7 @@
 """Generalized code to get counts and associated variances"""
 
 from itertools import count
+from unicodedata import category
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -38,6 +39,7 @@ def calculate_counts(
         original_var = variable_col
         variable_col = f"{variable_col}-{crosstab}"
         data.loc[:, variable_col] = data[original_var] + "-" + data[crosstab]
+        data[variable_col] = data[variable_col].replace({np.NaN: None})
 
     survey_design = survey_package.svrepdesign(
         variables=data[["a"]],

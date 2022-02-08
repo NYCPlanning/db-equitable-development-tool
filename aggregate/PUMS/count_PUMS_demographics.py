@@ -23,9 +23,9 @@ class PUMSCountDemographics(PUMSCount):
     ) -> None:
         self.indicators_denom.extend(
             [
-                ("LEP",)  # "speak_other_language_and_over_five_filter"),
-                # ("foreign_born",),
-                # ("age_bucket",),
+                ("LEP", "over_five_filter"),
+                ("foreign_born",),
+                ("age_bucket",),
             ]
         )
         if single_indicator:
@@ -47,25 +47,17 @@ class PUMSCountDemographics(PUMSCount):
             requery=requery,
         )
 
-    def foreign_born_by_race_assign(self, person):
-        fb = self.foreign_born_assign(person)
-        if fb is None:
-            return fb
-        return f"fb_{self.race_assign(person)}"
-
     def foreign_born_assign(self, person):
         """Foreign born"""
-        if person["NATIVITY"] == "Native":
-            return "not_fb"
-        return "fb"
+        if person["NATIVITY"] != "Native":
+            return "fb"
+        return None
 
     def LEP_assign(self, person):
         """Limited english proficiency"""
-        if person["ENG"] == "N/A (less than 5 years old/speaks only English)":
-            return None
-        elif person["ENG"] == "Very well":
-            return "not_lep"
-        return "lep"
+        if person["ENG"] in ["Not at all", "Not well", "Well"]:
+            return "lep"
+        return None
 
     def age_bucket_assign(self, person):
         if person["AGEP"] < 16:
@@ -75,12 +67,6 @@ class PUMSCountDemographics(PUMSCount):
         if person["AGEP"] >= 65:
             return "P65pl"
 
-    def age_bucket_by_race_assign(self, person):
-        age_bucket = self.age_bucket_assign(person)
-        race = self.race_assign(person)
-        return f"{age_bucket}_{race}"
-
-    # def speak_other_language_and_over_five_filter(self, PUMS: pd.DataFrame):
-    #     # subset = PUMS[PUMS["LANX"] == "Yes, speaks another language"]
-    #     subset = PUMS[PUMS['']]
-    #     return subset
+    def over_five_filter(self, PUMS: pd.DataFrame):
+        subset = PUMS[PUMS["AGEP"] > 5]
+        return subset

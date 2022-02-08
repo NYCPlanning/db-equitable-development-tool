@@ -68,6 +68,7 @@ class PUMSAggregator(BaseAggregator):
         )
         for crosstab in self.crosstabs:
             self.assign_indicator(crosstab)
+            self.add_category(crosstab)
         # Possible to-do: below code goes in call instead of init
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
@@ -155,27 +156,28 @@ class PUMSAggregator(BaseAggregator):
             keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(fraction_aggregated)
-        for category in self.categories[indicator]:
-            records_in_category = subset[subset[indicator] == category]
-            if not records_in_category.empty:
-                for ct in self.crosstabs:
-                    self.add_category(ct)
-                    fraction_aggregated_crosstab = calculate_fractions(
-                        data=records_in_category.copy(),
-                        variable_col=ct,
-                        categories=self.categories[ct],
-                        rw_cols=self.rw_cols,
-                        weight_col=self.weight_col,
-                        geo_col=self.geo_col,
-                        add_MOE=self.add_MOE,
-                        keep_SE=self.keep_SE,
-                        parent_category=category,
-                    )
-                    self.add_aggregated_data(fraction_aggregated_crosstab)
+        for race in self.categories["race"]:
+            records_in_race = subset[subset["race"] == race]
+            if not records_in_race.empty:
+                fraction_aggregated_crosstab = calculate_fractions(
+                    data=records_in_race.copy(),
+                    variable_col=indicator,
+                    categories=self.categories[indicator],
+                    rw_cols=self.rw_cols,
+                    weight_col=self.weight_col,
+                    geo_col=self.geo_col,
+                    add_MOE=self.add_MOE,
+                    keep_SE=self.keep_SE,
+                    race_crosstab=race,
+                )
+                self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
-        self.categories[indicator] = list(self.PUMS[indicator].unique())
+        categories = list(self.PUMS[indicator].unique())
+        if None in categories:
+            categories.remove(None)
+        self.categories[indicator] = categories
 
     def total_pop_assign(self, person):
         return "total_pop"

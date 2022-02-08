@@ -1,3 +1,4 @@
+from audioop import cross
 from email.errors import CloseBoundaryNotFoundDefect
 from operator import ge
 from threading import get_ident
@@ -30,7 +31,7 @@ def calculate_fractions(
     geo_col,
     add_MOE,
     keep_SE,
-    parent_category=None,
+    race_crosstab=None,
 ):
     """This adds to dataframe so it should receive copy of data
     Parent category is only used in crosstabs, this is the original variable being crosstabbed on."""
@@ -55,7 +56,7 @@ def calculate_fractions(
             vartype=base.c("se", "ci", "var", "cv"),
         )
         single_fraction.drop(columns=[geo_col], inplace=True)
-        if parent_category is None:
+        if race_crosstab is None:
             columns = [
                 f"{category}-fraction",
                 f"{category}-fraction-SE",
@@ -64,13 +65,12 @@ def calculate_fractions(
             ]
         else:
             columns = [
-                f"{parent_category}-{category}-fraction",
-                f"{parent_category}-{category}-fraction-SE",
-                f"{parent_category}-{category}-fraction-CV",
-                f"{parent_category}-{category}-fraction-denom",
+                f"{category}-{race_crosstab}-fraction",
+                f"{category}-{race_crosstab}-fraction-SE",
+                f"{category}-{race_crosstab}-fraction-CV",
+                f"{category}-{race_crosstab}-fraction-denom",
             ]
-
-        denom = data.groupby([variable_col, geo_col]).sum()["PWGTP"].unstack()[category]
+        denom = data.groupby(geo_col).sum()["PWGTP"]
         single_fraction["denominator"] = denom
         single_fraction.rename(
             columns={
@@ -95,5 +95,5 @@ def SE_to_zero_no_respondents(geography):
     """If fraction is zero then no respodents in this category for this geography.
     In this situation variance measures should be set to null"""
     if not geography.iloc[0]:
-        geography.iloc[1:] = None
+        geography.iloc[1:3] = None
     return geography

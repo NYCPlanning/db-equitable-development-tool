@@ -6,6 +6,7 @@ on:
         category:
           description: 'Corresponds to tab of 1572-B data matrix '
           required: true
+          default: housing_production
 
 
 jobs:

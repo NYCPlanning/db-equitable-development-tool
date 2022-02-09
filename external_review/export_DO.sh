@@ -9,6 +9,10 @@ function export_DO {
 
 }
 
+case $1 in
+    export ) export_DO $2 $3
+esac
+
 # export_DO housing_production_citywide.csv housing_production
 # export_DO housing_production_borough.csv housing_production
 # export_DO housing_production_puma.csv housing_production

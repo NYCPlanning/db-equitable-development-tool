@@ -1,0 +1,45 @@
+name: Export Category
+
+on:
+  workflow_dispatch:
+    inputs:
+        category:
+          description: 'Corresponds to tab of 1572-B data matrix '
+          required: true
+
+
+jobs:
+  export:
+    runs-on: ubuntu-20.04
+    env:
+      AWS_S3_ENDPOINT: ${{ secrets.DO_S3_ENDPOINT }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.DO_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SECRET_ACCESS_KEY }}
+    strategy:
+      matrix:
+        geography:
+          - puma
+          - borough
+          - citywide
+
+    steps:
+      - uses: actions/checkout@v2.3.4
+      
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      
+      - name: install dependencies
+        run: |
+          curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
+          chmod +x mc
+          sudo mv ./mc /usr/bin
+          mc config host add spaces $AWS_S3_ENDPOINT $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --api S3v4
+      
+      - name: export
+        run: |
+          python -m external_review.external_review_collate ${{matrix.geography}} ${{ github.event.inputs.category }}
+          ./external_review/export_DO.sh export ${{matrix.geography}} ${{ github.event.inputs.category }}
+
+
+

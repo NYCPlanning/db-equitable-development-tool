@@ -96,7 +96,7 @@ def units_change_citywide(df, census10):
 
     results = pivot_and_flatten_index(results, "citywide")
 
-    return results
+    return results.set_index("citywide")
 
 
 def unit_change_borough(df, census10):
@@ -139,7 +139,9 @@ def unit_change_borough(df, census10):
         {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
     )
 
-    return results_
+    results_.rename(columns={"boro": "borough"}, inplace=True)
+
+    return results_.set_index("borough")
 
 
 def NYC_PUMA_geographies():

@@ -25,7 +25,7 @@ jobs:
           - citywide
 
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2
       
       - uses: actions/setup-python@v2
         with:
@@ -33,15 +33,20 @@ jobs:
       
       - name: install dependencies
         run: |
+          sudo apt update
+          sudo apt install -y python3-pip python3-distutils
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
           curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x mc
           sudo mv ./mc /usr/bin
           mc config host add spaces $AWS_S3_ENDPOINT $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --api S3v4
+
       - name: Poetry Install
         run: |
           . $HOME/.poetry/env
           pip install poetry
           poetry install      
+          
       - name: export
         run: |
           poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} ${{ github.event.inputs.category }}

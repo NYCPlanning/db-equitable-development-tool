@@ -17,14 +17,16 @@ jobs:
       AWS_S3_ENDPOINT: ${{ secrets.DO_S3_ENDPOINT }}
       AWS_ACCESS_KEY_ID: ${{ secrets.DO_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SECRET_ACCESS_KEY }}
-      category: housing_production
+      
     strategy:
       matrix:
         geography:
           - puma
           - borough
           - citywide
-
+        category:
+          - housing_production
+ 
     steps:
       - uses: actions/checkout@v2
       
@@ -47,14 +49,14 @@ jobs:
           . $HOME/.poetry/env
           pip install poetry
           poetry install      
-          
+
       - name: dataloading
         run: ./ingest/data_library/dataloading.sh
 
       - name: export
         run: |
-          poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} $category # ${{ github.event.inputs.category }}
-          ./external_review/export_DO.sh export ${{matrix.geography}} $category #${{ github.event.inputs.category }}
+          poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} ${{matrix.category}}
+          ./external_review/export_DO.sh export ${{matrix.geography}} ${{matrix.category}}
 
 
 

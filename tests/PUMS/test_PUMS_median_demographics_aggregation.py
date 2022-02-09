@@ -16,5 +16,5 @@ def test_local_loader(all_data):
 @pytest.mark.test_aggregation
 def test_all_ages_positive():
     """Only demographic medians are ages"""
-    median_cols = [c for c in local_loader.aggregated.columns if "median" in c]
+    median_cols = [c for c in local_loader.aggregated.columns if c[-5:] == "median"]
     assert (local_loader.aggregated[median_cols].min() > 0).all()

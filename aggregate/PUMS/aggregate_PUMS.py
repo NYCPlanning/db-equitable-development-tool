@@ -89,7 +89,7 @@ class PUMSAggregator(BaseAggregator):
 
     def add_aggregated_data(self, new_var: pd.DataFrame):
         self.aggregated = self.aggregated.merge(
-            new_var, left_index=True, right_index=True
+            new_var, how="left", left_index=True, right_index=True
         )
 
     def assign_indicator(self, indicator) -> pd.DataFrame:

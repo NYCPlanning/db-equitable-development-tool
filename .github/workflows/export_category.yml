@@ -47,6 +47,9 @@ jobs:
           . $HOME/.poetry/env
           pip install poetry
           poetry install      
+          
+      - name: dataloading
+        run: ./ingest/data_library/dataloading.sh
 
       - name: export
         run: |

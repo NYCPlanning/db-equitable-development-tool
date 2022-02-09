@@ -68,5 +68,5 @@ class PUMSCountDemographics(PUMSCount):
             return "P65pl"
 
     def over_five_filter(self, PUMS: pd.DataFrame):
-        subset = PUMS[PUMS["AGEP"] > 5]
+        subset = PUMS[PUMS["AGEP"] >= 5]
         return subset

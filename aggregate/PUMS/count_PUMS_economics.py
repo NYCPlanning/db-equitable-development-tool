@@ -14,7 +14,11 @@ class PUMSCountEconomics(PUMSCount):
             "civilian_employed_pop_filter",
         ),  # Termed "Employment by occupation" in data matrix
         ("lf",),
-        ("industry",),  # Termed "Employment by industry sector" in data matrix
+        (
+            "industry",
+            "civilian_employed_pop_filter",
+        ),  # Termed "Employment by industry sector" in data matrix
+        # apply civilian_employed_pop_filter
     ]
 
     def __init__(
@@ -68,9 +72,8 @@ class PUMSCountEconomics(PUMSCount):
             "Arts, Entertainment, and Recreation, and  Accommodation and Food Services": "ArtEn",
             "Other Services (except Public Administration)": "Oth",
             "Public Administration": "PbAdm",
-            "Military": "Mil",  # Note that this wasn't in field specifications but it can't hurt to add
         }
-        return f'industry-{industry_mapper.get(person["INDP"], None)}'
+        return f'industry-{industry_mapper.get(person["INDP"], "none")}'
 
     def civilian_employed_pop_filter(self, PUMS: pd.DataFrame):
         """Filter to return subset of all people ages 16-64 who are employed as civilians"""

@@ -4,10 +4,10 @@ on:
   push:
   workflow_dispatch:
     inputs:
-        category:
-          description: 'Corresponds to tab of 1572-B data matrix '
-          required: true
-          default: housing_production
+      category:
+        description: 'Corresponds to tab of 1572-B data matrix '
+        required: true
+        default: housing_production
 
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
           . $HOME/.poetry/env
           pip install poetry
           poetry install      
-          
+
       - name: export
         run: |
           poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} ${{ github.event.inputs.category }}

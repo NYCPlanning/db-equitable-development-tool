@@ -35,10 +35,15 @@ jobs:
           chmod +x mc
           sudo mv ./mc /usr/bin
           mc config host add spaces $AWS_S3_ENDPOINT $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --api S3v4
-      
+      - name: Poetry Install
+        run: |
+          . $HOME/.poetry/env
+          pip install poetry
+          poetry install      
       - name: export
         run: |
-          python -m external_review.external_review_collate ${{matrix.geography}} ${{ github.event.inputs.category }}
+          
+          poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} ${{ github.event.inputs.category }}
           ./external_review/export_DO.sh export ${{matrix.geography}} ${{ github.event.inputs.category }}
 
 

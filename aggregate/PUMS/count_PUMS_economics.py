@@ -3,6 +3,11 @@
 from typing import Tuple, List
 from aggregate.PUMS.aggregate_PUMS import PUMSCount
 import pandas as pd
+from aggregate.PUMS.economic_indicators import (
+    occupation_assign,
+    lf_assign,
+    industry_assign,
+)
 
 
 class PUMSCountEconomics(PUMSCount):
@@ -35,42 +40,13 @@ class PUMSCountEconomics(PUMSCount):
         )
 
     def lf_assign(self, person):
-        if (
-            person["ESR"] == "N/A (less than 16 years old)"
-            or person["ESR"] == "Not in labor force"
-        ):
-            return "not-lf"
-        return "lf"
+        return lf_assign(person)
 
     def occupation_assign(self, person):
-        occupation_mapper = {
-            "Management, Business, Science, and Arts Occupations": "mbsa",
-            "Service Occupations": "srvc",
-            "Sales and Office Occupations": "slsoff",
-            "Natural Resources, Construction, and Maintenance Occupations": "cstmnt",
-            "Production, Transportation, and Material Moving Occupations": "prdtrn",
-        }
-
-        return f'occupation-{occupation_mapper.get(person["OCCP"], "none")}'
+        return occupation_assign(person)
 
     def industry_assign(self, person):
-        industry_mapper = {
-            "Agriculture, Forestry, Fishing and Hunting, and Mining": "AgFFHM",
-            "Construction": "Cnstn",
-            "Manufacturing": "MNfctr",
-            "Wholesale Trade": "Whlsl",
-            "Retail Trade": "Rtl",
-            "Transportation and Warehousing, and Utilities": "TrWHUt",
-            "Information": "Info",
-            "Finance and Insurance,  and Real Estate and Rental and Leasing": "FIRE",
-            "Professional, Scientific, and Management, and  Administrative and Waste Management Services": "PrfSMg",
-            "Educational Services, and Health Care and Social Assistance": "EdHlth",
-            "Arts, Entertainment, and Recreation, and  Accommodation and Food Services": "ArtEn",
-            "Other Services (except Public Administration)": "Oth",
-            "Public Administration": "PbAdm",
-            "Military": "Mil",  # Note that this wasn't in field specifications but it can't hurt to add
-        }
-        return f'industry-{industry_mapper.get(person["INDP"], None)}'
+        return industry_assign(person)
 
     def civilian_employed_pop_filter(self, PUMS: pd.DataFrame):
         """Filter to return subset of all people ages 16-64 who are employed as civilians"""

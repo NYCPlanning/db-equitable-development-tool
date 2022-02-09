@@ -2,10 +2,6 @@ from audioop import add
 from numpy import var
 from pandas import crosstab
 from aggregate.PUMS.aggregate_medians import PUMSMedians
-from statistical.calculate_medians import (
-    calculate_median,
-    calculate_median_with_crosstab,
-)
 
 
 class PUMSMedianDemographics(PUMSMedians):

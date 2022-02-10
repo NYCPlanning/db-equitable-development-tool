@@ -16,7 +16,7 @@ class PUMSCleaner:
         self.range_recodes = self.get_range_recodes()
         self.logger = create_logger("PUMS_cleaner_log", "logs/PUMSCleaner.log")
 
-    def clean_simple_cateogorical(self, vi_data, column_name):
+    def clean_simple_categorical(self, vi_data, column_name):
         """For columns that are downloaded as integers and map one to one to categories in data dictionary"""
         self.logger.info(
             f"cleaning {column_name} with simple categorical mapping approach. This uses the one_to_one_recodes df"

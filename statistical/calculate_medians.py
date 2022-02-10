@@ -79,7 +79,11 @@ def calculate_median_with_crosstab(
 ):
     """Can only do one crosstab at a time for now"""
     survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
-
+    print(f"calculate median passed data with {data.shape[0]} rows")
+    print(f"variable col is {variable_col}")
+    print(f"crosstab is {crosstab_col}")
+    assert variable_col in data.columns
+    assert crosstab_col in data.columns
     aggregated = survey_package.svyby(
         formula=data[[variable_col]],
         by=data[[geo_col, crosstab_col]],

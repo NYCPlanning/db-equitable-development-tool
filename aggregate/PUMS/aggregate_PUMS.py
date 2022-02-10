@@ -55,6 +55,7 @@ class PUMSAggregator(BaseAggregator):
         BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
         self.year = year
+        self.categories = {}
         PUMS_load_start = time.perf_counter()
         self.PUMS: pd.DataFrame = load_PUMS(
             variable_types=variable_types,

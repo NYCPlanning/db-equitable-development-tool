@@ -75,6 +75,7 @@ def calculate_median_with_crosstab(
     geo_col,
     add_MOE,
     keep_SE,
+    second_crosstab_name=None,
 ):
     """Can only do one crosstab at a time for now"""
     survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
@@ -88,9 +89,15 @@ def calculate_median_with_crosstab(
         vartype=base.c("se", "ci", "var", "cv"),
         **{"interval.type": "quantile"},
     )
-    median_col_name = f"{variable_col}-median"
-    se_col_name = f"{variable_col}-median-SE"
-    cv_col_name = f"{variable_col}-median-CV"
+
+    if second_crosstab_name:
+        data_point_label = f"{variable_col}-{second_crosstab_name}"
+    else:
+        data_point_label = variable_col
+
+    median_col_name = f"{data_point_label}-median"
+    se_col_name = f"{data_point_label}-median-SE"
+    cv_col_name = f"{data_point_label}-median-CV"
     aggregated.rename(
         columns={
             variable_col: median_col_name,

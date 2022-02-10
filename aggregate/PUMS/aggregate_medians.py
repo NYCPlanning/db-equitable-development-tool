@@ -31,7 +31,7 @@ class PUMSMedians(PUMSAggregator):
         )
 
     def calculate_add_new_variable(self, ind_denom):
-        """Overwrites from parent class. This needs to"""
+        """Overwrites from parent class"""
         indicator = ind_denom[0]
         self.assign_indicator(indicator)
         subset = self.apply_denominator(ind_denom)

@@ -11,7 +11,7 @@ def occupation_assign(person):
     }
     occupation = occupation_mapper.get(person["OCCP"])
     if occupation:
-        return f'occupation-{occupation_mapper.get(person["OCCP"], "none")}'
+        return f"occupation-{occupation.lower()}"
     return None
 
 
@@ -42,5 +42,5 @@ def industry_assign(person):
     }
     industry = industry_mapper.get(person["INDP"])
     if industry:
-        return f'industry-{industry_mapper.get(person["INDP"], "none")}'
+        return f"industry-{industry.lower()}"
     return None

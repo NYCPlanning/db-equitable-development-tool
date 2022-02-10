@@ -9,8 +9,10 @@ def occupation_assign(person):
         "Natural Resources, Construction, and Maintenance Occupations": "cstmnt",
         "Production, Transportation, and Material Moving Occupations": "prdtrn",
     }
-
-    return f'occupation-{occupation_mapper.get(person["OCCP"], "none")}'
+    occupation = occupation_mapper.get(person["OCCP"])
+    if occupation:
+        return f'occupation-{occupation_mapper.get(person["OCCP"], "none")}'
+    return None
 
 
 def lf_assign(person):
@@ -37,6 +39,8 @@ def industry_assign(person):
         "Arts, Entertainment, and Recreation, and  Accommodation and Food Services": "ArtEn",
         "Other Services (except Public Administration)": "Oth",
         "Public Administration": "PbAdm",
-        "Military": "Mil",  # Note that this wasn't in field specifications but it can't hurt to add
     }
-    return f'industry-{industry_mapper.get(person["INDP"], None)}'
+    industry = industry_mapper.get(person["INDP"])
+    if industry:
+        return f'industry-{industry_mapper.get(person["INDP"], "none")}'
+    return None

@@ -17,9 +17,12 @@ class PUMSCountEconomics(PUMSCount):
         (
             "occupation",
             "civilian_employed_pop_filter",
-        ),  # Termed "Employment by occupation" in data matrix
+        ),
         ("lf",),
-        ("industry",),  # Termed "Employment by industry sector" in data matrix
+        (
+            "industry",
+            "civilian_employed_pop_filter",
+        ),
     ]
 
     def __init__(

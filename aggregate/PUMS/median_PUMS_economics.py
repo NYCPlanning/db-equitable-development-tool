@@ -22,8 +22,8 @@ class PUMSMedianEconomics(PUMSAggregator):
     to do aggregatation in call of PUMSAggregator instead of init"""
 
     indicators_denom = [("wage", "civilian_employed_with_earnings_filter")]
-    # economic_crosstabs = ["industry", "occupation"]
-    economic_crosstabs = ["occupation"]
+    economic_crosstabs = ["industry", "occupation"]
+    # economic_crosstabs = ["occupation"]
     crosstabs = ["race"]
 
     def __init__(
@@ -34,8 +34,6 @@ class PUMSMedianEconomics(PUMSAggregator):
         add_MOE=True,
         keep_SE=False,
     ):
-        print("WARNING: only calculating occupation for debug")
-
         self.PUMS: pd.DataFrame = load_PUMS(
             variable_types=["demographics", "economics"],
             limited_PUMA=limited_PUMA,

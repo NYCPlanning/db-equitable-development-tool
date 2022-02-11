@@ -3,7 +3,7 @@ from json import load
 import geopandas as gp
 import requests
 from shapely import wkt
-from utils.geography_helpers import borough_code_to_abbr, NYC_PUMA_geographies
+from utils.assign_PUMA import borough_code_to_abbr, NYC_PUMA_geographies
 from internal_review.set_internal_review_file import set_internal_review_files
 
 supported_geographies = ["puma", "borough", "citywide"]

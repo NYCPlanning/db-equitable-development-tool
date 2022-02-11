@@ -12,6 +12,7 @@ path = "internal_review/housing_production/"
 subfolders = os.listdir("internal_review/housing_production/")
 
 for g in subfolders:
+    print(g)
 
     files = os.listdir(path + "/" + g + "/")
 

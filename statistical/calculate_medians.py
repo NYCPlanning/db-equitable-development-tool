@@ -1,5 +1,6 @@
+import random
 import warnings
-from numpy import var
+from numpy import result_type, var
 
 warnings.filterwarnings("ignore")
 
@@ -78,12 +79,13 @@ def calculate_median_with_crosstab(
     second_crosstab_name=None,
 ):
     """Can only do one crosstab at a time for now"""
+    # data[rw_cols] = data[rw_cols].apply(axis=1, func=random_rw, result_type="expand")
+    data[rw_cols] = data[rw_cols].replace({0: 0.01})
     survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
     print(f"calculate median passed data with {data.shape[0]} rows")
     print(f"variable col is {variable_col}")
     print(f"crosstab is {crosstab_col}")
-    assert variable_col in data.columns
-    assert crosstab_col in data.columns
+    print(f"second crosstab name is {second_crosstab_name}")
     aggregated = survey_package.svyby(
         formula=data[[variable_col]],
         by=data[[geo_col, crosstab_col]],
@@ -122,3 +124,10 @@ def calculate_median_with_crosstab(
     pivot_table = variance_measures(pivot_table, add_MOE, keep_SE)
 
     return pivot_table
+
+
+def random_rw(row):
+    rv = []
+    for i in range(1, 81):
+        rv.append(random.randint(1, 100))
+    return rv

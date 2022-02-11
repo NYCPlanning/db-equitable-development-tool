@@ -1,4 +1,5 @@
 """Examine median wages broken out by industry, occupation"""
+from re import sub
 import pandas as pd
 from aggregate.PUMS.aggregate_medians import PUMSMedians
 from aggregate.PUMS.count_PUMS_economics import PUMSCountEconomics
@@ -23,7 +24,6 @@ class PUMSMedianEconomics(PUMSAggregator):
 
     indicators_denom = [("wage", "civilian_employed_with_earnings_filter")]
     economic_crosstabs = ["industry", "occupation"]
-    # economic_crosstabs = ["occupation"]
     crosstabs = ["race"]
 
     def __init__(
@@ -99,7 +99,6 @@ class PUMSMedianEconomics(PUMSAggregator):
         indicator = ind_denom[0]
         self.assign_indicator(indicator)
         subset = self.apply_denominator(ind_denom)
-
         for crosstab in self.economic_crosstabs:
             self.assign_indicator(crosstab)
             new_indicator = calculate_median_with_crosstab(

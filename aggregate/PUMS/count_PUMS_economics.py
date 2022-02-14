@@ -10,20 +10,21 @@ class PUMSCountEconomics(PUMSCount):
     """Indicators refer to variables in Field Specifications page of data matrix"""
 
     indicators_denom: List[Tuple] = [
+        ("lf",),
         (
             "occupation",
             "civilian_employed_pop_filter",
         ),  # Termed "Employment by occupation" in data matrix
-        ("lf",),
         (
             "industry",
             "civilian_employed_pop_filter",
         ),  # Termed "Employment by industry sector" in data matrix
         # apply civilian_employed_pop_filter
+        ("", ), 
     ]
 
     def __init__(
-        self, limited_PUMA=False, year=2019, requery=False, add_MOE=True, keep_SE=False
+        self, limited_PUMA=False, year=2019, household=False, requery=False, add_MOE=True, keep_SE=False
     ) -> None:
         self.crosstabs = ["race"]
         self.include_fractions = True
@@ -37,6 +38,7 @@ class PUMSCountEconomics(PUMSCount):
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
+            household=household,
         )
 
     def lf_assign(self, person):
@@ -88,7 +90,7 @@ class PUMSCountEconomics(PUMSCount):
         turns out the NPF field is identiacal number of household members to all 
         individuals. So the individual assignment can be done fairly straight forwardsly
 
-        the function then use the numpy digitize to put the household income into 
+        the function then use the numpy digitize to put the household income into their respective bins
 
         REMAINING QUESTION: PUMS aggregator then take this to the calculate_counts 
         which needs to incorporate some ways to perform the calculation on the household levels

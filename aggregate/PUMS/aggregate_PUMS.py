@@ -51,7 +51,7 @@ class PUMSAggregator(BaseAggregator):
     weight_col = "PWGTP"
     geo_col = "PUMA"
 
-    def __init__(self, variable_types, limited_PUMA, year, requery) -> None:
+    def __init__(self, variable_types, limited_PUMA, year, requery, household) -> None:
         BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
         self.year = year
@@ -62,6 +62,7 @@ class PUMSAggregator(BaseAggregator):
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
+            household=household,
         )
         PUMS_load_end = time.perf_counter()
         self.logger.info(
@@ -73,6 +74,8 @@ class PUMSAggregator(BaseAggregator):
         # Possible to-do: below code goes in call instead of init
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
+
+        # add something here to calculate only the household level indicator
         for ind_denom in self.indicators_denom:
             print(f"iterated to {ind_denom[0]}")
             agg_start = time.perf_counter()

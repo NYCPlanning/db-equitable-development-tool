@@ -2,7 +2,7 @@
 
 
 def make_PUMS_cache_fn(
-    year: int, variable_types=None, limited_PUMA=False, include_rw=False
+    year: int, variable_types=None, limited_PUMA=False, include_rw=False, household=False
 ):
     fn = f'PUMS_{"_".join(variable_types)}'
     fn = f"{fn}_{year}"
@@ -10,6 +10,8 @@ def make_PUMS_cache_fn(
         fn += "_limitedPUMA"
     if not include_rw:
         fn += "_noRepWeights"
+    if household:
+        fn += '_household'
     return f"data/{fn}.pkl"
 
 

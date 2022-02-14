@@ -2,7 +2,8 @@ from typing import List
 import pandas as pd
 import numpy as np
 
-from utils.geography_helpers import assign_PUMA
+#from utils.geography_helpers import assign_PUMA
+#from utils.assign_PUMA import assign_PUMA
 
 """To do: make this central module from which all other code is called. Write 
 class method for aggregate step to access.  Class method will return cached data or
@@ -25,6 +26,7 @@ class PUMSData:
         limited_PUMA: bool = False,
         year: int = 2019,
         include_rw: bool = True,
+        household: bool = False,
     ):
         """Pulling PUMS data with replicate weights requires multiple GET
         requests as there is 50 variable max for each GET request. This class is
@@ -47,11 +49,12 @@ class PUMSData:
         """
         self.include_rw = include_rw
         self.cache_path = self.get_cache_fn(
-            variable_types, limited_PUMA, year, include_rw
+            variable_types, limited_PUMA, year, include_rw, household
         )
         self.variables = variables_for_processing(variable_types=variable_types)
         self.limited_PUMA = limited_PUMA
         self.year = year
+        self.household = household
         urls = get_urls(
             variable_types=variable_types,
             year=year,
@@ -66,12 +69,13 @@ class PUMSData:
         self.download_and_cache()
 
     @classmethod
-    def get_cache_fn(self, variable_types, limited_PUMA, year, include_rw):
+    def get_cache_fn(self, variable_types, limited_PUMA, year, include_rw, household):
         return make_PUMS_cache_fn(
             variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             include_rw=include_rw,
+            household=household
         )
 
     def populate_dataframes(self):
@@ -84,6 +88,8 @@ class PUMSData:
                     i[1], f"get request for {k} region two"
                 )
                 data = data_region_one.append(data_region_two)
+                if self.household:
+                    data = data.loc[data["SPORDER"] == '1']
                 self.assign_data_to_attr(k, data)
         if self.year == 2012:
             for k, i in self.urls.items():

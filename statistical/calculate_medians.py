@@ -82,10 +82,6 @@ def calculate_median_with_crosstab(
     # data[rw_cols] = data[rw_cols].apply(axis=1, func=random_rw, result_type="expand")
     data[rw_cols] = data[rw_cols].replace({0: 0.01})
     survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
-    print(f"calculate median passed data with {data.shape[0]} rows")
-    print(f"variable col is {variable_col}")
-    print(f"crosstab is {crosstab_col}")
-    print(f"second crosstab name is {second_crosstab_name}")
     aggregated = survey_package.svyby(
         formula=data[[variable_col]],
         by=data[[geo_col, crosstab_col]],

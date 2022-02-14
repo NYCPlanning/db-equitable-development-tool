@@ -35,10 +35,11 @@ def test_no_workers_median_NaN(indicator, mapper):
         for race in ["wnh", "bnh", "anh", "onh", "hsp"]:
             col_name = f"{indicator}-{i.lower()}-{race}-count"
             zero_workers = counts_aggregated.index[counts_aggregated[col_name] == 0]
-            if zero_workers:
+            if not zero_workers.empty:
                 assert (
-                    medians_aggregated[f"industry-{i.lower()}-wage-{race}-median"]
-                    .loc[zero_workers]
+                    medians_aggregated[f"{indicator}-{i.lower()}-wage-{race}-median"][
+                        zero_workers
+                    ]
                     .isna()
                     .all()
                 )

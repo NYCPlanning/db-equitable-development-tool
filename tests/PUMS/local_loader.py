@@ -4,6 +4,7 @@ from ingest.load_data import load_PUMS
 from aggregate.PUMS.count_PUMS_economics import PUMSCountEconomics
 from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
 from aggregate.PUMS.median_PUMS_demographics import PUMSMedianDemographics
+from aggregate.PUMS.median_PUMS_economics import PUMSMedianEconomics
 
 
 class LocalLoader:
@@ -49,7 +50,9 @@ class LocalLoader:
                 limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
             )
         elif type == "economics":
-            raise Exception("economics medians not implemented yet")
+            aggregator = PUMSMedianEconomics(
+                limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+            )
         else:
             raise Exception("type must be demographics or economics")
 

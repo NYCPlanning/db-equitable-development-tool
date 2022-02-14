@@ -133,9 +133,7 @@ class PUMSData:
 
     def clean_data(self):
         self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
-        self.vi_data["borough"] = self.vi_data["puma"].apply(
-            axis=1, func=puma_to_borough
-        )
+        self.vi_data["borough"] = self.vi_data.apply(axis=1, func=puma_to_borough)
         self.vi_data["citywide"] = "citywide"
         cleaner = PUMSCleaner()
         for v in self.variables:

@@ -9,21 +9,28 @@ import pandas as pd
 class PUMSCountEconomics(PUMSCount):
     """Indicators refer to variables in Field Specifications page of data matrix"""
 
-    indicators = [
-        "lf",
-        "lf_by_race",
-        "occupation",  # Termed "Employment by occupation" in data matrix
-        "occupation_by_race",
-        "industry",  # Termed "Employment by industry sector" in data matrix
-        "industry_by_race",
-        "household_income_level",
+    indicators_denom: List[Tuple] = [
+        (
+            "occupation",
+            "civilian_employed_pop_filter",
+        ),  # Termed "Employment by occupation" in data matrix
+        ("lf",),
+        (
+            "industry",
+            "civilian_employed_pop_filter",
+        ),  # Termed "Employment by industry sector" in data matrix
+        # apply civilian_employed_pop_filter
     ]
 
-    def __init__(self, limited_PUMA=False, year=2019, requery=False) -> None:
+    def __init__(
+        self, limited_PUMA=False, year=2019, requery=False, add_MOE=True, keep_SE=False
+    ) -> None:
         self.crosstabs = ["race"]
         self.include_fractions = True
         self.include_counts = True
         self.categories = {}
+        self.add_MOE = add_MOE
+        self.keep_SE = keep_SE
         PUMSCount.__init__(
             self,
             variable_types=["economics", "demographics"],
@@ -49,7 +56,7 @@ class PUMSCountEconomics(PUMSCount):
             "Production, Transportation, and Material Moving Occupations": "prdtrn",
         }
 
-        return f'occupation-{occupation_mapper.get(person["OCCP"], None)}'
+        return f'occupation-{occupation_mapper.get(person["OCCP"], "none")}'
 
     def industry_assign(self, person):
         industry_mapper = {
@@ -66,9 +73,8 @@ class PUMSCountEconomics(PUMSCount):
             "Arts, Entertainment, and Recreation, and  Accommodation and Food Services": "ArtEn",
             "Other Services (except Public Administration)": "Oth",
             "Public Administration": "PbAdm",
-            "Military": "Mil",  # Note that this wasn't in field specifications but it can't hurt to add
         }
-        return f'industry-{industry_mapper.get(person["INDP"], None)}'
+        return f'industry-{industry_mapper.get(person["INDP"], "none")}'
 
     def industry_by_race_assign(self, person):
         ind = self.industry_assign(person)
@@ -82,11 +88,7 @@ class PUMSCountEconomics(PUMSCount):
         turns out the NPF field is identiacal number of household members to all 
         individuals. So the individual assignment can be done fairly straight forwardsly
 
-
-        A function probably should be called based on the number of persons in household 
-        to determine the bucket. NOTE: this is beascially DONE by the income band dictionary
-
-        the function then use the numpy digitize the put the 
+        the function then use the numpy digitize to put the household income into 
 
         REMAINING QUESTION: PUMS aggregator then take this to the calculate_counts 
         which needs to incorporate some ways to perform the calculation on the household levels

@@ -17,6 +17,7 @@ Rtree = "^0.9.7"
 python-geosupport = "^1.0.8"
 usaddress = "^0.5.10"
 Shapely = "^1.8.0"
+typer = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
 

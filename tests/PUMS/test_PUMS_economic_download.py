@@ -3,7 +3,8 @@
 import pytest
 from tests.PUMS.local_loader import LocalLoader
 
-local_loader = LocalLoader()
+local_loader_2019 = LocalLoader()
+local_loader_2012 = LocalLoader()
 
 EXPECTED_COLS_VALUES_CATEGORICAL = [
     (
@@ -27,12 +28,23 @@ EXPECTED_COLS_VALUES_CATEGORICAL = [
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
-    local_loader.load_by_person(all_data, include_rw=False, variable_set="economics")
+    local_loader_2019.load_by_person(
+        all_data, include_rw=False, variable_set="economics", year=2019
+    )
+    local_loader_2012.load_by_person(
+        all_data, include_rw=False, variable_set="economics", year=2012
+    )
 
 
+local_loaders = [local_loader_2019, local_loader_2012]
+
+
+@pytest.mark.parametrize("local_loader", local_loaders)
 @pytest.mark.test_download
 @pytest.mark.parametrize("column, expected_values", EXPECTED_COLS_VALUES_CATEGORICAL)
-def test_categorical_columns_have_expected_values(column, expected_values):
+def test_categorical_columns_have_expected_values(
+    column, expected_values, local_loader
+):
 
     assert column in local_loader.by_person.columns
     for ev in expected_values:
@@ -42,9 +54,10 @@ def test_categorical_columns_have_expected_values(column, expected_values):
 EXPECTED_COLS_VALUES_CONTINOUS = [("HINCP", -60000, 99999999), ("WAGP", -1, 999999)]
 
 
+@pytest.mark.parametrize("local_loader", local_loaders)
 @pytest.mark.test_download
 @pytest.mark.parametrize("column, min_val, max_val", EXPECTED_COLS_VALUES_CONTINOUS)
-def test_continous_columns_have_expected_values(column, min_val, max_val):
+def test_continous_columns_have_expected_values(column, min_val, max_val, local_loader):
     """These tests aren't great"""
     assert column in local_loader.by_person.columns
     assert min(local_loader.by_person[column]) >= min_val
@@ -62,9 +75,9 @@ EXPECTED_COLS_VALUES_RANGE_CATEGORICAL = [
     "column, old_val, new_val", EXPECTED_COLS_VALUES_RANGE_CATEGORICAL
 )
 def test_categorical_range_variables_have_expected_values(column, old_val, new_val):
-
-    ids = local_loader.by_person_raw[
-        local_loader.by_person_raw[column] == old_val
+    """This test only works for 2019 as 2012 has differently named OCCP"""
+    ids = local_loader_2019.by_person_raw[
+        local_loader_2019.by_person_raw[column] == old_val
     ].index
 
-    sum(local_loader.by_person.loc[ids][column] == new_val) == len(ids)
+    sum(local_loader_2019.by_person.loc[ids][column] == new_val) == len(ids)

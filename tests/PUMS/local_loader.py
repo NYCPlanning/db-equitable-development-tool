@@ -1,3 +1,5 @@
+from statistics import variance
+from numpy import var
 from ingest.load_data import load_PUMS
 from aggregate.PUMS.count_PUMS_economics import PUMSCountEconomics
 from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
@@ -12,7 +14,9 @@ class LocalLoader:
     def __init__(self) -> None:
         pass
 
-    def load_by_person(self, all_data, include_rw=True, variable_set="demographics"):
+    def load_by_person(
+        self, all_data, include_rw=True, variable_set="demographic", year=2019
+    ):
         """To be called in first test"""
         limited_PUMA = not all_data
 
@@ -22,30 +26,41 @@ class LocalLoader:
             include_rw=include_rw,
             return_ingestor=True,
             requery=True,
+            year=year,
         )
         self.by_person_raw = self.ingestor.vi_data_raw
         self.by_person = self.ingestor.vi_data
 
-    def load_aggregated_counts(self, all_data, type):
+    def load_aggregated_counts(self, all_data, type, add_MOE=False, keep_SE=True):
         limited_PUMA = not all_data
         if type == "demographics":
             aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)
         elif type == "economics":
-            aggregator = PUMSCountEconomics(limited_PUMA=limited_PUMA)
+            aggregator = PUMSCountEconomics(
+                limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+            )
         self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated
 
-    def load_aggregated_medians(self, all_data, type):
+    def load_aggregated_medians(self, all_data, type, add_MOE=False, keep_SE=True):
         limited_PUMA = not all_data
         if type == "demographics":
-            aggregator = PUMSMedianDemographics(limited_PUMA=limited_PUMA)
+            aggregator = PUMSMedianDemographics(
+                limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+            )
         elif type == "economics":
-            raise Exception
+            raise Exception("economics medians not implemented yet")
+        else:
+            raise Exception("type must be demographics or economics")
+
         self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated
 
-    def load_count_aggregator(self, all_data):
+    def load_count_aggregator(self, all_data, add_MOE=False, keep_SE=True):
+        """How is this different from load_aggregated_counts?"""
         limited_PUMA = not all_data
-        self.count_aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)
+        self.count_aggregator = PUMSCountDemographics(
+            limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+        )
         self.by_person = self.count_aggregator.PUMS
         self.aggregated = self.count_aggregator.aggregated

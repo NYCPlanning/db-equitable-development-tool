@@ -1,4 +1,5 @@
 import warnings
+from numpy import var
 
 warnings.filterwarnings("ignore")
 
@@ -10,6 +11,8 @@ from rpy2.robjects.vectors import StrVector
 
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
+
+from statistical.MOE import variance_measures
 
 from rpy2.robjects import r, pandas2ri
 
@@ -30,7 +33,9 @@ def get_design_object(data, variable_col, rw_cols, weight_col):
     return survey_design
 
 
-def calculate_median(data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col):
+def calculate_median(
+    data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_col, add_MOE, keep_SE
+):
     """Became attribute and now gets aggregator passed as first variable which I don't want"""
     survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
     aggregated: pd.DataFrame
@@ -40,23 +45,36 @@ def calculate_median(data: pd.DataFrame, variable_col, rw_cols, weight_col, geo_
         design=survey_design,
         quantiles=base.c(0.5),
         FUN=survey_package.svyquantile,
+        vartype=base.c("se", "ci", "var", "cv"),
         **{"interval.type": "quantile"},
     )
-
+    columns = [
+        f"{variable_col}-median",
+        f"{variable_col}-median-SE",
+        f"{variable_col}-median-CV",
+    ]
     aggregated.rename(
         columns={
-            variable_col: f"{variable_col}-median",
-            f"se.{variable_col}": f"{variable_col}-se",
+            variable_col: columns[0],
+            f"se.{variable_col}": columns[1],
+            f"cv.{variable_col}": columns[2],
         },
         inplace=True,
     )
-    aggregated.drop(columns=geo_col, inplace=True)
-
+    aggregated = aggregated[columns]
+    aggregated = variance_measures(aggregated, add_MOE, keep_SE)
     return aggregated
 
 
 def calculate_median_with_crosstab(
-    data: pd.DataFrame, variable_col, crosstab_col, rw_cols, weight_col, geo_col
+    data: pd.DataFrame,
+    variable_col,
+    crosstab_col,
+    rw_cols,
+    weight_col,
+    geo_col,
+    add_MOE,
+    keep_SE,
 ):
     """Can only do one crosstab at a time for now"""
     survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
@@ -67,25 +85,29 @@ def calculate_median_with_crosstab(
         design=survey_design,
         quantiles=base.c(0.5),
         FUN=survey_package.svyquantile,
+        vartype=base.c("se", "ci", "var", "cv"),
         **{"interval.type": "quantile"},
     )
     median_col_name = f"{variable_col}-median"
-    se_col_name = f"{variable_col}-se"
+    se_col_name = f"{variable_col}-median-SE"
+    cv_col_name = f"{variable_col}-median-CV"
     aggregated.rename(
         columns={
             variable_col: median_col_name,
             f"se.{variable_col}": se_col_name,
+            f"cv.{variable_col}": cv_col_name,
         },
         inplace=True,
     )
     pivot_table = pd.pivot_table(
         data=aggregated,
-        values=[median_col_name, se_col_name],
+        values=[median_col_name, se_col_name, cv_col_name],
         columns=crosstab_col,
         index=geo_col,
     )
     pivot_table.columns = [
         f"{crosstab_var}-{stat}" for stat, crosstab_var in pivot_table.columns
     ]
+    pivot_table = variance_measures(pivot_table, add_MOE, keep_SE)
 
     return pivot_table

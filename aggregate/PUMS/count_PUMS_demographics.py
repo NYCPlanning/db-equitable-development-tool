@@ -1,4 +1,5 @@
 from aggregate.PUMS.aggregate_PUMS import PUMSAggregator, PUMSCount
+import pandas as pd
 
 
 class PUMSCountDemographics(PUMSCount):
@@ -16,15 +17,19 @@ class PUMSCountDemographics(PUMSCount):
         requery=False,
         include_counts=True,
         include_fractions=True,
+        add_MOE=True,
+        keep_SE=False,
+        single_indicator=False,
     ) -> None:
         self.indicators_denom.extend(
             [
-                ("LEP",),
+                ("LEP", "over_five_filter"),
                 ("foreign_born",),
                 ("age_bucket",),
             ]
         )
-
+        if single_indicator:
+            self.indicators_denom = self.indicators_denom[0:1]
         self.indicators_denom = list(
             set(self.indicators_denom)
         )  # To-do: figure out problem and undo hot fix
@@ -32,7 +37,8 @@ class PUMSCountDemographics(PUMSCount):
         self.categories = {}
         self.include_counts = include_counts
         self.include_fractions = include_fractions
-
+        self.add_MOE = add_MOE
+        self.keep_SE = keep_SE
         PUMSCount.__init__(
             self,
             variable_types=["demographics"],
@@ -41,44 +47,26 @@ class PUMSCountDemographics(PUMSCount):
             requery=requery,
         )
 
-    def foreign_born_by_race_assign(self, person):
-        fb = self.foreign_born_assign(person)
-        if fb is None:
-            return fb
-        return f"fb_{self.race_assign(person)}"
-
     def foreign_born_assign(self, person):
         """Foreign born"""
-        if person["NATIVITY"] == "Native":
-            return "not_fb"
-        return "fb"
+        if person["NATIVITY"] != "Native":
+            return "fb"
+        return None
 
     def LEP_assign(self, person):
         """Limited english proficiency"""
-        if (
-            person["AGEP"] < 5
-            or person["LANX"] == "No, speaks only English"
-            or person["ENG"] == "Very well"
-        ):
-            return "not_lep"
-        return "lep"
-
-    def LEP_by_race_assign(self, person):
-        """Limited english proficiency by race"""
-        lep = self.LEP_assign(person)
-        if lep is None:
-            return lep
-        return f"lep_{self.race_assign(person)}"
+        if person["ENG"] in ["Not at all", "Not well", "Well"]:
+            return "lep"
+        return None
 
     def age_bucket_assign(self, person):
-        if person["AGEP"] <= 16:
+        if person["AGEP"] < 16:
             return "PopU16"
-        if person["AGEP"] > 16 and person["AGEP"] < 65:
-            return "P16t65"
+        if person["AGEP"] >= 16 and person["AGEP"] < 65:
+            return "P16t64"
         if person["AGEP"] >= 65:
             return "P65pl"
 
-    def age_bucket_by_race_assign(self, person):
-        age_bucket = self.age_bucket_assign(person)
-        race = self.race_assign(person)
-        return f"{age_bucket}_{race}"
+    def over_five_filter(self, PUMS: pd.DataFrame):
+        subset = PUMS[PUMS["AGEP"] >= 5]
+        return subset

@@ -1,6 +1,9 @@
+from audioop import cross
+from email.errors import CloseBoundaryNotFoundDefect
+from operator import ge
 from threading import get_ident
 import warnings
-from numpy import single
+from numpy import single, var
 
 warnings.filterwarnings("ignore")
 
@@ -9,6 +12,7 @@ import rpy2
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.vectors import DataFrame, StrVector
+from statistical.MOE import variance_measures
 
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
@@ -25,15 +29,18 @@ def calculate_fractions(
     rw_cols,
     weight_col,
     geo_col,
-    crosstab_category=None,
+    add_MOE,
+    keep_SE,
+    race_crosstab=None,
 ):
-    """This adds to dataframe so it should receive copy of data"""
-
+    """This adds to dataframe so it should receive copy of data
+    Parent category is only used in crosstabs, this is the original variable being crosstabbed on."""
     all_fractions = pd.DataFrame(index=data[geo_col].unique())
     for category in categories:
-        data.loc[:, category] = (data[variable_col] == category).astype(int)
+        category_col = f"{variable_col}-{category}"
+        data.loc[:, category_col] = (data[variable_col] == category).astype(int)
         survey_design = survey_package.svrepdesign(
-            variables=data[[category]],
+            variables=data[[category_col]],
             repweights=data[rw_cols],
             weights=data[weight_col],
             combined_weights=True,
@@ -42,52 +49,51 @@ def calculate_fractions(
             rscales=1,
         )
         single_fraction: pd.DataFrame = survey_package.svyby(
-            formula=data[category],
+            formula=data[category_col],
             by=data[[geo_col]],
             design=survey_design,
             FUN=survey_package.svymean,
+            vartype=base.c("se", "ci", "var", "cv"),
         )
         single_fraction.drop(columns=[geo_col], inplace=True)
-        if crosstab_category is None:
-            columns = (f"{category}-fraction", f"{category}-fraction-se")
+        if race_crosstab is None:
+            columns = [
+                f"{category}-fraction",
+                f"{category}-fraction-SE",
+                f"{category}-fraction-CV",
+                f"{category}-fraction-denom",
+            ]
         else:
-            columns = (
-                f"{category}-{crosstab_category}-fraction",
-                f"{category}-{crosstab_category}-fraction-se",
-            )
+            columns = [
+                f"{category}-{race_crosstab}-fraction",
+                f"{category}-{race_crosstab}-fraction-SE",
+                f"{category}-{race_crosstab}-fraction-CV",
+                f"{category}-{race_crosstab}-fraction-denom",
+            ]
+        denom = data.groupby(geo_col).sum()["PWGTP"]
+        single_fraction["denominator"] = denom
         single_fraction.rename(
-            columns={"V1": columns[0], "se": columns[1]},
+            columns={
+                "V1": columns[0],
+                "se": columns[1],
+                "cv": columns[2],
+                "denominator": columns[3],
+            },
             inplace=True,
         )
-        all_fractions = all_fractions.merge(
-            single_fraction, left_index=True, right_index=True
+        single_fraction = single_fraction.apply(
+            SE_to_zero_no_respondents, axis=1, result_type="expand"
         )
+        all_fractions = all_fractions.merge(
+            single_fraction[columns], left_index=True, right_index=True
+        )
+    all_fractions = variance_measures(all_fractions, add_MOE, keep_SE)
     return all_fractions
 
 
-def calculate_fractions_crosstabs(
-    data,
-    variable_col,
-    var_categories,
-    crosstab,
-    crosstab_categories,
-    rw_cols,
-    weight_col,
-    geo_col,
-):
-    all_fractions = pd.DataFrame(index=data[geo_col].unique())
-    for ct_category in crosstab_categories:
-        data_filtered = data[data[crosstab] == ct_category]
-        ct_fraction = calculate_fractions(
-            data_filtered,
-            variable_col,
-            var_categories,
-            rw_cols,
-            weight_col,
-            geo_col,
-            ct_category,
-        )
-        all_fractions = all_fractions.merge(
-            ct_fraction, left_index=True, right_index=True
-        )
-    return all_fractions
+def SE_to_zero_no_respondents(geography):
+    """If fraction is zero then no respodents in this category for this geography.
+    In this situation variance measures should be set to null"""
+    if not geography.iloc[0]:
+        geography.iloc[1:3] = None
+    return geography

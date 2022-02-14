@@ -19,9 +19,10 @@ borough_code_mapper = {
 }
 
 
-def borough_code_to_abbr(borough_code) -> str:
-    borough_code = int(borough_code)
-    return borough_code_mapper[borough_code]
+def puma_to_borough(record):
+    borough_code = record.puma.astype(str).str[:2].astype(int)
+    borough = borough_code_mapper[borough_code]
+    return borough
 
 
 NYC_PUMAS_url = "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"

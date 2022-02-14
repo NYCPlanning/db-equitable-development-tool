@@ -49,12 +49,14 @@ class PUMSAggregator(BaseAggregator):
 
     rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
     weight_col = "PWGTP"
-    geo_col = "PUMA"
 
-    def __init__(self, variable_types, limited_PUMA, year, requery) -> None:
+    def __init__(
+        self, variable_types, limited_PUMA, year, requery, geo_col="puma"
+    ) -> None:
         BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
         self.year = year
+        self.geo_col = geo_col
         self.categories = {}
         PUMS_load_start = time.perf_counter()
         self.PUMS: pd.DataFrame = load_PUMS(
@@ -71,8 +73,8 @@ class PUMSAggregator(BaseAggregator):
             self.assign_indicator(crosstab)
             self.add_category(crosstab)
         # Possible to-do: below code goes in call instead of init
-        self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
-        self.aggregated.index.name = "PUMA"
+        self.aggregated = pd.DataFrame(index=self.PUMS[geo_col].unique())
+        self.aggregated.index.name = geo_col
         for ind_denom in self.indicators_denom:
             print(f"iterated to {ind_denom[0]}")
             agg_start = time.perf_counter()

@@ -1,5 +1,6 @@
+import random
 import warnings
-from numpy import var
+from numpy import result_type, var
 
 warnings.filterwarnings("ignore")
 
@@ -75,10 +76,12 @@ def calculate_median_with_crosstab(
     geo_col,
     add_MOE,
     keep_SE,
+    second_crosstab_name=None,
 ):
     """Can only do one crosstab at a time for now"""
+    # data[rw_cols] = data[rw_cols].apply(axis=1, func=random_rw, result_type="expand")
+    data[rw_cols] = data[rw_cols].replace({0: 0.01})
     survey_design = get_design_object(data, variable_col, rw_cols, weight_col)
-
     aggregated = survey_package.svyby(
         formula=data[[variable_col]],
         by=data[[geo_col, crosstab_col]],
@@ -88,9 +91,15 @@ def calculate_median_with_crosstab(
         vartype=base.c("se", "ci", "var", "cv"),
         **{"interval.type": "quantile"},
     )
-    median_col_name = f"{variable_col}-median"
-    se_col_name = f"{variable_col}-median-SE"
-    cv_col_name = f"{variable_col}-median-CV"
+
+    if second_crosstab_name:
+        data_point_label = f"{variable_col}-{second_crosstab_name}"
+    else:
+        data_point_label = variable_col
+
+    median_col_name = f"{data_point_label}-median"
+    se_col_name = f"{data_point_label}-median-SE"
+    cv_col_name = f"{data_point_label}-median-CV"
     aggregated.rename(
         columns={
             variable_col: median_col_name,
@@ -111,3 +120,10 @@ def calculate_median_with_crosstab(
     pivot_table = variance_measures(pivot_table, add_MOE, keep_SE)
 
     return pivot_table
+
+
+def random_rw(row):
+    rv = []
+    for i in range(1, 81):
+        rv.append(random.randint(1, 100))
+    return rv

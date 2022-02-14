@@ -45,13 +45,21 @@ class BaseAggregator:
 
 
 class PUMSAggregator(BaseAggregator):
-    """Parent class for aggregating PUMS data"""
+    """Parent class for aggregating PUMS data.
+    Option to pass in PUMS dataframe on init is hot fix, added to accomdate median_PUMS_economics which breaks several patterns and requires
+    many hot fixes. Solution is to do aggregation on call of this class instead of init"""
 
     rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
     weight_col = "PWGTP"
 
     def __init__(
-        self, variable_types, limited_PUMA, year, requery, geo_col="puma"
+        self,
+        variable_types,
+        limited_PUMA,
+        year,
+        requery,
+        geo_col="puma",
+        PUMS: pd.DataFrame = None,
     ) -> None:
         BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
@@ -59,12 +67,15 @@ class PUMSAggregator(BaseAggregator):
         self.geo_col = geo_col
         self.categories = {}
         PUMS_load_start = time.perf_counter()
-        self.PUMS: pd.DataFrame = load_PUMS(
-            variable_types=variable_types,
-            limited_PUMA=limited_PUMA,
-            year=year,
-            requery=requery,
-        )
+        if PUMS is None:
+            self.PUMS: pd.DataFrame = load_PUMS(
+                variable_types=variable_types,
+                limited_PUMA=limited_PUMA,
+                year=year,
+                requery=requery,
+            )
+        else:
+            self.PUMS = PUMS
         PUMS_load_end = time.perf_counter()
         self.logger.info(
             f"PUMS data from download took {PUMS_load_end - PUMS_load_start} seconds"

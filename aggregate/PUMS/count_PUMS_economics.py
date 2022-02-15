@@ -26,7 +26,13 @@ class PUMSCountEconomics(PUMSCount):
     ]
 
     def __init__(
-        self, limited_PUMA=False, year=2019, requery=False, add_MOE=True, keep_SE=False
+        self,
+        limited_PUMA=False,
+        year=2019,
+        requery=False,
+        add_MOE=True,
+        keep_SE=False,
+        geo_col: str = "puma",
     ) -> None:
         self.crosstabs = ["race"]
         self.include_fractions = True
@@ -40,6 +46,7 @@ class PUMSCountEconomics(PUMSCount):
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
+            geo_col=geo_col,
         )
 
     def lf_assign(self, person):

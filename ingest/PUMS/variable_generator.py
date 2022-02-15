@@ -29,10 +29,15 @@ variable_mapper = {
         ("INDP", "clean_range_categorical"),  # Industry
         ("OCCP", "occupation_clean_range_categorical"),  # Occupation
     ],
+    "households":[
+        ("HINCP", "clean_continous"), # Household Income
+        ("NPF", "clean_continous"), # Number of Household Members
+        ("HHT", "clean_simple_categorical") # Household Types
+    ]
 }
 
 
-allowed_variable_types = ["demographics", "economics"]
+allowed_variable_types = ["demographics", "economics", "households"]
 
 
 def variables_for_processing(variable_types: List, include_clean_method=True) -> List:

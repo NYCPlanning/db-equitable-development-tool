@@ -47,8 +47,8 @@ class BaseAggregator:
 class PUMSAggregator(BaseAggregator):
     """Parent class for aggregating PUMS data"""
 
-    rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
-    weight_col = "PWGTP"
+    #rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
+    #weight_col = "PWGTP"
     geo_col = "PUMA"
 
     def __init__(self, variable_types, limited_PUMA, year, requery, household) -> None:
@@ -74,6 +74,14 @@ class PUMSAggregator(BaseAggregator):
         # Possible to-do: below code goes in call instead of init
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
+
+        if household:
+            self.rw_cols = [f"WGTP{x}" for x in range(1, 81)]
+            self.weight_col = "WGTP"
+        else:
+            self.rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
+            self.weight_col = "PWGTP"
+
 
         # add something here to calculate only the household level indicator
         for ind_denom in self.indicators_denom:

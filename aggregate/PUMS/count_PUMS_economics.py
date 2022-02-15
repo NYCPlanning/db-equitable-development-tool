@@ -10,6 +10,10 @@ class PUMSCountEconomics(PUMSCount):
     """Indicators refer to variables in Field Specifications page of data matrix"""
 
     indicators_denom: List[Tuple] = [
+        (
+            "household_income_bands", 
+            "household_type_filter"
+        ), 
         ("lf",),
         (
             "occupation",
@@ -20,21 +24,27 @@ class PUMSCountEconomics(PUMSCount):
             "civilian_employed_pop_filter",
         ),  # Termed "Employment by industry sector" in data matrix
         # apply civilian_employed_pop_filter
-        ("", ), 
+        #
     ]
 
     def __init__(
         self, limited_PUMA=False, year=2019, household=False, requery=False, add_MOE=True, keep_SE=False
     ) -> None:
-        self.crosstabs = ["race"]
+        #self.crosstabs = ["race"]
         self.include_fractions = True
         self.include_counts = True
         self.categories = {}
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        if household:
+            self.variable_types=["households"]
+            self.crosstabs = []
+        else:
+            self.variable_types=["economics", "demographics"]
+            self.crosstabs = ["race"]
         PUMSCount.__init__(
             self,
-            variable_types=["economics", "demographics"],
+            variable_types=self.variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
@@ -84,7 +94,7 @@ class PUMSCountEconomics(PUMSCount):
             return ind
         return f"{ind}_{self.race_assign(person)}"
 
-    def assign_to_household_income_band(self, person):
+    def household_income_bands_assign(self, person):
 
         '''
         turns out the NPF field is identiacal number of household members to all 
@@ -110,10 +120,22 @@ class PUMSCountEconomics(PUMSCount):
 
         labels = ['ELI', 'VLI', "LI", 'MI', 'MIDI', 'HI']
 
-        idx = np.digitize(person["HINCP"], income_bands[person["NPF"]])
+        if person["NPF"] > 8:
+            idx = np.digitize(person["HINCP"], income_bands[8])
+        else:
+            idx = np.digitize(person["HINCP"], income_bands[person["NPF"]])
 
         return labels[idx - 1]
-        
+    
+    def household_type_filter(self, PUMS: pd.DataFrame):
+        """Filter to return subset of households only 1-7 in the HHT variable which is non-group quarter or vacant category"""
+
+        non_gq_vac_subset = PUMS[(PUMS["HHT"] != 0)]
+
+        return non_gq_vac_subset
+
+
+
     def civilian_employed_pop_filter(self, PUMS: pd.DataFrame):
         """Filter to return subset of all people ages 16-64 who are employed as civilians"""
         age_subset = PUMS[(PUMS["AGEP"] >= 16) & (PUMS["AGEP"] <= 64)]

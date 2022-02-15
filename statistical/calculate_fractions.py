@@ -70,7 +70,9 @@ def calculate_fractions(
                 f"{category}-{race_crosstab}-fraction-CV",
                 f"{category}-{race_crosstab}-fraction-denom",
             ]
-        denom = data.groupby(geo_col).sum()["PWGTP"]
+        #denom = data.groupby(geo_col).sum()["PWGTP"] # test a change to weight column name here
+        print(weight_col)
+        denom = data.groupby(geo_col).sum()[weight_col] 
         single_fraction["denominator"] = denom
         single_fraction.rename(
             columns={

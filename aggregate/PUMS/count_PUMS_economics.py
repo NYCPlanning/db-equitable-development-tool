@@ -14,15 +14,15 @@ class PUMSCountEconomics(PUMSCount):
             "household_income_bands", 
             "household_type_filter"
         ), 
-        ("lf",),
-        (
-            "occupation",
-            "civilian_employed_pop_filter",
-        ),  # Termed "Employment by occupation" in data matrix
-        (
-            "industry",
-            "civilian_employed_pop_filter",
-        ),  # Termed "Employment by industry sector" in data matrix
+        #("lf",),
+        #(
+        #    "occupation",
+        #    "civilian_employed_pop_filter",
+        #),  # Termed "Employment by occupation" in data matrix
+        #(
+        #    "industry",
+        #    "civilian_employed_pop_filter",
+        #),  # Termed "Employment by industry sector" in data matrix
         # apply civilian_employed_pop_filter
         #
     ]
@@ -130,7 +130,7 @@ class PUMSCountEconomics(PUMSCount):
     def household_type_filter(self, PUMS: pd.DataFrame):
         """Filter to return subset of households only 1-7 in the HHT variable which is non-group quarter or vacant category"""
 
-        non_gq_vac_subset = PUMS[(PUMS["HHT"] != 0)]
+        non_gq_vac_subset = PUMS[(PUMS["HHT"] != 'N/A (GQ/vacant)')].copy()
 
         return non_gq_vac_subset
 

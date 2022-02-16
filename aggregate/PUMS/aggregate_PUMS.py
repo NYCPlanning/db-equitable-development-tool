@@ -7,6 +7,7 @@ To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 from hashlib import new
 import os
 from re import sub
+from unittest import skip
 import pandas as pd
 import time
 import numpy as np
@@ -56,6 +57,7 @@ class PUMSAggregator(BaseAggregator):
         self.limited_PUMA = limited_PUMA
         self.year = year
         self.categories = {}
+        self.household = household
         PUMS_load_start = time.perf_counter()
         self.PUMS: pd.DataFrame = load_PUMS(
             variable_types=variable_types,
@@ -167,28 +169,31 @@ class PUMSAggregator(BaseAggregator):
             keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(fraction_aggregated)
-        for race in self.categories["race"]:
-            records_in_race = subset[subset["race"] == race]
-            if not records_in_race.empty:
-                fraction_aggregated_crosstab = calculate_fractions(
-                    data=records_in_race.copy(),
-                    variable_col=indicator,
-                    categories=self.categories[indicator],
-                    rw_cols=self.rw_cols,
-                    weight_col=self.weight_col,
-                    geo_col=self.geo_col,
-                    add_MOE=self.add_MOE,
-                    keep_SE=self.keep_SE,
-                    race_crosstab=race,
-                )
-                self.add_aggregated_data(fraction_aggregated_crosstab)
+        if self.household:
+            skip
+        else:
+            for race in self.categories["race"]:
+                records_in_race = subset[subset["race"] == race]
+                if not records_in_race.empty:
+                    fraction_aggregated_crosstab = calculate_fractions(
+                        data=records_in_race.copy(),
+                        variable_col=indicator,
+                        categories=self.categories[indicator],
+                        rw_cols=self.rw_cols,
+                        weight_col=self.weight_col,
+                        geo_col=self.geo_col,
+                        add_MOE=self.add_MOE,
+                        keep_SE=self.keep_SE,
+                        race_crosstab=race,
+                    )
+                    self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
         categories = list(self.PUMS[indicator].unique())
         if None in categories:
             categories.remove(None)
-        self.categories[indicator] = categories
+        self.categories[indicator] = categories # all the possible values for a indicator is now saved in categories dict
 
     def total_pop_assign(self, person):
         return "total_pop"

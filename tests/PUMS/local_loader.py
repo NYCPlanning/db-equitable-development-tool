@@ -40,6 +40,7 @@ class LocalLoader:
             aggregator = PUMSCountEconomics(
                 limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
             )
+        self.aggregator = aggregator
         self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated
 

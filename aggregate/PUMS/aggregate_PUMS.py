@@ -185,7 +185,7 @@ class PUMSAggregator(BaseAggregator):
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
-        categories = list(self.PUMS[indicator].unique())
+        categories = list(self.PUMS[indicator].unique()) # all the values for each indicator
         if None in categories:
             categories.remove(None)
         self.categories[indicator] = categories

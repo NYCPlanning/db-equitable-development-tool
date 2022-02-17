@@ -21,32 +21,6 @@ load_dotenv()
 
 api_key = os.environ["CENSUS_API_KEY"]
 
-""" the mapper is really not used here. Should consider remove?"""
-variable_mapper = {
-    "demographics": [
-        ("RAC1P", "clean_simple_cateogorical"),
-        ("HISP", "clean_simple_cateogorical"),
-        ("NATIVITY", "clean_simple_cateogorical"),
-        ("LANX", "clean_simple_cateogorical"),
-        ("ENG", "clean_simple_cateogorical"),
-        ("AGEP", "clean_continous"),
-    ],
-    "economics": [
-        ("HINCP", "clean_continous"),  # Household income
-        ("ESR", "clean_simple_cateogorical"),  # Employment status
-        ("WAGP", "clean_continous"),  # Wages
-        ("SCHL", "clean_simple_cateogorical"),  # Educational achievement
-        ("INDP", "clean_range_categorical"),  # Industry
-        ("OCCP", "clean_range_categorical"),  # Occupation
-        ("NPF", "clean_continous")
-    ],
-    "households":[
-        ("HINCP", "clean_continous"),
-        ("NPF", "clean_continous"),
-        ("HHT", "clean_simple_cateogorical")
-    ]
-}
-
 NYC_PUMA_base = "7950000US360"
 
 geo_ids = [

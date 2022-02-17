@@ -62,8 +62,7 @@ class PUMSCountHouseholds(PUMSCount):
     def household_type_filter(self, PUMS: pd.DataFrame):
         """Filter to return subset of households only 1-7 in the HHT variable which is non-group quarter or vacant category"""
 
-        non_gq_vac_subset = PUMS[(PUMS["HHT"] != 'N/A (GQ/vacant)')].copy()
-
+        non_gq_vac_subset = PUMS[(PUMS["HHT"] != 'N/A (GQ/vacant)')]
         return non_gq_vac_subset
 
 

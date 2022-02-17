@@ -10,8 +10,6 @@ def make_PUMS_cache_fn(
         fn += "_limitedPUMA"
     if not include_rw:
         fn += "_noRepWeights"
-    if household:
-        fn += '_household'
     return f"data/{fn}.pkl"
 
 

@@ -50,8 +50,6 @@ class PUMSAggregator(BaseAggregator):
     Option to pass in PUMS dataframe on init is hot fix, added to accomdate median_PUMS_economics which breaks several patterns and requires
     many hot fixes. Solution is to do aggregation on call of this class instead of init"""
 
-    #rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
-    #weight_col = "PWGTP"
     geo_col = "PUMA"
 
     def __init__(
@@ -91,8 +89,6 @@ class PUMSAggregator(BaseAggregator):
             self.rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
             self.weight_col = "PWGTP"
 
-
-        # add something here to calculate only the household level indicator
         for ind_denom in self.indicators_denom:
             print(f"iterated to {ind_denom[0]}")
             agg_start = time.perf_counter()

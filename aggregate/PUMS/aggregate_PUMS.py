@@ -7,6 +7,7 @@ To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 from hashlib import new
 import os
 from re import sub
+from unittest import skip
 import pandas as pd
 import time
 import numpy as np
@@ -45,25 +46,33 @@ class BaseAggregator:
 
 
 class PUMSAggregator(BaseAggregator):
-    """Parent class for aggregating PUMS data"""
+    """Parent class for aggregating PUMS data.
+    Option to pass in PUMS dataframe on init is hot fix, added to accomdate median_PUMS_economics which breaks several patterns and requires
+    many hot fixes. Solution is to do aggregation on call of this class instead of init"""
 
-    rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
-    weight_col = "PWGTP"
+    #rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
+    #weight_col = "PWGTP"
     geo_col = "PUMA"
 
-    def __init__(self, variable_types, limited_PUMA, year, requery, household) -> None:
+    def __init__(
+        self, variable_types, limited_PUMA, year, requery, household, PUMS: pd.DataFrame = None
+    ) -> None:
         BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
         self.year = year
         self.categories = {}
+        self.household = household
         PUMS_load_start = time.perf_counter()
-        self.PUMS: pd.DataFrame = load_PUMS(
-            variable_types=variable_types,
-            limited_PUMA=limited_PUMA,
-            year=year,
-            requery=requery,
-            household=household,
-        )
+        if PUMS is None:
+            self.PUMS: pd.DataFrame = load_PUMS(
+                variable_types=variable_types,
+                limited_PUMA=limited_PUMA,
+                year=year,
+                requery=requery,
+                household=household,
+            )
+        else:
+            self.PUMS = PUMS
         PUMS_load_end = time.perf_counter()
         self.logger.info(
             f"PUMS data from download took {PUMS_load_end - PUMS_load_start} seconds"
@@ -74,6 +83,14 @@ class PUMSAggregator(BaseAggregator):
         # Possible to-do: below code goes in call instead of init
         self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
         self.aggregated.index.name = "PUMA"
+
+        if household:
+            self.rw_cols = [f"WGTP{x}" for x in range(1, 81)]
+            self.weight_col = "WGTP"
+        else:
+            self.rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
+            self.weight_col = "PWGTP"
+
 
         # add something here to calculate only the household level indicator
         for ind_denom in self.indicators_denom:
@@ -159,28 +176,31 @@ class PUMSAggregator(BaseAggregator):
             keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(fraction_aggregated)
-        for race in self.categories["race"]:
-            records_in_race = subset[subset["race"] == race]
-            if not records_in_race.empty:
-                fraction_aggregated_crosstab = calculate_fractions(
-                    data=records_in_race.copy(),
-                    variable_col=indicator,
-                    categories=self.categories[indicator],
-                    rw_cols=self.rw_cols,
-                    weight_col=self.weight_col,
-                    geo_col=self.geo_col,
-                    add_MOE=self.add_MOE,
-                    keep_SE=self.keep_SE,
-                    race_crosstab=race,
-                )
-                self.add_aggregated_data(fraction_aggregated_crosstab)
+        if self.household:
+            skip
+        else:
+            for race in self.categories["race"]:
+                records_in_race = subset[subset["race"] == race]
+                if not records_in_race.empty:
+                    fraction_aggregated_crosstab = calculate_fractions(
+                        data=records_in_race.copy(),
+                        variable_col=indicator,
+                        categories=self.categories[indicator],
+                        rw_cols=self.rw_cols,
+                        weight_col=self.weight_col,
+                        geo_col=self.geo_col,
+                        add_MOE=self.add_MOE,
+                        keep_SE=self.keep_SE,
+                        race_crosstab=race,
+                    )
+                    self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
-        categories = list(self.PUMS[indicator].unique())
+        categories = list(self.PUMS[indicator].unique()) # all the values for each indicator
         if None in categories:
             categories.remove(None)
-        self.categories[indicator] = categories
+        self.categories[indicator] = categories # all the possible values for a indicator is now saved in categories dict
 
     def total_pop_assign(self, person):
         return "total_pop"

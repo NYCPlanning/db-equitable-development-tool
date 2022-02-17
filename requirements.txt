@@ -1,8 +1,0 @@
-pytest
-pandas
-requests
-rpy2
-openpyxl
-geopandas
-Rtree
-Shapely

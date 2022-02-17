@@ -38,6 +38,7 @@ def calculate_counts(
     data[rw_cols] = data[rw_cols].replace(
         {0: 0.01}
     )  # this is a fix for replacate weight issue econ aggregator
+    data[rw_cols] = data[rw_cols].astype(int)
 
     if crosstab:
         original_var = variable_col

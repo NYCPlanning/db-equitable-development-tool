@@ -4,6 +4,11 @@ from typing import Tuple, List
 from aggregate.PUMS.aggregate_PUMS import PUMSCount
 import numpy as np
 import pandas as pd
+from aggregate.PUMS.economic_indicators import (
+    occupation_assign,
+    lf_assign,
+    industry_assign,
+)
 
 
 class PUMSCountEconomics(PUMSCount):
@@ -20,7 +25,6 @@ class PUMSCountEconomics(PUMSCount):
             "civilian_employed_pop_filter",
         ),  # Termed "Employment by industry sector" in data matrix
         # apply civilian_employed_pop_filter
-        # ("", ),
     ]
 
     def __init__(
@@ -32,15 +36,21 @@ class PUMSCountEconomics(PUMSCount):
         add_MOE=True,
         keep_SE=False,
     ) -> None:
-        self.crosstabs = ["race"]
+        #self.crosstabs = ["race"]
         self.include_fractions = True
         self.include_counts = True
         self.categories = {}
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        if household:
+            self.variable_types=["households"]
+            self.crosstabs = []
+        else:
+            self.variable_types=["economics", "demographics"]
+            self.crosstabs = ["race"]
         PUMSCount.__init__(
             self,
-            variable_types=["economics", "demographics"],
+            variable_types=self.variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
@@ -48,41 +58,13 @@ class PUMSCountEconomics(PUMSCount):
         )
 
     def lf_assign(self, person):
-        if (
-            person["ESR"] == "N/A (less than 16 years old)"
-            or person["ESR"] == "Not in labor force"
-        ):
-            return "not-lf"
-        return "lf"
+        return lf_assign(person)
 
     def occupation_assign(self, person):
-        occupation_mapper = {
-            "Management, Business, Science, and Arts Occupations": "mbsa",
-            "Service Occupations": "srvc",
-            "Sales and Office Occupations": "slsoff",
-            "Natural Resources, Construction, and Maintenance Occupations": "cstmnt",
-            "Production, Transportation, and Material Moving Occupations": "prdtrn",
-        }
-
-        return f'occupation-{occupation_mapper.get(person["OCCP"], "none")}'
+        return occupation_assign(person)
 
     def industry_assign(self, person):
-        industry_mapper = {
-            "Agriculture, Forestry, Fishing and Hunting, and Mining": "AgFFHM",
-            "Construction": "Cnstn",
-            "Manufacturing": "MNfctr",
-            "Wholesale Trade": "Whlsl",
-            "Retail Trade": "Rtl",
-            "Transportation and Warehousing, and Utilities": "TrWHUt",
-            "Information": "Info",
-            "Finance and Insurance,  and Real Estate and Rental and Leasing": "FIRE",
-            "Professional, Scientific, and Management, and  Administrative and Waste Management Services": "PrfSMg",
-            "Educational Services, and Health Care and Social Assistance": "EdHlth",
-            "Arts, Entertainment, and Recreation, and  Accommodation and Food Services": "ArtEn",
-            "Other Services (except Public Administration)": "Oth",
-            "Public Administration": "PbAdm",
-        }
-        return f'industry-{industry_mapper.get(person["INDP"], "none")}'
+        return industry_assign(person)
 
     def industry_by_race_assign(self, person):
         ind = self.industry_assign(person)
@@ -90,6 +72,7 @@ class PUMSCountEconomics(PUMSCount):
             return ind
         return f"{ind}_{self.race_assign(person)}"
 
+<<<<<<< HEAD
     def assign_to_household_income_band(self, person):
 
         """
@@ -120,6 +103,8 @@ class PUMSCountEconomics(PUMSCount):
 
         return labels[idx - 1]
 
+=======
+>>>>>>> 7bde4e540e76415623fcffb87cbb4cc8c6c5cd85
     def civilian_employed_pop_filter(self, PUMS: pd.DataFrame):
         """Filter to return subset of all people ages 16-64 who are employed as civilians"""
         age_subset = PUMS[(PUMS["AGEP"] >= 16) & (PUMS["AGEP"] <= 64)]

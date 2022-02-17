@@ -17,7 +17,7 @@ class PUMSCountHouseholds(PUMSCount):
     ]
 
     def __init__(
-        self, limited_PUMA=False, year=2019, household=False, requery=False, add_MOE=True, keep_SE=False
+        self, limited_PUMA=False, year=2019, requery=False, add_MOE=True, keep_SE=False
     ) -> None:
         self.include_fractions = True
         self.include_counts = True
@@ -26,6 +26,7 @@ class PUMSCountHouseholds(PUMSCount):
         self.keep_SE = keep_SE
         self.variable_types=["households"]
         self.crosstabs = []
+        self.household=True
 
         PUMSCount.__init__(
             self,
@@ -33,21 +34,10 @@ class PUMSCountHouseholds(PUMSCount):
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
-            household=household, # this is for aggregator to choose the right route for calculations
+            household=self.household, # this is for aggregator to choose the right route for calculations
         )
 
     def household_income_bands_assign(self, person):
-
-        '''
-        turns out the NPF field is identiacal number of household members to all 
-        individuals. So the individual assignment can be done fairly straight forwardsly
-
-        the function then use the numpy digitize to put the household income into their respective bins
-
-        REMAINING QUESTION: PUMS aggregator then take this to the calculate_counts 
-        which needs to incorporate some ways to perform the calculation on the household levels
-        which is different from counting on person level
-        '''
 
         income_bands = {
             1: [-9999999, 20900, 34835, 55735, 83602, 114952, 9999999],

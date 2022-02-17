@@ -35,3 +35,14 @@ def test_industry_assigned_correctly():
         ]
         == "MIDI"
     ).all()
+
+
+@pytest.mark.test_aggregation
+def test_income_bands_fractions_add_up_to_one():
+    """does the income band categories fractions in each puma adds up to one"""
+    ib=['ELI', 'VLI', "LI", 'MI', 'MIDI', 'HI']
+    ib_frac_cols = [f'{x}-fraction' for x in ib]
+    assert (
+        local_loader.aggregated[ib_frac_cols].sum(axis=1)
+        == 1
+    ).all()

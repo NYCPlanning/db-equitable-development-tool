@@ -134,25 +134,30 @@ class PUMSData:
         df = self.__getattribute__(attr_name) #
         df["person_id"] = df["SERIALNO"] + df["SPORDER"]
         df.set_index("person_id", inplace=True)
-        #df.drop(columns=["SPORDER"], inplace=True) # don't drop serialno so use for household indicator
+        df.drop(columns=["SPORDER"], inplace=True) 
 
     def clean_data(self):
+        
         if self.household:
+            rw_cols= [f"WGTP{x}" for x in range(1, 81)]
             self.vi_data["WGTP"] = self.vi_data["WGTP"].astype(int)
+            self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
         else:
+            rw_cols= [f"PWGTP{x}" for x in range(1, 81)]
             self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
+            self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
         cleaner = PUMSCleaner()
         for v in self.variables:
             self.vi_data = cleaner.__getattribute__(v[1])(self.vi_data, v[0])
 
     def merge_rw(self):
         """Merge two dataframes of replicate weights into one"""
-        cols_to_drop = ["ST", "PUMA", "SERIALNO", "SPORDER"] # add serial number to drop before the merge 
+        cols_to_drop = ["ST", "PUMA", "SERIALNO"] # add serial number to drop before the merge 
         self.rw_one_data.drop(columns=cols_to_drop, inplace=True)
         self.rw_two_data.drop(columns=cols_to_drop, inplace=True)
         self.rw = self.rw_one_data.merge(
             self.rw_two_data, left_index=True, right_index=True
-        ).astype(str)
+        )
 
     def merge_vi_rw(self):
         """Add replicate weights to the dataframe with variables of interest"""

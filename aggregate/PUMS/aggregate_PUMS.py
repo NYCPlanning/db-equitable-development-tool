@@ -176,9 +176,7 @@ class PUMSAggregator(BaseAggregator):
             keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(fraction_aggregated)
-        if self.household:
-            skip
-        else:
+        if not self.household:
             for race in self.categories["race"]:
                 records_in_race = subset[subset["race"] == race]
                 if not records_in_race.empty:
@@ -197,10 +195,10 @@ class PUMSAggregator(BaseAggregator):
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
-        categories = list(self.PUMS[indicator].unique()) # all the values for each indicator
+        categories = list(self.PUMS[indicator].unique())
         if None in categories:
             categories.remove(None)
-        self.categories[indicator] = categories # all the possible values for a indicator is now saved in categories dict
+        self.categories[indicator] = categories
 
     def total_pop_assign(self, person):
         return "total_pop"

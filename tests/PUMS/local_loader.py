@@ -43,7 +43,7 @@ class LocalLoader:
             )
         elif type == "households":
             aggregator = PUMSCountHouseholds(
-                limited_PUMA=limited_PUMA, household=True, add_MOE=add_MOE, keep_SE=keep_SE
+                limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
             )
         self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated

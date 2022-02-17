@@ -25,23 +25,28 @@ class PUMSCountEconomics(PUMSCount):
             "civilian_employed_pop_filter",
         ),  # Termed "Employment by industry sector" in data matrix
         # apply civilian_employed_pop_filter
-        #
     ]
 
     def __init__(
-        self, limited_PUMA=False, year=2019, household=False, requery=False, add_MOE=True, keep_SE=False
+        self,
+        limited_PUMA=False,
+        year=2019,
+        household=False,
+        requery=False,
+        add_MOE=True,
+        keep_SE=False,
     ) -> None:
-        #self.crosstabs = ["race"]
+        # self.crosstabs = ["race"]
         self.include_fractions = True
         self.include_counts = True
         self.categories = {}
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
         if household:
-            self.variable_types=["households"]
+            self.variable_types = ["households"]
             self.crosstabs = []
         else:
-            self.variable_types=["economics", "demographics"]
+            self.variable_types = ["economics", "demographics"]
             self.crosstabs = ["race"]
         PUMSCount.__init__(
             self,

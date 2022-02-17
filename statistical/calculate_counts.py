@@ -35,7 +35,9 @@ def calculate_counts(
 ):
     """To do: implement something more elegant than "a" dummy var"""
     data["a"] = 1
-    data[rw_cols] = data[rw_cols].replace({0: 0.01}) # this is a fix for replacate weight issue econ aggregator
+    data[rw_cols] = data[rw_cols].replace(
+        {0: 0.01}
+    ) # this is a fix for replacate weight issue econ aggregator
 
     if crosstab:
         original_var = variable_col

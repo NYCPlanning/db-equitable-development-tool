@@ -14,6 +14,7 @@ class PUMSCountEconomics(PUMSCount):
     """Indicators refer to variables in Field Specifications page of data matrix"""
 
     indicators_denom: List[Tuple] = [
+        ("education", "age_over_24_filter"),
         (
             "occupation",
             "civilian_employed_pop_filter",
@@ -57,6 +58,33 @@ class PUMSCountEconomics(PUMSCount):
 
     def industry_assign(self, person):
         return industry_assign(person)
+
+    def education_assign(self, person):
+        education = person["SCHL"]
+        if education in [
+            "Bachelor's degree",
+            "Doctorate degree",
+            "Master's degree",
+            "Professional degree beyond a bachelor's degree",
+        ]:
+            return "Bachelors_or_higher"
+        elif education in [
+            "Some college, but less than 1 year",
+            "Associate's degree",
+            "1 or more years of college credit, no degree",
+        ]:
+            return "Some_college"
+        elif education in [
+            "Regular high school diploma",
+            "GED or alternative credential",
+        ]:
+            return "high_school_or_equiv"
+
+        return "less_than_hs_or_equiv"
+
+    def age_over_24_filter(self, PUMS: pd.DataFrame):
+        age_subset = PUMS[(PUMS["AGEP"] > 24)]
+        return age_subset
 
     def civilian_employed_pop_filter(self, PUMS: pd.DataFrame):
         """Filter to return subset of all people ages 16-64 who are employed as civilians"""

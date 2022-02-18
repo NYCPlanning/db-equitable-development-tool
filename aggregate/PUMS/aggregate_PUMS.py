@@ -19,6 +19,7 @@ from utils.make_logger import create_logger
 from statistical.calculate_fractions import (
     calculate_fractions,
 )
+from aggregate.aggregated_cache_fn import PUMS_cache_fn
 
 allowed_variance_measures = ["SE", "MOE"]
 
@@ -38,11 +39,14 @@ class BaseAggregator:
         """For debugging and collaborating. This is where .csv's for"""
         if not os.path.exists(".output/"):
             os.mkdir(".output/")
-        fn = self.__class__.__name__
-        fn += "_" + str(self.year)
-        if self.limited_PUMA:
-            fn += "_limitedPUMA"
-        self.aggregated.to_csv(f".output/{fn}.csv")
+        fn = PUMS_cache_fn(
+            EDDT_category=self.EDDT_category,
+            calculation_type=self.calculation_type,
+            year=self.year,
+            geography=self.geo_col,
+            limited_PUMA=self.limited_PUMA,
+        )
+        self.aggregated.to_csv(f".output/{fn}")
 
 
 class PUMSAggregator(BaseAggregator):
@@ -53,7 +57,13 @@ class PUMSAggregator(BaseAggregator):
     geo_col = "PUMA"
 
     def __init__(
-        self, variable_types, limited_PUMA, year, requery, household, PUMS: pd.DataFrame = None
+        self,
+        variable_types,
+        limited_PUMA,
+        year,
+        requery,
+        household,
+        PUMS: pd.DataFrame = None,
     ) -> None:
         BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
@@ -86,7 +96,9 @@ class PUMSAggregator(BaseAggregator):
             self.rw_cols = [f"WGTP{x}" for x in range(1, 81)]
             self.weight_col = "WGTP"
         else:
-            self.rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
+            self.rw_cols = [
+                f"PWGTP{x}" for x in range(1, 81)
+            ]  # This will get refactored out
             self.weight_col = "PWGTP"
 
         for ind_denom in self.indicators_denom:
@@ -100,6 +112,7 @@ class PUMSAggregator(BaseAggregator):
             self.sort_aggregated_columns_alphabetically()
         except:
             print("couldn't sort columns alphabetically")
+        self.cache_flat_csv()
 
     def sort_aggregated_columns_alphabetically(self):
         """Put each variable next to it's standard error"""
@@ -207,3 +220,4 @@ class PUMSCount(PUMSAggregator):
     """Need some way to introduce total pop indicator here"""
 
     indicators_denom = [("total_pop",)]
+    calculation_type = "counts"

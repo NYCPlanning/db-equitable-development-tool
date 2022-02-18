@@ -39,13 +39,14 @@ class PUMSCountDemographics(PUMSCount):
         self.include_fractions = include_fractions
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        self.EDDT_category = "demographics"
         PUMSCount.__init__(
             self,
             variable_types=["demographics"],
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
-            household=False
+            household=False,
         )
 
     def foreign_born_assign(self, person):

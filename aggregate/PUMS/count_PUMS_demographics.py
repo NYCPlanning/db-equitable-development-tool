@@ -45,6 +45,7 @@ class PUMSCountDemographics(PUMSCount):
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
+            household=False
         )
 
     def foreign_born_assign(self, person):

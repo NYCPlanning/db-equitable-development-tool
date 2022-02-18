@@ -21,10 +21,10 @@ def save_PUMS(eddt_category, geography, year, test_data):
         year=year,
         test_data=test_data,
     )
-    folder_path = f"external_review/{eddt_category}"
+    folder_path = f".staging/{eddt_category}"
     if not path.exists(folder_path):
         makedirs(folder_path)
-    data.to_csv(f".staging/{eddt_category}/{year}_by_{geography}.csv")
+    data.to_csv(f".staging/{eddt_category}/{str(year)}_by_{geography}.csv")
 
 
 if __name__ == "__main__":

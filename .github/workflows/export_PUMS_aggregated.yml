@@ -24,7 +24,7 @@ jobs:
           - demographics
           # - economics
         year:
-          # - 2012
+          - 2012
           - 2019
  
     steps:
@@ -61,7 +61,7 @@ jobs:
 
       - name: export
         run: |
-          poetry run python3 -m external_review.external_review_PUMS ${{matrix.category}} ${{matrix.geography}}  ${{matrix.year}}
+          poetry run python3 -m external_review.external_review_PUMS ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}} True
           ./external_review/export_DO.sh export ${{matrix.category}} ${{matrix.geography}}  ${{matrix.year}}
 
 

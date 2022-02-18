@@ -1,5 +1,6 @@
 """Similar to load_data in ingest process. MAybe this is supposed to live in
  external review, I'm not sure"""
+from cgi import test
 from aggregate.aggregated_cache_fn import PUMS_cache_fn
 from utils.setup_directory import setup_directory
 from os import path
@@ -32,7 +33,7 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
             print(data)
         else:
             aggregator_class = aggregators[EDDT_category][calculation_type]
-            aggregator = aggregator_class()
+            aggregator = aggregator_class(limited_PUMA=test_data, requery=True)
             data = aggregator.aggregated
         if rv is None:
             rv = data

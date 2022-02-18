@@ -64,8 +64,8 @@ jobs:
 
       - name: export
         run: |
-          poetry run python3 -m external_review.external_review_PUMS ${{matrix.geography}} ${{matrix.category}} ${{matrix.year}}
-          ./external_review/export_DO.sh export ${{matrix.geography}} ${{matrix.category}} ${{matrix.year}}
+          poetry run python3 -m external_review.external_review_PUMS ${{matrix.category}} ${{matrix.geography}}  ${{matrix.year}}
+          ./external_review/export_DO.sh export ${{matrix.category}} ${{matrix.geography}}  ${{matrix.year}}
 
 
 

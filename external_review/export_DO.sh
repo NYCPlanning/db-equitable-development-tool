@@ -11,8 +11,9 @@ function export_DO {
 }
 
 function export_DO_PUMS {
-    geography=$1
-    EDDT_category=$2
+    EDDT_category=$1
+    geography=$2
+   
     year=$3
     filename="${year}_by_${geography}.csv"
     SPACES="spaces/edm-publishing/db-eddt/${EDDT_category}"

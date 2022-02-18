@@ -11,7 +11,6 @@ import pandas as pd
 from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
 from aggregate.PUMS.median_PUMS_demographics import PUMSMedianDemographics
 
-categories_with_household_level = ["economics"]
 
 categories = {
     "demographics": [
@@ -44,7 +43,7 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
         if path.exists(cache_fp):
             data = pd.read_csv(cache_fp, index_col=geography.upper())
         else:
-            aggregator = aggregator_class(limited_PUMA=test_data, requery=True)
+            aggregator = aggregator_class(limited_PUMA=test_data, geo_col=geography)
             data = aggregator.aggregated
         if rv is None:
             rv = data

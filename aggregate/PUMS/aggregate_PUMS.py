@@ -44,6 +44,7 @@ class BaseAggregator:
             calculation_type=self.calculation_type,
             year=self.year,
             geography=self.geo_col,
+            by_household=self.household,
             limited_PUMA=self.limited_PUMA,
         )
         self.aggregated.to_csv(f".output/{fn}")
@@ -62,7 +63,7 @@ class PUMSAggregator(BaseAggregator):
         limited_PUMA,
         year,
         requery,
-        household,
+        household=False,
         PUMS: pd.DataFrame = None,
     ) -> None:
         BaseAggregator.__init__(self)

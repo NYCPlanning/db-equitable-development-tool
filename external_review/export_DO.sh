@@ -11,17 +11,17 @@ function export_DO {
 }
 
 function export_DO_PUMS {
-    geography_level=$1
+    geography=$1
     EDDT_category=$2
     year=$3
-    filename="${geography}_${year}.csv"
-    SPACES="spaces/edm-publishing/db-eddt/${category}"
-    mc cp ./external_review/$category/$filename $SPACES/$filename
+    filename="${year}_by_${geography}.csv"
+    SPACES="spaces/edm-publishing/db-eddt/${EDDT_category}"
+    mc cp ./external_review/$EDDT_category/$filename $SPACES/$filename
 
 }
 
 case $1 in
-    export ) export_DO $2 $3
+    export ) export_DO $2 $3 ;;
     export_PUMS ) export_DO_PUMS $2 $3 $4
 esac
 

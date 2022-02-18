@@ -5,6 +5,7 @@ write a new file but this step can be DRY'd out and brought down to a simplier f
 from cgi import test
 from operator import ge
 import pandas as pd
+from os import path, makedirs
 import typer
 
 from aggregate.load_aggregated import load_aggregated_PUMS
@@ -12,15 +13,18 @@ from aggregate.load_aggregated import load_aggregated_PUMS
 app = typer.Typer()
 
 
-def collate_PUMS(EDDT_category, geography, year, limited_PUMA=False):
+def collate_PUMS(eddt_category, geography, year, test_data):
     """Years will be extended as more data comes in"""
     data = load_aggregated_PUMS(
-        EDDT_category=EDDT_category,
+        EDDT_category=eddt_category,
         geography=geography,
         year=year,
-        test_data=limited_PUMA,
+        test_data=test_data,
     )
-    data.to_csv(f"external_review/{EDDT_category}/{geography}_{year}.csv")
+    folder_path = f"external_review/{eddt_category}"
+    if not path.exists(folder_path):
+        makedirs(folder_path)
+    data.to_csv(f"external_review/{eddt_category}/{year}_by_{geography}.csv")
 
 
 if __name__ == "__main__":

@@ -28,7 +28,8 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
         )
         cache_fp = f".output/{cache_fn}"
         if path.exists(cache_fp):
-            data = pd.read_csv(cache_fp, index_col=geography)
+            data = pd.read_csv(cache_fp, index_col=geography.upper())
+            print(data)
         else:
             aggregator_class = aggregators[EDDT_category][calculation_type]
             aggregator = aggregator_class()

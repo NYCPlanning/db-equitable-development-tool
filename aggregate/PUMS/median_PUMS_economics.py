@@ -33,6 +33,7 @@ class PUMSMedianEconomics(PUMSAggregator):
         requery=False,
         add_MOE=True,
         keep_SE=False,
+        geo_col="puma",
     ):
         self.PUMS: pd.DataFrame = load_PUMS(
             variable_types=["demographics", "economics"],
@@ -42,6 +43,7 @@ class PUMSMedianEconomics(PUMSAggregator):
         )
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        self.geo_col = geo_col
         self.categories = {}
         self.EDDT_category = "economics"
         self.calculation_type = "medians"
@@ -57,6 +59,7 @@ class PUMSMedianEconomics(PUMSAggregator):
             year=year,
             requery=requery,
             PUMS=self.PUMS,
+            geo_col=self.geo_col,
         )
 
     def assign_indicator(self, indicator) -> pd.DataFrame:

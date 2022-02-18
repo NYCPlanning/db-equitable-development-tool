@@ -14,6 +14,7 @@ class PUMSMedians(PUMSAggregator):
     def __init__(
         self,
         variable_types,
+        geo_col,
         limited_PUMA=False,
         year=2019,
         requery=False,
@@ -29,6 +30,7 @@ class PUMSMedians(PUMSAggregator):
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
+            geo_col=geo_col,
         )
 
     def calculate_add_new_variable(self, ind_denom):

@@ -19,6 +19,7 @@ class PUMSMedianDemographics(PUMSMedians):
         requery=False,
         add_MOE=True,
         keep_SE=False,
+        geo_col="puma",
     ) -> None:
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
@@ -31,6 +32,7 @@ class PUMSMedianDemographics(PUMSMedians):
             requery=requery,
             add_MOE=add_MOE,
             keep_SE=keep_SE,
+            geo_col=geo_col,
         )
 
     def age_assign(self, person):

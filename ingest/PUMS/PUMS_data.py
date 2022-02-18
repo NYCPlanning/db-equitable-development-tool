@@ -1,9 +1,9 @@
 from typing import List
 import pandas as pd
 import numpy as np
+from sqlalchemy import func
 
-#from utils.geography_helpers import assign_PUMA
-#from utils.assign_PUMA import assign_PUMA
+from utils.assign_PUMA import assign_PUMA, puma_to_borough
 
 """To do: make this central module from which all other code is called. Write 
 class method for aggregate step to access.  Class method will return cached data or
@@ -60,7 +60,7 @@ class PUMSData:
             year=year,
             limited_PUMA=limited_PUMA,
             include_rw=self.include_rw,
-            household=self.household
+            household=self.household,
         )
         self.urls = urls
         self.vi_data: pd.DataFrame = None
@@ -76,7 +76,7 @@ class PUMSData:
             limited_PUMA=limited_PUMA,
             year=year,
             include_rw=include_rw,
-            household=household
+            household=household,
         )
 
     def populate_dataframes(self):
@@ -89,8 +89,9 @@ class PUMSData:
                     i[1], f"get request for {k} region two"
                 )
                 data = data_region_one.append(data_region_two)
+                data = rename_PUMA_col(data, "PUMA")
                 if self.household:
-                    data = data.loc[data["SPORDER"] == '1']
+                    data = data.loc[data["SPORDER"] == "1"]
                 self.assign_data_to_attr(k, data)
         if self.year == 2012:
             for k, i in self.urls.items():
@@ -131,19 +132,21 @@ class PUMSData:
         self.vi_data.to_pickle(self.cache_path)
 
     def assign_identifier(self, attr_name):
-        df = self.__getattribute__(attr_name) #
+        df = self.__getattribute__(attr_name)  #
         df["person_id"] = df["SERIALNO"] + df["SPORDER"]
         df.set_index("person_id", inplace=True)
-        df.drop(columns=["SPORDER"], inplace=True) 
+        df.drop(columns=["SPORDER"], inplace=True)
 
     def clean_data(self):
-        
+        self.vi_data["borough"] = self.vi_data.apply(axis=1, func=puma_to_borough)
+        self.vi_data["citywide"] = "citywide"
+
         if self.household:
-            rw_cols= [f"WGTP{x}" for x in range(1, 81)]
+            rw_cols = [f"WGTP{x}" for x in range(1, 81)]
             self.vi_data["WGTP"] = self.vi_data["WGTP"].astype(int)
             self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
         else:
-            rw_cols= [f"PWGTP{x}" for x in range(1, 81)]
+            rw_cols = [f"PWGTP{x}" for x in range(1, 81)]
             self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
             self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
         cleaner = PUMSCleaner()
@@ -152,7 +155,11 @@ class PUMSData:
 
     def merge_rw(self):
         """Merge two dataframes of replicate weights into one"""
-        cols_to_drop = ["ST", "PUMA", "SERIALNO"] # add serial number to drop before the merge 
+        cols_to_drop = [
+            "ST",
+            "puma",
+            "SERIALNO",
+        ]  # add serial number to drop before the merge
         self.rw_one_data.drop(columns=cols_to_drop, inplace=True)
         self.rw_two_data.drop(columns=cols_to_drop, inplace=True)
         self.rw = self.rw_one_data.merge(
@@ -165,5 +172,5 @@ class PUMSData:
 
 
 def rename_PUMA_col(df, PUMA_col_name):
-    df.rename(columns={PUMA_col_name: "PUMA"}, inplace=True)
+    df.rename(columns={PUMA_col_name: "puma"}, inplace=True)
     return df

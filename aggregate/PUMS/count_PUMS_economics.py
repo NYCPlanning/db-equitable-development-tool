@@ -43,6 +43,7 @@ class PUMSCountEconomics(PUMSCount):
         self.categories = {}
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        self.EDDT_category = "economics"
         if household:
             self.variable_types = ["households"]
             self.crosstabs = []

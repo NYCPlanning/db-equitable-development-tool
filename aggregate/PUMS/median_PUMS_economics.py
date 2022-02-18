@@ -43,6 +43,8 @@ class PUMSMedianEconomics(PUMSAggregator):
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
         self.categories = {}
+        self.EDDT_category = "economics"
+        self.calculation_type = "medians"
         for economic_crosstab in self.economic_crosstabs:
             """Unusual to assign indicator without aggregating on it directly.
             Using column as crosstab instead of indicator to report"""

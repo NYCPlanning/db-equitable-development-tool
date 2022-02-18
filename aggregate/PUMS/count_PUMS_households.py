@@ -10,10 +10,7 @@ class PUMSCountHouseholds(PUMSCount):
     """Indicators refer to variables in Field Specifications page of data matrix"""
 
     indicators_denom: List[Tuple] = [
-        (
-            "household_income_bands", 
-            "household_type_filter"
-        ), 
+        ("household_income_bands", "household_type_filter"),
     ]
 
     def __init__(
@@ -24,17 +21,17 @@ class PUMSCountHouseholds(PUMSCount):
         self.categories = {}
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
-        self.variable_types=["households"]
+        self.variable_types = ["households"]
         self.crosstabs = []
-        self.household=True
-
+        self.household = True
+        self.EDDT_category = "economics"
         PUMSCount.__init__(
             self,
-            variable_types=self.variable_types, # this is for the ingestion to pull correct weight and variables
+            variable_types=self.variable_types,  # this is for the ingestion to pull correct weight and variables
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
-            household=self.household, # this is for aggregator to choose the right route for calculations
+            household=self.household,  # this is for aggregator to choose the right route for calculations
         )
 
     def household_income_bands_assign(self, person):
@@ -47,10 +44,10 @@ class PUMSCountHouseholds(PUMSCount):
             5: [-9999999, 32258, 53763, 86021, 129032, 177419, 9999999],
             6: [-9999999, 34636, 57727, 92362, 138544, 190498, 99999999],
             7: [-9999999, 37014, 61690, 98703, 148055, 203576, 99999999],
-            8: [-9999999, 39423, 65705, 105128, 157692, 216826, 99999999]
+            8: [-9999999, 39423, 65705, 105128, 157692, 216826, 99999999],
         }
 
-        labels = ['ELI', 'VLI', "LI", 'MI', 'MIDI', 'HI']
+        labels = ["ELI", "VLI", "LI", "MI", "MIDI", "HI"]
 
         if person["NPF"] > 8:
             idx = np.digitize(person["HINCP"], income_bands[8])
@@ -58,11 +55,9 @@ class PUMSCountHouseholds(PUMSCount):
             idx = np.digitize(person["HINCP"], income_bands[person["NPF"]])
 
         return labels[idx - 1]
-    
+
     def household_type_filter(self, PUMS: pd.DataFrame):
         """Filter to return subset of households only 1-7 in the HHT variable which is non-group quarter or vacant category"""
 
-        non_gq_vac_subset = PUMS[(PUMS["HHT"] != 'N/A (GQ/vacant)')]
+        non_gq_vac_subset = PUMS[(PUMS["HHT"] != "N/A (GQ/vacant)")]
         return non_gq_vac_subset
-
-

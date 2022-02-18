@@ -21,6 +21,7 @@ def save_PUMS(eddt_category, geography, year, test_data):
         year=year,
         test_data=test_data,
     )
+    print(data)
     folder_path = f".staging/{eddt_category}"
     if not path.exists(folder_path):
         makedirs(folder_path)

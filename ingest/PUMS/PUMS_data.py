@@ -26,6 +26,7 @@ class PUMSData:
         limited_PUMA: bool = False,
         year: int = 2019,
         include_rw: bool = True,
+        household: bool = False,
     ):
         """Pulling PUMS data with replicate weights requires multiple GET
         requests as there is 50 variable max for each GET request. This class is
@@ -48,16 +49,18 @@ class PUMSData:
         """
         self.include_rw = include_rw
         self.cache_path = self.get_cache_fn(
-            variable_types, limited_PUMA, year, include_rw
+            variable_types, limited_PUMA, year, include_rw, household
         )
         self.variables = variables_for_processing(variable_types=variable_types)
         self.limited_PUMA = limited_PUMA
         self.year = year
+        self.household = household
         urls = get_urls(
             variable_types=variable_types,
             year=year,
             limited_PUMA=limited_PUMA,
             include_rw=self.include_rw,
+            household=self.household,
         )
         self.urls = urls
         self.vi_data: pd.DataFrame = None
@@ -67,12 +70,13 @@ class PUMSData:
         self.download_and_cache()
 
     @classmethod
-    def get_cache_fn(self, variable_types, limited_PUMA, year, include_rw):
+    def get_cache_fn(self, variable_types, limited_PUMA, year, include_rw, household):
         return make_PUMS_cache_fn(
             variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             include_rw=include_rw,
+            household=household,
         )
 
     def populate_dataframes(self):
@@ -86,6 +90,8 @@ class PUMSData:
                 )
                 data = data_region_one.append(data_region_two)
                 data = rename_PUMA_col(data, "PUMA")
+                if self.household:
+                    data = data.loc[data["SPORDER"] == "1"]
                 self.assign_data_to_attr(k, data)
         if self.year == 2012:
             for k, i in self.urls.items():
@@ -126,27 +132,39 @@ class PUMSData:
         self.vi_data.to_pickle(self.cache_path)
 
     def assign_identifier(self, attr_name):
-        df = self.__getattribute__(attr_name)
+        df = self.__getattribute__(attr_name)  #
         df["person_id"] = df["SERIALNO"] + df["SPORDER"]
         df.set_index("person_id", inplace=True)
-        df.drop(columns=["SERIALNO", "SPORDER"], inplace=True)
+        df.drop(columns=["SPORDER"], inplace=True)
 
     def clean_data(self):
-        self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
         self.vi_data["borough"] = self.vi_data.apply(axis=1, func=puma_to_borough)
         self.vi_data["citywide"] = "citywide"
+
+        if self.household:
+            rw_cols = [f"WGTP{x}" for x in range(1, 81)]
+            self.vi_data["WGTP"] = self.vi_data["WGTP"].astype(int)
+            self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
+        else:
+            rw_cols = [f"PWGTP{x}" for x in range(1, 81)]
+            self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
+            self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
         cleaner = PUMSCleaner()
         for v in self.variables:
             self.vi_data = cleaner.__getattribute__(v[1])(self.vi_data, v[0])
 
     def merge_rw(self):
         """Merge two dataframes of replicate weights into one"""
-        cols_to_drop = ["ST", "puma"]
+        cols_to_drop = [
+            "ST",
+            "puma",
+            "SERIALNO",
+        ]  # add serial number to drop before the merge
         self.rw_one_data.drop(columns=cols_to_drop, inplace=True)
         self.rw_two_data.drop(columns=cols_to_drop, inplace=True)
         self.rw = self.rw_one_data.merge(
             self.rw_two_data, left_index=True, right_index=True
-        ).astype(int)
+        )
 
     def merge_vi_rw(self):
         """Add replicate weights to the dataframe with variables of interest"""

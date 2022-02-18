@@ -7,6 +7,7 @@ To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 from hashlib import new
 import os
 from re import sub
+from unittest import skip
 import pandas as pd
 import time
 import numpy as np
@@ -49,8 +50,7 @@ class PUMSAggregator(BaseAggregator):
     Option to pass in PUMS dataframe on init is hot fix, added to accomdate median_PUMS_economics which breaks several patterns and requires
     many hot fixes. Solution is to do aggregation on call of this class instead of init"""
 
-    rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
-    weight_col = "PWGTP"
+    # geo_col = "PUMA"
 
     def __init__(
         self,
@@ -58,6 +58,7 @@ class PUMSAggregator(BaseAggregator):
         limited_PUMA,
         year,
         requery,
+        household,
         geo_col="puma",
         PUMS: pd.DataFrame = None,
     ) -> None:
@@ -66,6 +67,7 @@ class PUMSAggregator(BaseAggregator):
         self.year = year
         self.geo_col = geo_col
         self.categories = {}
+        self.household = household
         PUMS_load_start = time.perf_counter()
         if PUMS is None:
             self.PUMS: pd.DataFrame = load_PUMS(
@@ -73,6 +75,7 @@ class PUMSAggregator(BaseAggregator):
                 limited_PUMA=limited_PUMA,
                 year=year,
                 requery=requery,
+                household=household,
             )
         else:
             self.PUMS = PUMS
@@ -86,6 +89,16 @@ class PUMSAggregator(BaseAggregator):
         # Possible to-do: below code goes in call instead of init
         self.aggregated = pd.DataFrame(index=self.PUMS[geo_col].unique())
         self.aggregated.index.name = geo_col
+
+        if household:
+            self.rw_cols = [f"WGTP{x}" for x in range(1, 81)]
+            self.weight_col = "WGTP"
+        else:
+            self.rw_cols = [
+                f"PWGTP{x}" for x in range(1, 81)
+            ]  # This will get refactored out
+            self.weight_col = "PWGTP"
+
         for ind_denom in self.indicators_denom:
             print(f"iterated to {ind_denom[0]}")
             agg_start = time.perf_counter()
@@ -169,21 +182,22 @@ class PUMSAggregator(BaseAggregator):
             keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(fraction_aggregated)
-        for race in self.categories["race"]:
-            records_in_race = subset[subset["race"] == race]
-            if not records_in_race.empty:
-                fraction_aggregated_crosstab = calculate_fractions(
-                    data=records_in_race.copy(),
-                    variable_col=indicator,
-                    categories=self.categories[indicator],
-                    rw_cols=self.rw_cols,
-                    weight_col=self.weight_col,
-                    geo_col=self.geo_col,
-                    add_MOE=self.add_MOE,
-                    keep_SE=self.keep_SE,
-                    race_crosstab=race,
-                )
-                self.add_aggregated_data(fraction_aggregated_crosstab)
+        if not self.household:
+            for race in self.categories["race"]:
+                records_in_race = subset[subset["race"] == race]
+                if not records_in_race.empty:
+                    fraction_aggregated_crosstab = calculate_fractions(
+                        data=records_in_race.copy(),
+                        variable_col=indicator,
+                        categories=self.categories[indicator],
+                        rw_cols=self.rw_cols,
+                        weight_col=self.weight_col,
+                        geo_col=self.geo_col,
+                        add_MOE=self.add_MOE,
+                        keep_SE=self.keep_SE,
+                        race_crosstab=race,
+                    )
+                    self.add_aggregated_data(fraction_aggregated_crosstab)
 
     def add_category(self, indicator):
         """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""

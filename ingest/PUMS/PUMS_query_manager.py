@@ -21,7 +21,6 @@ load_dotenv()
 
 api_key = os.environ["CENSUS_API_KEY"]
 
-
 NYC_PUMA_base = "7950000US360"
 
 geo_ids = [
@@ -43,6 +42,7 @@ def get_urls(
     year: int,
     variable_types: List = [],
     limited_PUMA=False,
+    household=False,
     include_rw=True,
 ) -> dict:
     """
@@ -59,18 +59,25 @@ def get_urls(
     variable_queries = {}
 
     variables = variables_for_url(variable_types, year)
-    variable_queries["vi"] = var_query_string(variables)
+    variable_queries["vi"] = var_query_string(variables, household)
 
     if include_rw:
         for x, k in ((1, "rw_one"), (41, "rw_two")):
-            variable_queries[k] = ",".join([f"PWGTP{x}" for x in range(x, x + 40)])
+            if household:
+                variable_queries[k] = ",".join([f"WGTP{x}" for x in range(x, x + 40)])
+            else:
+                variable_queries[k] = ",".join([f"PWGTP{x}" for x in range(x, x + 40)])
 
     urls = generate_urls(base_weights_section, geo_queries, variable_queries, year)
     return urls
 
 
-def var_query_string(variables) -> str:
-    base = f"PWGTP,{variables}"
+def var_query_string(variables, household=False) -> str:
+    if household:
+        base = f"WGTP,{variables}"
+    else:
+        base = f"PWGTP,{variables}"
+
     return base
 
 

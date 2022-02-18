@@ -20,6 +20,7 @@ class PUMSCountDemographics(PUMSCount):
         add_MOE=True,
         keep_SE=False,
         single_indicator=False,
+        geo_col="puma",
     ) -> None:
         self.indicators_denom.extend(
             [
@@ -45,7 +46,8 @@ class PUMSCountDemographics(PUMSCount):
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
-            household=False
+            geo_col=geo_col,
+            household=False,
         )
 
     def foreign_born_assign(self, person):

@@ -50,14 +50,22 @@ class PUMSAggregator(BaseAggregator):
     Option to pass in PUMS dataframe on init is hot fix, added to accomdate median_PUMS_economics which breaks several patterns and requires
     many hot fixes. Solution is to do aggregation on call of this class instead of init"""
 
-    geo_col = "PUMA"
+    # geo_col = "PUMA"
 
     def __init__(
-        self, variable_types, limited_PUMA, year, requery, household, PUMS: pd.DataFrame = None
+        self,
+        variable_types,
+        limited_PUMA,
+        year,
+        requery,
+        household,
+        geo_col="puma",
+        PUMS: pd.DataFrame = None,
     ) -> None:
         BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
         self.year = year
+        self.geo_col = geo_col
         self.categories = {}
         self.household = household
         PUMS_load_start = time.perf_counter()
@@ -79,14 +87,16 @@ class PUMSAggregator(BaseAggregator):
             self.assign_indicator(crosstab)
             self.add_category(crosstab)
         # Possible to-do: below code goes in call instead of init
-        self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
-        self.aggregated.index.name = "PUMA"
+        self.aggregated = pd.DataFrame(index=self.PUMS[geo_col].unique())
+        self.aggregated.index.name = geo_col
 
         if household:
             self.rw_cols = [f"WGTP{x}" for x in range(1, 81)]
             self.weight_col = "WGTP"
         else:
-            self.rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
+            self.rw_cols = [
+                f"PWGTP{x}" for x in range(1, 81)
+            ]  # This will get refactored out
             self.weight_col = "PWGTP"
 
         for ind_denom in self.indicators_denom:

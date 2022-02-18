@@ -19,15 +19,18 @@ class PUMSMedians(PUMSAggregator):
         requery=False,
         add_MOE=True,
         keep_SE=False,
+        household=False
     ) -> None:
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        self.household = household
         PUMSAggregator.__init__(
             self,
             variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             requery=requery,
+            household=self.household
         )
 
     def calculate_add_new_variable(self, ind_denom):

@@ -13,7 +13,7 @@ from aggregate.load_aggregated import load_aggregated_PUMS
 app = typer.Typer()
 
 
-def collate_PUMS(eddt_category, geography, year, test_data):
+def collate_PUMS(eddt_category, geography, year, test_data=False):
     """Years will be extended as more data comes in"""
     data = load_aggregated_PUMS(
         EDDT_category=eddt_category,

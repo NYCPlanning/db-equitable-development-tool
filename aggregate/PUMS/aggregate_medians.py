@@ -19,7 +19,7 @@ class PUMSMedians(PUMSAggregator):
         requery=False,
         add_MOE=True,
         keep_SE=False,
-        household=False
+        household=False,
     ) -> None:
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE

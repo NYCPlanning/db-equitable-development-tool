@@ -1,5 +1,6 @@
 from statistics import variance
 from numpy import var
+from aggregate.PUMS.count_PUMS_households import PUMSCountHouseholds
 from ingest.load_data import load_PUMS
 from aggregate.PUMS.count_PUMS_economics import PUMSCountEconomics
 from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
@@ -38,6 +39,10 @@ class LocalLoader:
             aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)
         elif type == "economics":
             aggregator = PUMSCountEconomics(
+                limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+            )
+        elif type == "households":
+            aggregator = PUMSCountHouseholds(
                 limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
             )
         self.by_person = aggregator.PUMS

@@ -59,15 +59,15 @@ def calculate_fractions(
         if race_crosstab is None:
             columns = [
                 f"{category}-pct",
-                f"{category}-pct-SE",
-                f"{category}-pct-CV",
+                f"{category}-pct-se",
+                f"{category}-pct-cv",
                 f"{category}-pct-denom",
             ]
         else:
             columns = [
                 f"{category}-{race_crosstab}-pct",
-                f"{category}-{race_crosstab}-pct-SE",
-                f"{category}-{race_crosstab}-pct-CV",
+                f"{category}-{race_crosstab}-pct-se",
+                f"{category}-{race_crosstab}-pct-cv",
                 f"{category}-{race_crosstab}-pct-denom",
             ]
 

@@ -23,7 +23,7 @@ def test_counts_have_coefficient_of_variation(loader):
     df = loader.aggregated
     for c in df.columns:
         if c[-6:] == "-count":
-            assert c + "-CV" in df.columns
+            assert c + "-cv" in df.columns
 
 
 @pytest.mark.parametrize("loader", count_loaders)
@@ -31,7 +31,7 @@ def test_fractions_have_coefficient_of_variation(loader):
     df = loader.aggregated
     for c in df.columns:
         if c[-9:] == "-fraction":
-            assert c + "-CV" in df.columns
+            assert c + "-cv" in df.columns
 
 
 median_loaders = [median_dem_loader]
@@ -42,4 +42,4 @@ def test_medians_have_coefficient_of_variation(loader):
     df = loader.aggregated
     for c in df.columns:
         if c[-7:] == "-median":
-            assert c + "-CV" in df.columns
+            assert c + "-cv" in df.columns

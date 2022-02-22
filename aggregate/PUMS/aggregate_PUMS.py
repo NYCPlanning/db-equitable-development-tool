@@ -243,8 +243,8 @@ class PUMSAggregator(BaseAggregator):
             for ind_category in self.categories[ind]:
                 for measure in ["count", "pct"]:
                     col_order.append(f"{ind_category}-{measure}")
-                    col_order.append(f"{ind_category}-{measure}-CV")
-                    col_order.append(f"{ind_category}-{measure}-MOE")
+                    col_order.append(f"{ind_category}-{measure}-cv")
+                    col_order.append(f"{ind_category}-{measure}-moe")
                 col_order.append(f"{ind_category}-pct-denom")
             if not self.household:
                 for ind_category in self.categories[ind]:
@@ -254,8 +254,8 @@ class PUMSAggregator(BaseAggregator):
                                 f"{ind_category}-{race_crosstab}-{measure}"
                             )
                             col_order.append(f"{column_label_base}")
-                            col_order.append(f"{column_label_base}-CV")
-                            col_order.append(f"{column_label_base}-MOE")
+                            col_order.append(f"{column_label_base}-cv")
+                            col_order.append(f"{column_label_base}-moe")
                         col_order.append(f"{ind_category}-{race_crosstab}-pct-denom")
         self.aggregated = self.aggregated.reindex(columns=col_order)
 

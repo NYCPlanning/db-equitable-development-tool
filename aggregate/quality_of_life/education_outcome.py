@@ -59,19 +59,25 @@ def calculate_city(df:pd.DataFrame, ):
 
 def rename_fields(df:pd.DataFrame):
 
-    for r in races:
-        race_rename = {
+    race_rename = {
             'ALL': 'all', 
             'ASN': 'anh', 
             'BLK': 'bnh', 
             'HIS': 'hsp', 
             'OTH': 'onh', 
             'WHT': 'wnh'
-        }
-        
-    = 'ela_3rdto8th_proficiency_pct'
-    result = df
-    return result
+    }
+
+    for r in races:
+
+        df.rename(columns={
+            f'E38PRFP{r}': f'ela_proficiency_3rdto8thgrade_{race_rename[r]}_pct',
+            f'M38PRFP{r}': f'math_proficiency_3rdto8thgrade_{race_rename[r]}_pct',
+            f'GRAD17P{r}': f'graduation_2017_{race_rename[r]}_pct'
+        }, inplace=True)
+
+    #'ela_proficiency_3rdto8thgrade_{}_pct'
+    return df
 
 def get_education_outcome() -> pd.DataFrame:
 

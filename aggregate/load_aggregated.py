@@ -15,19 +15,17 @@ from aggregate.PUMS.median_PUMS_demographics import PUMSMedianDemographics
 categories = {
     "demographics": [
         ("counts", PUMSCountDemographics, False),
-        ("medians", PUMSMedianDemographics, False),
     ],
     "economics": [
         ("counts", PUMSCountEconomics, False),
         ("counts", PUMSCountHouseholds, True),
-        ("medians", PUMSMedianEconomics, False),
-        # median household economics baseclass goes here once we are finished
     ],
 }
 
 
 def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
     """To do: include households"""
+
     setup_directory(".output/")
     rv = None
     for calculation_type, aggregator_class, household in categories[EDDT_category]:
@@ -40,9 +38,14 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
             by_household=household,
         )
         cache_fp = f".output/{cache_fn}"
+        print(f"looking for aggregated results at {cache_fp}")
         if path.exists(cache_fp):
+            print("found cached aggregated data")
             data = pd.read_csv(cache_fp, index_col=geography.upper())
         else:
+            print(
+                f"didn't find cached aggregated data, aggregating with {aggregator_class.__name__}"
+            )
             aggregator = aggregator_class(limited_PUMA=test_data, geo_col=geography)
             data = aggregator.aggregated
         if rv is None:

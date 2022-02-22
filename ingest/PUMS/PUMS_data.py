@@ -48,7 +48,7 @@ class PUMSData:
         """
         self.include_rw = include_rw
         self.cache_path = self.get_cache_fn(
-            variable_types, limited_PUMA, year, include_rw, household
+            variable_types, limited_PUMA, year, include_rw
         )
         self.variables = variables_for_processing(variable_types=variable_types)
         self.limited_PUMA = limited_PUMA
@@ -69,13 +69,12 @@ class PUMSData:
         self.download_and_cache()
 
     @classmethod
-    def get_cache_fn(self, variable_types, limited_PUMA, year, include_rw, household):
+    def get_cache_fn(self, variable_types, limited_PUMA, year, include_rw):
         return make_PUMS_cache_fn(
             variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             include_rw=include_rw,
-            household=household,
         )
 
     def populate_dataframes(self):

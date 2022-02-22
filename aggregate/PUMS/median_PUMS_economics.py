@@ -35,6 +35,7 @@ class PUMSMedianEconomics(PUMSAggregator):
         keep_SE=False,
         geo_col="puma",
     ):
+        raise Exception("Medians as written in this base class are incorrect")
         self.PUMS: pd.DataFrame = load_PUMS(
             variable_types=["demographics", "economics"],
             limited_PUMA=limited_PUMA,

@@ -17,10 +17,13 @@ def save_PUMS(
     eddt_category,
     geography,
     year,
-    test_data=typer.Option(False, help="aggregate smaller dataset for debugging"),
+    test_data: bool = False,
 ):
     """--test_data will aggregate on only first puma in each borough"""
     print(f"test data bool is {test_data}")
+    print(type(test_data))
+    if not isinstance(test_data, bool):
+        raise Exception
     data = load_aggregated_PUMS(
         EDDT_category=eddt_category,
         geography=geography,

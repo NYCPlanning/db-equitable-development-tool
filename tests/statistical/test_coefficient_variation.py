@@ -1,4 +1,6 @@
-"""Coefficient of variation should always be included and always be less than one"""
+"""Coefficient of variation should always be included and always be less than one
+Note that changes from fraction to pct will break these tests
+"""
 import pytest
 from tests.PUMS.local_loader import LocalLoader
 

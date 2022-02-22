@@ -14,9 +14,13 @@ app = typer.Typer()
 
 
 def save_PUMS(
-    eddt_category, geography, year, test_data=typer.Option(False, "--test_data")
+    eddt_category,
+    geography,
+    year,
+    test_data=typer.Option(False, help="aggregate smaller dataset for debugging"),
 ):
-    """Years will be extended as more data comes in"""
+    """--test_data will aggregate on only first puma in each borough"""
+    print(f"test data bool is {test_data}")
     data = load_aggregated_PUMS(
         EDDT_category=eddt_category,
         geography=geography,

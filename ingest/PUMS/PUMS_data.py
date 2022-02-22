@@ -1,7 +1,6 @@
 from typing import List
 import pandas as pd
 import numpy as np
-from sqlalchemy import func
 
 from utils.assign_PUMA import assign_PUMA, puma_to_borough
 

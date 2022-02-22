@@ -14,7 +14,13 @@ class PUMSCountHouseholds(PUMSCount):
     ]
 
     def __init__(
-        self, limited_PUMA=False, year=2019, requery=False, add_MOE=True, keep_SE=False
+        self,
+        limited_PUMA=False,
+        year=2019,
+        requery=False,
+        add_MOE=True,
+        keep_SE=False,
+        geo_col="puma",
     ) -> None:
         self.include_fractions = True
         self.include_counts = True
@@ -32,6 +38,7 @@ class PUMSCountHouseholds(PUMSCount):
             year=year,
             requery=requery,
             household=self.household,  # this is for aggregator to choose the right route for calculations
+            geo_col=geo_col,
         )
 
     def household_income_bands_assign(self, person):

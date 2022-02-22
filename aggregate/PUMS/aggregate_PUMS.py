@@ -67,12 +67,12 @@ class PUMSAggregator(BaseAggregator):
         geo_col="puma",
         PUMS: pd.DataFrame = None,
     ) -> None:
-        BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
         self.year = year
         self.geo_col = geo_col
         self.categories = {}
         self.household = household
+        BaseAggregator.__init__(self)
         PUMS_load_start = time.perf_counter()
         if PUMS is None:
             self.PUMS: pd.DataFrame = load_PUMS(

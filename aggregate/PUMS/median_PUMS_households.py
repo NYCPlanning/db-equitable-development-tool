@@ -39,9 +39,11 @@ class PUMSMedianHouseholds(PUMSMedians):
 
     def mdhinc_bucket_assign(self, household):
 
-        mdhinc_bins = [-599999, 9999, 14999, 19999, 
-            24999, 29999, 34999, 39999, 44999, 49999, 
-            59999, 74999, 99999, 124999, 149999, 199999, 99999999]
+        mdhinc_bins = [
+            -599999, 9999, 14999, 19999, 24999, 
+            29999, 34999, 39999, 44999, 49999, 59999,
+            74999, 99999, 124999, 149999, 199999, 99999999
+        ]
 
         idx = np.digitize(household["HINCP"], mdhinc_bins)
 

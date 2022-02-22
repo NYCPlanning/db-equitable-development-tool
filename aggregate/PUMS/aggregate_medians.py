@@ -1,5 +1,6 @@
 """Between PUMS aggregator and base classes"""
 from aggregate.PUMS.aggregate_PUMS import PUMSAggregator
+from statistical.calculate_counts import calculate_counts
 from statistical.calculate_medians import (
     calculate_median,
     calculate_median_with_crosstab,
@@ -38,6 +39,17 @@ class PUMSMedians(PUMSAggregator):
         indicator = ind_denom[0]
         self.assign_indicator(indicator)
         subset = self.apply_denominator(ind_denom)
+        
+        if self.household == True:
+            new_indicator_aggregated = calculate_counts(
+                data=subset,
+                variable_col=indicator,
+                rw_cols=self.rw_cols,
+                weight_col=self.weight_col,
+                geo_col=self.geo_col,
+                add_MOE=self.add_MOE,
+                keep_SE=self.keep_SE,
+            )
 
         new_indicator_aggregated = calculate_median(
             data=subset,

@@ -18,7 +18,7 @@ from ingest.load_data import load_PUMS
 class PUMSMedianEconomics(PUMSAggregator):
     """Because this has a double crosstab on race and industry/occupation it needs it's own
     implementation of calculate_add_new_variable and won't use PUMSMedian's
-    Note: bad desing to add self.PUMS here, should only be set in parent PUMS aggregator
+    Note: bad design to add self.PUMS here, should only be set in parent PUMS aggregator
     This code involves some hot fixes to hit deadline, call can be addressed with refactor
     to do aggregatation in call of PUMSAggregator instead of init"""
 
@@ -55,6 +55,7 @@ class PUMSMedianEconomics(PUMSAggregator):
             year=year,
             requery=requery,
             PUMS=self.PUMS,
+            household=False
         )
 
     def assign_indicator(self, indicator) -> pd.DataFrame:

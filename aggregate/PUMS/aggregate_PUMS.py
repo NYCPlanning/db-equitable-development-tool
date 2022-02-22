@@ -246,14 +246,19 @@ class PUMSAggregator(BaseAggregator):
                     col_order.append(f"{ind_category}-{measure}-CV")
                     col_order.append(f"{ind_category}-{measure}-MOE")
                 col_order.append(f"{ind_category}-fraction-denom")
-            for ind_category in self.categories[ind]:
-                for race_crosstab in self.categories["race"]:
-                    for measure in ["count", "fraction"]:
-                        column_label_base = f"{ind_category}-{race_crosstab}-{measure}"
-                        col_order.append(f"{column_label_base}")
-                        col_order.append(f"{column_label_base}-CV")
-                        col_order.append(f"{column_label_base}-MOE")
-                    col_order.append(f"{ind_category}-{race_crosstab}-fraction-denom")
+            if not self.household:
+                for ind_category in self.categories[ind]:
+                    for race_crosstab in self.categories["race"]:
+                        for measure in ["count", "fraction"]:
+                            column_label_base = (
+                                f"{ind_category}-{race_crosstab}-{measure}"
+                            )
+                            col_order.append(f"{column_label_base}")
+                            col_order.append(f"{column_label_base}-CV")
+                            col_order.append(f"{column_label_base}-MOE")
+                        col_order.append(
+                            f"{ind_category}-{race_crosstab}-fraction-denom"
+                        )
         self.aggregated = self.aggregated.reindex(columns=col_order)
 
     def total_pop_assign(self, person):

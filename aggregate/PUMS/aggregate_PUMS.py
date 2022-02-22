@@ -4,10 +4,7 @@ Reference for applying weights: https://www2.census.gov/programs-surveys/acs/tec
 
 To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 """
-from hashlib import new
 import os
-from re import sub
-from unittest import skip
 import pandas as pd
 import time
 import numpy as np
@@ -103,7 +100,6 @@ class PUMSAggregator(BaseAggregator):
                 f"PWGTP{x}" for x in range(1, 81)
             ]  # This will get refactored out
             self.weight_col = "PWGTP"
-
         for ind_denom in self.indicators_denom:
             print(f"iterated to {ind_denom[0]}")
             agg_start = time.perf_counter()
@@ -111,10 +107,7 @@ class PUMSAggregator(BaseAggregator):
             self.logger.info(
                 f"aggregating {ind_denom[0]} took {time.perf_counter()-agg_start}"
             )
-        try:
-            self.sort_aggregated_columns_alphabetically()
-        except:
-            print("couldn't sort columns alphabetically")
+        self.order_columns()
         self.cache_flat_csv()
 
     def sort_aggregated_columns_alphabetically(self):
@@ -122,6 +115,7 @@ class PUMSAggregator(BaseAggregator):
         self.aggregated = sort_columns(self.aggregated)
 
     def add_aggregated_data(self, new_var: pd.DataFrame):
+
         self.aggregated = self.aggregated.merge(
             new_var, how="left", left_index=True, right_index=True
         )
@@ -161,7 +155,9 @@ class PUMSAggregator(BaseAggregator):
             add_MOE=self.add_MOE,
             keep_SE=self.keep_SE,
         )
-        self.add_aggregated_data(new_indicator_aggregated)
+        self.add_aggregated_data(
+            new_var=new_indicator_aggregated,
+        )
         for ct in self.crosstabs:
             self.add_category(ct)  # To-do: move higher up, maybe to init
             count_aggregated_ct = calculate_counts(
@@ -174,7 +170,7 @@ class PUMSAggregator(BaseAggregator):
                 add_MOE=self.add_MOE,
                 keep_SE=self.keep_SE,
             )
-            self.add_aggregated_data(count_aggregated_ct)
+            self.add_aggregated_data(new_var=count_aggregated_ct)
 
     def add_fractions(self, indicator, subset):
         fraction_aggregated = calculate_fractions(
@@ -187,7 +183,7 @@ class PUMSAggregator(BaseAggregator):
             add_MOE=self.add_MOE,
             keep_SE=self.keep_SE,
         )
-        self.add_aggregated_data(fraction_aggregated)
+        self.add_aggregated_data(new_var=fraction_aggregated)
         if not self.household:
             for race in self.categories["race"]:
                 records_in_race = subset[subset["race"] == race]
@@ -203,14 +199,62 @@ class PUMSAggregator(BaseAggregator):
                         keep_SE=self.keep_SE,
                         race_crosstab=race,
                     )
-                    self.add_aggregated_data(fraction_aggregated_crosstab)
+                self.add_aggregated_data(
+                    new_var=fraction_aggregated_crosstab,
+                )
 
     def add_category(self, indicator):
-        """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
-        categories = list(self.PUMS[indicator].unique())
-        if None in categories:
-            categories.remove(None)
-        self.categories[indicator] = categories
+        """To-do: feel that there is easier way to return non-None categories but I
+        can't thik of what it is right now. Refactor if there is easier way
+        Probably a cleaner way to handle cases where categories have specific order
+        """
+        if indicator == "age_bucket":
+            self.categories["age_bucket"] = ["PopU16", "P16t64", "P65pl"]
+        if indicator == "household_income_bands":
+            self.categories["household_income_bands"] = [
+                "ELI",
+                "VLI",
+                "LI",
+                "MI",
+                "MIDI",
+                "HI",
+            ]
+        if indicator == "education":
+            self.categories["education"] = [
+                "Bachelors_or_higher",
+                "Some_college",
+                "high_school_or_equiv",
+                "less_than_hs_or_equiv",
+            ]
+
+        else:
+            categories = list(self.PUMS[indicator].unique())
+            if None in categories:
+                categories.remove(None)
+            categories.sort()
+            self.categories[indicator] = categories
+
+    def order_columns(self):
+        """This can be DRY'd out, written quickly to meet deadline"""
+
+        col_order = []
+        for ind_denom in self.indicators_denom:
+            ind = ind_denom[0]
+            for ind_category in self.categories[ind]:
+                for measure in ["count", "fraction"]:
+                    col_order.append(f"{ind_category}-{measure}")
+                    col_order.append(f"{ind_category}-{measure}-CV")
+                    col_order.append(f"{ind_category}-{measure}-MOE")
+                col_order.append(f"{ind_category}-fraction-denom")
+            for ind_category in self.categories[ind]:
+                for race_crosstab in self.categories["race"]:
+                    for measure in ["count", "fraction"]:
+                        column_label_base = f"{ind_category}-{race_crosstab}-{measure}"
+                        col_order.append(f"{column_label_base}")
+                        col_order.append(f"{column_label_base}-CV")
+                        col_order.append(f"{column_label_base}-MOE")
+                    col_order.append(f"{ind_category}-{race_crosstab}-fraction-denom")
+        self.aggregated = self.aggregated.reindex(columns=col_order)
 
     def total_pop_assign(self, person):
         return "total_pop"

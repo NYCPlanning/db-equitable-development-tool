@@ -35,7 +35,7 @@ def load_PUMS(
         year=year,
         include_rw=include_rw,
     )
-    print(f"reading from cache path {cache_path}")
+    print(f"reading raw data from cache path {cache_path}")
     if requery or not exists(cache_path):
         logger.info(f"Making get request to generate data sent to {cache_path}")
         ingestor = PUMSData(

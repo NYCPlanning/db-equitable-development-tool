@@ -15,17 +15,16 @@ class PUMSCountEconomics(PUMSCount):
     """Indicators refer to variables in Field Specifications page of data matrix"""
 
     indicators_denom: List[Tuple] = [
-        ("education", "age_over_24_filter"),
+        ("lf",),
         (
             "occupation",
             "civilian_employed_pop_filter",
         ),  # Termed "Employment by occupation" in data matrix
-        ("lf",),
         (
             "industry",
             "civilian_employed_pop_filter",
         ),  # Termed "Employment by industry sector" in data matrix
-        # apply civilian_employed_pop_filter
+        ("education", "age_over_24_filter"),
     ]
 
     def __init__(

@@ -2,7 +2,7 @@ import pandas as pd
 
 races = ['ALL', 'ASN', 'BLK', 'HIS', 'OTH', 'WHT']
 
-def calculate_puma(df:pd.DataFrame,):
+def calculate_edu_outcome(df:pd.DataFrame, geo: str):
 
     puma_cross = pd.read_excel(
         "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx",
@@ -14,65 +14,22 @@ def calculate_puma(df:pd.DataFrame,):
     puma_cross.columns = puma_cross.columns.str.replace(' \n', '')
 
     df = df.merge(puma_cross[["NTACode", "PUMACode"]], how="left", on="NTACode")
-
-    df_ = df.groupby('PUMACode').sum().reset_index()
-
-    #df_['NTACode'] = df_['PUMACode']
-
-    for r in races:
-        df_[f'E38PRFP{r}'] = df_[f'E38PRFN{r}'] / df_[f'E38TEST{r}'] #ELA
-        df_[f'M38PRFP{r}'] = df_[f'M38PRFN{r}'] / df_[f'M38TEST{r}'] #MATH
-        df_[f'GRAD17P{r}'] = df_[f'GRAD17N{r}'] / df_[f'GRAD17C{r}'] #graduation
-
-    cols = ['PUMACode'] + [f'E38PRFP{r}' for r in races] + [f'M38PRFP{r}'for r in races] + [f'GRAD17P{r}' for r in races] 
-
-    result = df_[cols].copy()
-
-    rename_fields(result, 'puma')
-
-    return result
-
-def calculate_borough(df: pd.DataFrame, ):
-
+    df.rename(columns={'PUMACode': 'puma'}, inplace=True)
     df['boro'] = df.NTACode.str[:2]
+    df['citywide'] = 'citywide'
 
-    df_ = df.groupby('boro').sum().reset_index()
-
-    #df_['NTACode'] = df_['boro']
-
-    for r in races:
-        df_[f'E38PRFP{r}'] = df_[f'E38PRFN{r}'] / df_[f'E38TEST{r}'] #ELA
-        df_[f'M38PRFP{r}'] = df_[f'M38PRFN{r}'] / df_[f'M38TEST{r}'] #MATH
-        df_[f'GRAD17P{r}'] = df_[f'GRAD17N{r}'] / df_[f'GRAD17C{r}'] #graduation
-
-    cols = ['boro'] + [f'E38PRFP{r}' for r in races] + [f'M38PRFP{r}'for r in races] + [f'GRAD17P{r}' for r in races] 
-
-    result = df_[cols].copy()
-
-    rename_fields(result, 'boro')
-
-    return result
-
-def calculate_city(df:pd.DataFrame, ):
-
-    df_ = df.sum(axis=0).copy()   
-
-    #df_.rename({'NTACode': 'Citywide'}, inplace=True)
-
-    df_['NTACode'] = 'citywide'
-
-    print(df_.index)
+    agg = df.groupby(geo).sum().reset_index()
 
     for r in races:
-        df_[f'E38PRFP{r}'] = df_[f'E38PRFN{r}'] / df_[f'E38TEST{r}'] #ELA
-        df_[f'M38PRFP{r}'] = df_[f'M38PRFN{r}'] / df_[f'M38TEST{r}'] #MATH
-        df_[f'GRAD17P{r}'] = df_[f'GRAD17N{r}'] / df_[f'GRAD17C{r}'] #graduation
+        agg[f'E38PRFP{r}'] = agg[f'E38PRFN{r}'] / agg[f'E38TEST{r}'] #ELA
+        agg[f'M38PRFP{r}'] = agg[f'M38PRFN{r}'] / agg[f'M38TEST{r}'] #MATH
+        agg[f'GRAD17P{r}'] = agg[f'GRAD17N{r}'] / agg[f'GRAD17C{r}'] #graduation
 
-    cols = ['NTACode'] + [f'E38PRFP{r}' for r in races] + [f'M38PRFP{r}'for r in races] + [f'GRAD17P{r}' for r in races] 
+    cols = [geo] + [f'E38PRFP{r}' for r in races] + [f'M38PRFP{r}'for r in races] + [f'GRAD17P{r}' for r in races] 
 
-    result = pd.DataFrame(data=[df_[cols].to_list()], columns=df_[cols].index)
+    result = agg[cols].round(5)
 
-    rename_fields(result, 'citywide')
+    rename_fields(result, geo)
 
     return result
 
@@ -95,34 +52,29 @@ def rename_fields(df: pd.DataFrame, geo: str):
             f'GRAD17P{r}': f'graduation_rate_2017_{race_rename[r]}_pct'
         }, inplace=True)
 
-    if geo == 'citywide':
-
-        df.rename(columns={'NTACode': 'Citywide'})
-    
-    elif geo == 'puma':
-
-        df.rename(columns={'PUMACode': 'puma'})
-
     return None
 
-def get_education_outcome() -> pd.DataFrame:
+def get_education_outcome(internal_review=True) -> pd.DataFrame:
 
     # Read columns with 
-    df = pd.read_excel('resources/QOL/NTA_data_prepared_for_ArcMap_wCodebook.xlsx', 
+    raw_edu_outcome = pd.read_excel('resources/QOL/NTA_data_prepared_for_ArcMap_wCodebook.xlsx', 
         sheet_name='5_StudentPerformance', usecols="A:M,AL:AW,CN:CY", header=1)
 
-    puma_result = calculate_puma(df)
-
-    boro_result = calculate_borough(df)
-
-    city_result = calculate_city(df)
+    #if geo == 'puma':
+    puma_result = calculate_edu_outcome(raw_edu_outcome, 'puma')
+    #elif geo == 'boro':
+    boro_result = calculate_edu_outcome(raw_edu_outcome, 'boro')
+    #elif geo == 'citywide':
+    city_result = calculate_edu_outcome(raw_edu_outcome, 'citywide')
+        #print('invalid geography')
 
     # comment out if not combining the result in this step
     #final_result = pd.concat([nta_result, boro_result, city_result], axis=0, ignore_index=True)
 
-    puma_result.to_csv('internal_review/quality_of_life/puma/education_outcome.csv', index=False)
-    boro_result.to_csv('internal_review/quality_of_life/borough/education_outcome.csv', index=False)
-    city_result.to_csv('internal_review/quality_of_life/citywide/education_outcome.csv', index=False)
+    if internal_review:
+        puma_result.to_csv('internal_review/quality_of_life/puma/education_outcome.csv', index=False)
+        boro_result.to_csv('internal_review/quality_of_life/borough/education_outcome.csv', index=False)
+        city_result.to_csv('internal_review/quality_of_life/citywide/education_outcome.csv', index=False)
 
 
     return 

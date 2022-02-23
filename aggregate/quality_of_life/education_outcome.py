@@ -4,20 +4,6 @@ races = ['ALL', 'ASN', 'BLK', 'HIS', 'OTH', 'WHT']
 
 def calculate_edu_outcome(df:pd.DataFrame, geo: str):
 
-    puma_cross = pd.read_excel(
-        "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx",
-        sheet_name='NTA in PUMA_',
-        header=6,
-        dtype=str,
-    )
- 
-    puma_cross.columns = puma_cross.columns.str.replace(' \n', '')
-
-    df = df.merge(puma_cross[["NTACode", "PUMACode"]], how="left", on="NTACode")
-    df.rename(columns={'PUMACode': 'puma'}, inplace=True)
-    df['boro'] = df.NTACode.str[:2]
-    df['citywide'] = 'citywide'
-
     agg = df.groupby(geo).sum().reset_index()
 
     for r in races:
@@ -54,21 +40,45 @@ def rename_fields(df: pd.DataFrame, geo: str):
 
     return None
 
-def get_education_outcome(geo: str, internal_review=True) -> pd.DataFrame:
+def get_education_outcome(geo: str, internal_review=False) -> pd.DataFrame:
 
-    # Read columns with 
+    puma_cross = pd.read_excel(
+        "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx",
+        sheet_name='NTA in PUMA_',
+        header=6,
+        dtype=str,
+    )
+ 
+    puma_cross.columns = puma_cross.columns.str.replace(' \n', '')
+
+    puma_cross = puma_cross.loc[~puma_cross.NTACode.isin(['BX99', 'BK99', 'MN99', 'QN99'])]
+
+    #print(len(puma_cross.NTACode.unique()))
+    print(puma_cross)
+    # Read in source and do some cleanning and merging with puma cross walk
     raw_edu_outcome = pd.read_excel('resources/QOL/NTA_data_prepared_for_ArcMap_wCodebook.xlsx', 
         sheet_name='5_StudentPerformance', usecols="A:M,AL:AW,CN:CY", header=1)
 
-    result = calculate_edu_outcome(raw_edu_outcome, geo)
+    print(len(raw_edu_outcome.NTACode.unique()))
+    raw_edu_outcome.fillna(value=0, inplace=True)
+    #print(raw_edu_outcome)
+    raw_edu_outcome_puma = raw_edu_outcome.merge(puma_cross[["NTACode", "PUMACode"]], how="left", on="NTACode")
+    print(raw_edu_outcome_puma)
+    raw_edu_outcome_puma.rename(columns={'PUMACode': 'puma'}, inplace=True)
+    raw_edu_outcome_puma['boro'] = raw_edu_outcome_puma.NTACode.str[:2]
+    raw_edu_outcome_puma['citywide'] = 'citywide'
+
+    result = calculate_edu_outcome(raw_edu_outcome_puma, geo)
 
     # comment out if not combining the result in this step
     #final_result = pd.concat([nta_result, boro_result, city_result], axis=0, ignore_index=True)
 
     if internal_review:
-        puma_result = calculate_edu_outcome(raw_edu_outcome, 'puma')
-        boro_result = calculate_edu_outcome(raw_edu_outcome, 'boro')
-        city_result = calculate_edu_outcome(raw_edu_outcome, 'citywide')
+        puma_result = calculate_edu_outcome(raw_edu_outcome_puma, 'puma')
+        boro_result = calculate_edu_outcome(raw_edu_outcome_puma, 'boro')
+        city_result = calculate_edu_outcome(raw_edu_outcome_puma, 'citywide')
+
+        #print(puma_result)
 
         puma_result.to_csv('internal_review/quality_of_life/puma/education_outcome.csv', index=False)
         boro_result.to_csv('internal_review/quality_of_life/borough/education_outcome.csv', index=False)

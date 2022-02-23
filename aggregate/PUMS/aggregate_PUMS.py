@@ -4,14 +4,23 @@ Reference for applying weights: https://www2.census.gov/programs-surveys/acs/tec
 
 To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 """
+from hashlib import new
 import os
+from re import sub
+from unittest import skip
 import pandas as pd
+import time
+import numpy as np
 from ingest.load_data import load_PUMS
 from statistical.calculate_counts import calculate_counts
 from aggregate.race_assign import PUMS_race_assign
 from aggregate.clean_aggregated import sort_columns
 from utils.make_logger import create_logger
-import time
+from statistical.calculate_fractions import (
+    calculate_fractions,
+)
+
+allowed_variance_measures = ["SE", "MOE"]
 
 
 class BaseAggregator:
@@ -37,36 +46,66 @@ class BaseAggregator:
 
 
 class PUMSAggregator(BaseAggregator):
-    """Parent class for aggregating PUMS data"""
+    """Parent class for aggregating PUMS data.
+    Option to pass in PUMS dataframe on init is hot fix, added to accomdate median_PUMS_economics which breaks several patterns and requires
+    many hot fixes. Solution is to do aggregation on call of this class instead of init"""
 
-    rw_cols = [f"PWGTP{x}" for x in range(1, 81)]  # This will get refactored out
-    weight_col = "PWGTP"
-    geo_col = "PUMA"
+    # geo_col = "PUMA"
 
-    def __init__(self, variable_types, limited_PUMA, year, requery) -> None:
+    def __init__(
+        self,
+        variable_types,
+        limited_PUMA,
+        year,
+        requery,
+        household,
+        geo_col="puma",
+        PUMS: pd.DataFrame = None,
+    ) -> None:
         BaseAggregator.__init__(self)
         self.limited_PUMA = limited_PUMA
         self.year = year
+        self.geo_col = geo_col
+        self.categories = {}
+        self.household = household
         PUMS_load_start = time.perf_counter()
-        self.PUMS: pd.DataFrame = load_PUMS(
-            variable_types=variable_types,
-            limited_PUMA=limited_PUMA,
-            year=year,
-            requery=requery,
-        )
+        if PUMS is None:
+            self.PUMS: pd.DataFrame = load_PUMS(
+                variable_types=variable_types,
+                limited_PUMA=limited_PUMA,
+                year=year,
+                requery=requery,
+                household=household,
+            )
+        else:
+            self.PUMS = PUMS
         PUMS_load_end = time.perf_counter()
         self.logger.info(
             f"PUMS data from download took {PUMS_load_end - PUMS_load_start} seconds"
         )
         for crosstab in self.crosstabs:
             self.assign_indicator(crosstab)
+            self.add_category(crosstab)
         # Possible to-do: below code goes in call instead of init
-        self.aggregated = pd.DataFrame(index=self.PUMS["PUMA"].unique())
-        self.aggregated.index.name = "PUMA"
-        for ind in self.indicators:
+        self.aggregated = pd.DataFrame(index=self.PUMS[geo_col].unique())
+        self.aggregated.index.name = geo_col
+
+        if household:
+            self.rw_cols = [f"WGTP{x}" for x in range(1, 81)]
+            self.weight_col = "WGTP"
+        else:
+            self.rw_cols = [
+                f"PWGTP{x}" for x in range(1, 81)
+            ]  # This will get refactored out
+            self.weight_col = "PWGTP"
+
+        for ind_denom in self.indicators_denom:
+            print(f"iterated to {ind_denom[0]}")
             agg_start = time.perf_counter()
-            self.calculate_add_new_variable(ind)
-            self.logger.info(f"aggregating {ind} took {time.perf_counter()-agg_start}")
+            self.calculate_add_new_variable(ind_denom)
+            self.logger.info(
+                f"aggregating {ind_denom[0]} took {time.perf_counter()-agg_start}"
+            )
         try:
             self.sort_aggregated_columns_alphabetically()
         except:
@@ -76,9 +115,9 @@ class PUMSAggregator(BaseAggregator):
         """Put each variable next to it's standard error"""
         self.aggregated = sort_columns(self.aggregated)
 
-    def add_aggregated_data(self, new_var):
+    def add_aggregated_data(self, new_var: pd.DataFrame):
         self.aggregated = self.aggregated.merge(
-            new_var, left_index=True, right_index=True
+            new_var, how="left", left_index=True, right_index=True
         )
 
     def assign_indicator(self, indicator) -> pd.DataFrame:
@@ -86,6 +125,86 @@ class PUMSAggregator(BaseAggregator):
             self.PUMS[indicator] = self.PUMS.apply(
                 axis=1, func=self.__getattribute__(f"{indicator}_assign")
             )
+
+    def calculate_add_new_variable(self, ind_denom):
+        indicator = ind_denom[0]
+        print(f"assigning indicator of {indicator} ")
+        self.assign_indicator(indicator)
+        self.add_category(indicator)
+        subset = self.apply_denominator(ind_denom)
+        if self.include_counts:
+            self.add_counts(indicator, subset)
+        if self.include_fractions:
+            self.add_fractions(indicator, subset)
+
+    def apply_denominator(self, ind_denom) -> pd.DataFrame:
+        if len(ind_denom) == 1:
+            subset = self.PUMS.copy()
+        else:
+            subset = self.__getattribute__(ind_denom[1])(self.PUMS)
+        return subset
+
+    def add_counts(self, indicator, subset):
+
+        new_indicator_aggregated = calculate_counts(
+            data=subset,
+            variable_col=indicator,
+            rw_cols=self.rw_cols,
+            weight_col=self.weight_col,
+            geo_col=self.geo_col,
+            add_MOE=self.add_MOE,
+            keep_SE=self.keep_SE,
+        )
+        self.add_aggregated_data(new_indicator_aggregated)
+        for ct in self.crosstabs:
+            self.add_category(ct)  # To-do: move higher up, maybe to init
+            count_aggregated_ct = calculate_counts(
+                data=subset,
+                variable_col=indicator,
+                rw_cols=self.rw_cols,
+                weight_col=self.weight_col,
+                geo_col=self.geo_col,
+                crosstab=ct,
+                add_MOE=self.add_MOE,
+                keep_SE=self.keep_SE,
+            )
+            self.add_aggregated_data(count_aggregated_ct)
+
+    def add_fractions(self, indicator, subset):
+        fraction_aggregated = calculate_fractions(
+            data=subset,
+            variable_col=indicator,
+            categories=self.categories[indicator],
+            rw_cols=self.rw_cols,
+            weight_col=self.weight_col,
+            geo_col=self.geo_col,
+            add_MOE=self.add_MOE,
+            keep_SE=self.keep_SE,
+        )
+        self.add_aggregated_data(fraction_aggregated)
+        if not self.household:
+            for race in self.categories["race"]:
+                records_in_race = subset[subset["race"] == race]
+                if not records_in_race.empty:
+                    fraction_aggregated_crosstab = calculate_fractions(
+                        data=records_in_race.copy(),
+                        variable_col=indicator,
+                        categories=self.categories[indicator],
+                        rw_cols=self.rw_cols,
+                        weight_col=self.weight_col,
+                        geo_col=self.geo_col,
+                        add_MOE=self.add_MOE,
+                        keep_SE=self.keep_SE,
+                        race_crosstab=race,
+                    )
+                    self.add_aggregated_data(fraction_aggregated_crosstab)
+
+    def add_category(self, indicator):
+        """To-do: feel that there is easier way to return non-None categories but I can't thik of what it is right now. Refactor if there is easier way"""
+        categories = list(self.PUMS[indicator].unique())
+        if None in categories:
+            categories.remove(None)
+        self.categories[indicator] = categories
 
     def total_pop_assign(self, person):
         return "total_pop"
@@ -97,4 +216,4 @@ class PUMSAggregator(BaseAggregator):
 class PUMSCount(PUMSAggregator):
     """Need some way to introduce total pop indicator here"""
 
-    indicators = ["total_pop"]
+    indicators_denom = [("total_pop",)]

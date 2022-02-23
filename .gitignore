@@ -83,6 +83,7 @@ ipython_config.py
 
 # pyenv
 .python-version
+pyvenv.cfg
 
 # pipenv
 #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
@@ -146,3 +147,9 @@ logs/
 
 #
 .vscode/
+
+#Local Docker testing
+Dockerfile
+
+# scratch notebook
+notebooks/scratch.ipynb

@@ -16,7 +16,7 @@ class PUMSCleaner:
         self.range_recodes = self.get_range_recodes()
         self.logger = create_logger("PUMS_cleaner_log", "logs/PUMSCleaner.log")
 
-    def clean_simple_cateogorical(self, vi_data, column_name):
+    def clean_simple_categorical(self, vi_data, column_name):
         """For columns that are downloaded as integers and map one to one to categories in data dictionary"""
         self.logger.info(
             f"cleaning {column_name} with simple categorical mapping approach. This uses the one_to_one_recodes df"
@@ -37,7 +37,7 @@ class PUMSCleaner:
         vi_data[column_name] = vi_data[column_name].astype(int)
         return vi_data
 
-    def clean_range_categorical(self, vi_data, column_name):
+    def clean_range_categorical(self, vi_data: pd.DataFrame, column_name):
         """Based on https://stackoverflow.com/questions/57376325/replace-a-range-of-integer-values-in-multiple-columns-of-pandas"""
 
         self.logger.info(
@@ -54,6 +54,16 @@ class PUMSCleaner:
         vi_data[column_name] = vi_data[new_col_name]
         vi_data.drop(columns=new_col_name, inplace=True)
         return vi_data
+
+    def occupation_clean_range_categorical(self, vi_data: pd.DataFrame, column_name):
+        """Occupation gets it's own cleaner function as the 2012 data comes in with a
+        different schema"""
+        if "OCCP" not in vi_data.columns:
+            OCCP_cols = ["OCCP02", "OCCP10", "OCCP12"]
+            vi_data[OCCP_cols] = vi_data[OCCP_cols].replace({"-1": None, "N.A.": None})
+            vi_data["OCCP"] = vi_data.apply(get_occupation, axis=1, args=(OCCP_cols,))
+            vi_data["OCCP"].replace({None: 9}, inplace=True)
+        return self.clean_range_categorical(vi_data, column_name)
 
     def get_one_to_one_recode_df(self):
         fp = "resources/PUMS_recodes.csv"
@@ -119,3 +129,10 @@ class PUMSCleaner:
                 )
             )
         return rv
+
+
+def get_occupation(record, occp_cols):
+    for c in occp_cols:
+        if record[c] is not None:
+            return record[c]
+    return None

@@ -21,7 +21,7 @@ def test_local_loader(all_data):
 @pytest.mark.test_new_crosstabs
 def test_all_counts_sum_to_total_pop():
     aggregator = local_loader.count_aggregator
-    for ind in aggregator.indicators:
+    for ind in aggregator.indicators_denom:
         assert (
             aggregator.aggregated[
                 [f"{category}-count" for category in aggregator.categories[ind]]
@@ -33,7 +33,9 @@ def test_all_counts_sum_to_total_pop():
 @pytest.mark.test_aggregation
 def test_that_all_races_sum_to_total_within_indicator():
     """Parameterize this to look at nativity, age buckets as well"""
-    lep_race_cols = [f"lep-{r}" for r in race_counts]  # Generate this from function
+    lep_race_cols = [
+        f"lep-{r}-count" for r in race_counts
+    ]  # Generate this from function
     assert (
         local_loader.aggregated[lep_race_cols].sum(axis=1)
         == local_loader.aggregated["lep-count"]
@@ -75,9 +77,9 @@ def test_age_bucket_assignment_correct():
     """95 is top coded value for age"""
     by_person_data = local_loader.by_person
     assert min(by_person_data[by_person_data["age_bucket"] == "PopU16"]["AGEP"]) == 0
-    assert max(by_person_data[by_person_data["age_bucket"] == "PopU16"]["AGEP"]) == 16
-    assert min(by_person_data[by_person_data["age_bucket"] == "P16t65"]["AGEP"]) == 17
-    assert max(by_person_data[by_person_data["age_bucket"] == "P16t65"]["AGEP"]) == 64
+    assert max(by_person_data[by_person_data["age_bucket"] == "PopU16"]["AGEP"]) == 15
+    assert min(by_person_data[by_person_data["age_bucket"] == "P16t64"]["AGEP"]) == 16
+    assert max(by_person_data[by_person_data["age_bucket"] == "P16t64"]["AGEP"]) == 64
     assert min(by_person_data[by_person_data["age_bucket"] == "P65pl"]["AGEP"]) == 65
     assert max(by_person_data[by_person_data["age_bucket"] == "P65pl"]["AGEP"]) == 95
 

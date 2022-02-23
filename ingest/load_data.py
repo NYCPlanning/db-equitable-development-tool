@@ -35,7 +35,6 @@ def load_PUMS(
         year=year,
         include_rw=include_rw,
     )
-    print(f"reading raw data from cache path {cache_path}")
     if requery or not exists(cache_path):
         logger.info(f"Making get request to generate data sent to {cache_path}")
         ingestor = PUMSData(
@@ -45,6 +44,8 @@ def load_PUMS(
             include_rw=include_rw,
             household=household,
         )
+    else:
+        print(f"reading raw data from cache path {cache_path}")
     PUMS_data = pd.read_pickle(cache_path)
     if return_ingestor:
         rv = ingestor

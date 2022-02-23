@@ -6,6 +6,13 @@ from ingest.QOL.access_transit import load_access_ADA_subway, load_access_subway
 from internal_review.set_internal_review_file import set_internal_review_files
 
 
+def access_subway_and_access_ADA_accessible(geography, save_for_internal_review=False):
+    """Accessor for two similar indicators:
+    - Percent of residents within 1/4 mile of ADA accessible subway stations
+    - Percent within 1/4 mile of subway or Select Bus station"""
+    pass
+
+
 def set_results_for_internal_review():
     """Saves results to .csv so that reviewers can see results during code review"""
     access_subway_SBS = access_to_subway_or_SBS()

@@ -47,7 +47,7 @@ def set_results_for_internal_review(access_df, geography):
         data=[
             (access_df, "Access_to_subway_or_sbs.csv", geography),
         ],
-        category="QOL",
+        category="quality_of_life",
     )
 
 

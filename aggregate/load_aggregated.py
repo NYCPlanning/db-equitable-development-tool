@@ -41,7 +41,7 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
         print(f"looking for aggregated results at {cache_fp}")
         if path.exists(cache_fp):
             print("found cached aggregated data")
-            data = pd.read_csv(cache_fp, index_col=geography.upper())
+            data = pd.read_csv(cache_fp, index_col=geography)
         else:
             print(
                 f"didn't find cached aggregated data, aggregating with {aggregator_class.__name__}"

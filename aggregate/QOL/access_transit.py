@@ -10,19 +10,28 @@ def access_subway_and_access_ADA_accessible(geography, save_for_internal_review=
     """Accessor for two similar indicators:
     - Percent of residents within 1/4 mile of ADA accessible subway stations
     - Percent within 1/4 mile of subway or Select Bus station"""
-    pass
-
-
-def set_results_for_internal_review():
-    """Saves results to .csv so that reviewers can see results during code review"""
     access_subway_SBS = access_to_subway_or_SBS()
     access_ADA_subway = access_to_ADA_subway()
+
+    if save_for_internal_review:
+        set_results_for_internal_review(access_subway_SBS, access_ADA_subway)
+
+
+def set_results_for_internal_review(access_subway_SBS, access_ADA_subway):
+    """Saves results to .csv so that reviewers can see results during code review"""
     set_internal_review_files(
         data=[
             (access_subway_SBS, "Access_to_subway_or_sbs"),
             (access_ADA_subway, "Access_to_ada_subway"),
         ]
     )
+
+
+def calculate_access_fraction(data, gb_col, count_col, fraction_col):
+    gb = data.groupby(gb_col).sum().reset_index()
+
+    gb[fraction_col] = gb[count_col] / gb["total_pop"]
+    return gb[fraction_col]
 
 
 def access_to_subway_or_SBS():

@@ -20,8 +20,10 @@ borough_code_mapper = {
 
 
 def puma_to_borough(record):
-
-    borough_code_str = record.puma[:2]
+    if record.puma[0] == "0":
+        borough_code_str = record.puma[1:3]
+    else:
+        borough_code_str = record.puma[:2]
     borough_code = int(borough_code_str)
     borough = borough_code_mapper[borough_code]
     return borough

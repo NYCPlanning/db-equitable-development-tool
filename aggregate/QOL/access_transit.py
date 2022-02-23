@@ -2,8 +2,7 @@
 "Percent of residents within 1/4 mile of ADA accessible subway stations\" and 
 "Percent within 1/4 mile of subway or Select Bus station". Both indicators are similar and quite simple
 """
-from operator import ge
-from ingest.QOL.access_transit import load_access_ADA_subway, load_access_subway_SBS
+import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.assign_PUMA import puma_to_borough
 
@@ -13,8 +12,8 @@ def access_subway_and_access_ADA(geography, save_for_internal_review=False):
     - Percent of residents within 1/4 mile of ADA accessible subway stations
     - Percent within 1/4 mile of subway or Select Bus station"""
 
-    access_subway_SBS = load_access_subway_SBS().reset_index()
-    access_ADA_subway = load_access_ADA_subway().reset_index()
+    access_subway_SBS = load_access_subway_SBS()
+    access_ADA_subway = load_access_ADA_subway()
 
     assign_geo_cols(access_subway_SBS)
     assign_geo_cols(access_ADA_subway)
@@ -57,3 +56,35 @@ def calculate_access_fraction(data, gb_col, count_col, fraction_col):
 
     gb[fraction_col] = gb[count_col] / gb["total_pop"]
     return gb[[fraction_col]]
+
+
+def load_access_subway_SBS() -> pd.DataFrame:
+    access = pd.read_csv(".library/dcp_access_subway_SBS.csv")
+    access = remove_state_code_from_PUMA(access)
+    access.rename(
+        columns={
+            "pop_within_1/4_mile_of_subway_stations_and_sbs_stops": "pop_with_access_subway_SBS",
+            "total_pop_from_census_2020": "total_pop",
+        },
+        inplace=True,
+    )
+    return access
+
+
+def remove_state_code_from_PUMA(access: pd.DataFrame) -> pd.DataFrame:
+    access["puma"] = access["puma"].astype(str).str[-5:]
+    return access
+
+
+def load_access_ADA_subway() -> pd.DataFrame:
+    access = pd.read_csv(".library/dcp_access_ADA_subway.csv")
+
+    access = remove_state_code_from_PUMA(access)
+    access.rename(
+        columns={
+            "pop_within_1/4_mile_of_ada_subway_stations": "pop_with_accessible_ADA_subway",
+            "total_pop_from_census_2020": "total_pop",
+        },
+        inplace=True,
+    )
+    return access

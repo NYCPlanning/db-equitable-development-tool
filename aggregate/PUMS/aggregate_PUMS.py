@@ -67,7 +67,7 @@ class PUMSAggregator(BaseAggregator):
         self.limited_PUMA = limited_PUMA
         self.year = year
         self.geo_col = geo_col
-        self.categories = {}
+        # self.categories = {}
         self.household = household
         BaseAggregator.__init__(self)
         PUMS_load_start = time.perf_counter()
@@ -208,10 +208,7 @@ class PUMSAggregator(BaseAggregator):
         can't thik of what it is right now. Refactor if there is easier way
         Probably a cleaner way to handle cases where categories have specific order
         """
-        print(f"adding categories for {indicator}")
-        print(self.categories)
         if indicator == "age_bucket":
-            print("assigning age bucket with implicit order")
             self.categories["age_bucket"] = ["PopU16", "P16t64", "P65pl"]
         elif indicator == "household_income_bands":
             self.categories["household_income_bands"] = [
@@ -229,8 +226,8 @@ class PUMSAggregator(BaseAggregator):
                 "high_school_or_equiv",
                 "less_than_hs_or_equiv",
             ]
-
         else:
+
             categories = list(self.PUMS[indicator].unique())
             if None in categories:
                 categories.remove(None)

@@ -51,7 +51,7 @@ class PUMSMedianEconomics(PUMSAggregator):
             """Unusual to assign indicator without aggregating on it directly.
             Using column as crosstab instead of indicator to report"""
             self.assign_indicator(economic_crosstab)
-
+            self.add_category(economic_crosstab)
         PUMSAggregator.__init__(
             self,
             variable_types=["demographics", "economics"],
@@ -133,3 +133,26 @@ class PUMSMedianEconomics(PUMSAggregator):
                         second_crosstab_name=race,
                     )
                     self.add_aggregated_data(new_indicator)
+
+    def order_columns(self):
+        """Overwrites method in PUMSAggregator as this class does double crosstab thing.
+        General medians class will also need custom version"""
+
+        col_order = []
+        for ind in self.economic_crosstabs:
+            for ind_category in self.categories[ind]:
+                for measure in ["median"]:
+                    col_order.append(f"{ind_category}-wage-{measure}")
+                    col_order.append(f"{ind_category}-wage-{measure}-cv")
+                    col_order.append(f"{ind_category}-wage-{measure}-moe")
+            if not self.household:
+                for ind_category in self.categories[ind]:
+                    for race_crosstab in self.categories["race"]:
+                        for measure in ["median"]:
+                            column_label_base = (
+                                f"{ind_category}-wage-{race_crosstab}-{measure}"
+                            )
+                            col_order.append(f"{column_label_base}")
+                            col_order.append(f"{column_label_base}-cv")
+                            col_order.append(f"{column_label_base}-moe")
+        self.aggregated = self.aggregated.reindex(columns=col_order)

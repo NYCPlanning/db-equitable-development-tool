@@ -19,6 +19,7 @@ categories = {
     "economics": [
         ("counts", PUMSCountHouseholds, True),
         ("counts", PUMSCountEconomics, False),
+        ("medians", PUMSMedianEconomics, False),
     ],
 }
 

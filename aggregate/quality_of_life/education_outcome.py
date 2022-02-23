@@ -54,27 +54,25 @@ def rename_fields(df: pd.DataFrame, geo: str):
 
     return None
 
-def get_education_outcome(internal_review=True) -> pd.DataFrame:
+def get_education_outcome(geo: str, internal_review=True) -> pd.DataFrame:
 
     # Read columns with 
     raw_edu_outcome = pd.read_excel('resources/QOL/NTA_data_prepared_for_ArcMap_wCodebook.xlsx', 
         sheet_name='5_StudentPerformance', usecols="A:M,AL:AW,CN:CY", header=1)
 
-    #if geo == 'puma':
-    puma_result = calculate_edu_outcome(raw_edu_outcome, 'puma')
-    #elif geo == 'boro':
-    boro_result = calculate_edu_outcome(raw_edu_outcome, 'boro')
-    #elif geo == 'citywide':
-    city_result = calculate_edu_outcome(raw_edu_outcome, 'citywide')
-        #print('invalid geography')
+    result = calculate_edu_outcome(raw_edu_outcome, geo)
 
     # comment out if not combining the result in this step
     #final_result = pd.concat([nta_result, boro_result, city_result], axis=0, ignore_index=True)
 
     if internal_review:
+        puma_result = calculate_edu_outcome(raw_edu_outcome, 'puma')
+        boro_result = calculate_edu_outcome(raw_edu_outcome, 'boro')
+        city_result = calculate_edu_outcome(raw_edu_outcome, 'citywide')
+
         puma_result.to_csv('internal_review/quality_of_life/puma/education_outcome.csv', index=False)
         boro_result.to_csv('internal_review/quality_of_life/borough/education_outcome.csv', index=False)
         city_result.to_csv('internal_review/quality_of_life/citywide/education_outcome.csv', index=False)
 
 
-    return 
+    return result

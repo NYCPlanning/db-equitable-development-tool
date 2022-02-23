@@ -208,9 +208,12 @@ class PUMSAggregator(BaseAggregator):
         can't thik of what it is right now. Refactor if there is easier way
         Probably a cleaner way to handle cases where categories have specific order
         """
+        print(f"adding categories for {indicator}")
+        print(self.categories)
         if indicator == "age_bucket":
+            print("assigning age bucket with implicit order")
             self.categories["age_bucket"] = ["PopU16", "P16t64", "P65pl"]
-        if indicator == "household_income_bands":
+        elif indicator == "household_income_bands":
             self.categories["household_income_bands"] = [
                 "ELI",
                 "VLI",
@@ -219,7 +222,7 @@ class PUMSAggregator(BaseAggregator):
                 "MIDI",
                 "HI",
             ]
-        if indicator == "education":
+        elif indicator == "education":
             self.categories["education"] = [
                 "Bachelors_or_higher",
                 "Some_college",

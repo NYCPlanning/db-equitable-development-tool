@@ -1,4 +1,4 @@
-borough,total_injuries,ped_injuries,cycle_injuries,motorist_injuries,total_fatalities
+borough,safety_trafficinjuries_total,safety_trafficinjuries_ped,safety_trafficinjuries_cycle,safety_trafficinjuries_motorist,safety_trafficfatalities_total
 BK,1034.81,243.94,100.77,690.1,4.71
 BX,836.67,220.35,38.81,577.51,4.16
 MN,1236.42,444.55,178.95,612.91,6.94

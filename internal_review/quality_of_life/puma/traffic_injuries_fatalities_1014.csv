@@ -1,4 +1,4 @@
-puma,total_injuries,ped_injuries,cycle_injuries,motorist_injuries,total_fatalities
+puma,safety_trafficinjuries_total,safety_trafficinjuries_ped,safety_trafficinjuries_cycle,safety_trafficinjuries_motorist,safety_trafficfatalities_total
 04001,753.28,171.55,166.03,415.69,6.72
 04002,1165.45,260.61,150.0,754.85,5.15
 04003,1279.66,310.51,169.15,800.0,2.03

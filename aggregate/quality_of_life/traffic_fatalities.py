@@ -20,11 +20,11 @@ def traffic_fatalities_injuries(geography, end_year, save_for_internal_review=Fa
     big_df = pd.DataFrame(data={"puma": get_all_NYC_PUMAs()})
     for year in year_mapper[end_year]:
         raw_df = pd.read_csv(f".library/dcp_dot_trafficinjuries_{year}.csv")
-        injuries_col_name = f"total_injuries_{year}"
-        ped_col_name = f"ped_injuries_{year}"
-        cycle_col_name = f"cycle_injuries_{year}"
-        motorist_col_name = f"motorist_injuries_{year}"
-        fatalities_col_name = f"total_fatalities_{year}"
+        injuries_col_name = f"injuries_total_{year}"
+        ped_col_name = f"injuries_ped_{year}"
+        cycle_col_name = f"injuries_cycle_{year}"
+        motorist_col_name = f"injuries_motorist_{year}"
+        fatalities_col_name = f"fatalities_total_{year}"
 
         raw_df.rename(
             columns={
@@ -56,11 +56,11 @@ def traffic_fatalities_injuries(geography, end_year, save_for_internal_review=Fa
         final = pd.DataFrame(index=["citywide"])
     final.index.rename(geography, inplace=True)
     for data_point in [
-        "total_injuries",
-        "ped_injuries",
-        "cycle_injuries",
-        "motorist_injuries",
-        "total_fatalities",
+        "injuries_total",
+        "injuries_ped",
+        "injuries_cycle",
+        "injuries_motorist",
+        "fatalities_total",
     ]:
         data_point_df = big_df[
             [c for c in big_df.columns if data_point in c] + [geography]
@@ -70,6 +70,8 @@ def traffic_fatalities_injuries(geography, end_year, save_for_internal_review=Fa
         )
         final = final.merge(averages, left_index=True, right_index=True)
 
+    add_safety_column_label_prefix(final)
+
     if save_for_internal_review:
         fn_year = {2020: "1620", 2014: "1014"}
         set_internal_review_files(
@@ -77,6 +79,11 @@ def traffic_fatalities_injuries(geography, end_year, save_for_internal_review=Fa
             "quality_of_life",
         )
     return final
+
+
+def add_safety_column_label_prefix(df: pd.DataFrame):
+
+    df.columns = ["safety_traffic" + c for c in df.columns]
 
 
 def mean_by_geography(data, geography, col_name):

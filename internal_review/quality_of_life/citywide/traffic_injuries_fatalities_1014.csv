@@ -1,2 +1,2 @@
-citywide,total_injuries,ped_injuries,cycle_injuries,motorist_injuries,total_fatalities
+citywide,safety_trafficinjuries_total,safety_trafficinjuries_ped,safety_trafficinjuries_cycle,safety_trafficinjuries_motorist,safety_trafficfatalities_total
 citywide,862.98,232.01,82.89,548.08,4.35

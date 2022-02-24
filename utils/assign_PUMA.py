@@ -11,18 +11,17 @@ from utils.geocode import from_eviction_address
 geocode_functions = {"from_eviction_address": from_eviction_address}
 
 borough_code_mapper = {
-    37: "BX",
-    38: "MN",
-    39: "SI",
-    40: "BK",
-    41: "QN",
+    "037": "BX",
+    "038": "MN",
+    "039": "SI",
+    "040": "BK",
+    "041": "QN",
 }
 
 
 def puma_to_borough(record):
 
-    borough_code_str = record.puma[:2]
-    borough_code = int(borough_code_str)
+    borough_code = record.puma[:3]
     borough = borough_code_mapper[borough_code]
     return borough
 
@@ -79,7 +78,7 @@ def get_all_NYC_PUMAs():
     ]
     rv = []
     for borough in geo_ids:
-        rv.extend([str(PUMA) for PUMA in borough])
+        rv.extend(["0" + str(PUMA) for PUMA in borough])
     return rv
 
 
@@ -92,6 +91,4 @@ def clean_PUMAs(puma) -> pd.DataFrame:
     puma = str(puma)
     if puma[:2] == "36":
         puma = puma[2:]
-    if puma[0:1] == "0":
-        puma = puma[1:]
     return puma

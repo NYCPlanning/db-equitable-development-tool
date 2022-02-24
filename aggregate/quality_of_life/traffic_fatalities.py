@@ -9,7 +9,7 @@ from utils.assign_PUMA import (
 )
 
 
-def traffic_fatalities_injuries(geography, end_year, send_to_internal_review=False):
+def traffic_fatalities_injuries(geography, end_year, save_for_internal_review=False):
     assert geography in ["puma", "borough", "citywide"]
     assert end_year in [2020, 2014]
     year_mapper = {
@@ -71,6 +71,12 @@ def traffic_fatalities_injuries(geography, end_year, send_to_internal_review=Fal
         )
         final = final.merge(averages, left_index=True, right_index=True)
 
+    if save_for_internal_review:
+        fn_year = {2020: "1620", 2014: "1014"}
+        set_internal_review_files(
+            [(final, f"traffic_injuries_fatalities_{fn_year[year]}.csv", geography)],
+            "quality_of_life",
+        )
     return final
 
 

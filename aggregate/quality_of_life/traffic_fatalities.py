@@ -56,6 +56,7 @@ def traffic_fatalities_injuries(geography, end_year, save_for_internal_review=Fa
         final = pd.DataFrame(index=get_all_boroughs())
     if geography == "citywide":
         final = pd.DataFrame(index=["citywide"])
+    final.index.rename(geography, inplace=True)
     for data_point in [
         "total_injuries",
         "ped_injuries",
@@ -81,5 +82,5 @@ def traffic_fatalities_injuries(geography, end_year, save_for_internal_review=Fa
 
 
 def mean_by_geography(data, geography, col_name):
-    averages = data.groupby(geography).mean().mean(axis=1).rename(col_name)
+    averages = data.groupby(geography).mean().mean(axis=1).rename(col_name).round(2)
     return averages

@@ -83,6 +83,10 @@ def get_all_NYC_PUMAs():
     return rv
 
 
+def get_all_boroughs():
+    return ["BK", "BX", "MN", "QN", "SI"]
+
+
 def clean_PUMAs(puma) -> pd.DataFrame:
     """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead"""
     puma = str(puma)

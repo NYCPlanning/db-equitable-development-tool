@@ -19,9 +19,7 @@ def traffic_fatalities_injuries(geography, end_year, save_for_internal_review=Fa
 
     big_df = pd.DataFrame(data={"puma": get_all_NYC_PUMAs()})
     for year in year_mapper[end_year]:
-        raw_df = pd.read_csv(
-            f"resources/quality_of_life/traffic_fatalities/crash{year}.csv"
-        )
+        raw_df = pd.read_csv(f".library/dcp_dot_trafficinjuries_{year}.csv")
         injuries_col_name = f"total_injuries_{year}"
         ped_col_name = f"ped_injuries_{year}"
         cycle_col_name = f"cycle_injuries_{year}"
@@ -31,11 +29,11 @@ def traffic_fatalities_injuries(geography, end_year, save_for_internal_review=Fa
         raw_df.rename(
             columns={
                 "PUMA": "puma",
-                "Total Injuries per 100 Street Miles": injuries_col_name,
-                "Pedestrian Injuries per 100 Street Miles": ped_col_name,
-                "Cyclist Injuries per 100 Street Miles": cycle_col_name,
-                "Motorist Injuries per 100 Street Miles": motorist_col_name,
-                "Total Fatalities per 100 Street Miles": fatalities_col_name,
+                "total_injuries_per_100_street_miles": injuries_col_name,
+                "pedestrian_injuries_per_100_street_miles": ped_col_name,
+                "cyclist_injuries_per_100_street_miles": cycle_col_name,
+                "motorist_injuries_per_100_street_miles": motorist_col_name,
+                "total_fatalities_per_100_street_miles": fatalities_col_name,
             },
             inplace=True,
         )

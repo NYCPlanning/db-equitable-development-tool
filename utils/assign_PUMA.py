@@ -66,3 +66,28 @@ def PUMA_from_coord(record):
     if matched_PUMA.empty:
         return None
     return matched_PUMA.puma.values[0]
+
+
+def get_all_NYC_PUMAs():
+    """Adopted from code in PUMS_query_manager"""
+    geo_ids = [
+        range(4001, 4019),  # Brooklyn
+        range(3701, 3711),  # Bronx
+        range(4101, 4115),  # Queens
+        range(3901, 3904),  # Staten Island
+        range(3801, 3811),  # Manhattan
+    ]
+    rv = []
+    for borough in geo_ids:
+        rv.extend([str(PUMA) for PUMA in borough])
+    return rv
+
+
+def clean_PUMAs(puma) -> pd.DataFrame:
+    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead"""
+    puma = str(puma)
+    if puma[:2] == "36":
+        puma = puma[2:]
+    if puma[0:1] == "0":
+        puma = puma[1:]
+    return puma

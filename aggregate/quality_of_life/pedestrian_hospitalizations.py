@@ -3,6 +3,11 @@ import pandas as pd
 from utils.PUMA_helpers import community_district_to_PUMA
 
 
+def pedestrian_hospitalizations(geography, write_to_interal_review=False):
+    if geography == "citywide":
+        final = pd.DataFrame(index=["citywide"])
+
+
 def load_clean_pedestrian_injury_hospitalizations():
     source_data = pd.read_csv(
         "resources/quality_of_life/pedestrian_injuries/pedestrian_injuries.csv",

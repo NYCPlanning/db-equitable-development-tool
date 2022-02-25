@@ -95,6 +95,5 @@ def community_district_to_PUMA(df, CD_col):
             cd_code = row["CD"][:2] + cd_num
             mapper[cd_code] = row["PUMACode"]
 
-    print(mapper)
     df["puma"] = df[CD_col].replace(mapper)
     return df

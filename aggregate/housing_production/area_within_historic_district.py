@@ -3,7 +3,7 @@ from json import load
 import geopandas as gp
 import requests
 from shapely import wkt
-from utils.assign_PUMA import puma_to_borough, NYC_PUMA_geographies
+from utils.PUMA_helpers import puma_to_borough, NYC_PUMA_geographies
 from internal_review.set_internal_review_file import set_internal_review_files
 
 supported_geographies = ["puma", "borough", "citywide"]
@@ -60,7 +60,7 @@ def fraction_area_historic(PUMA, hd):
         return 0, 0
     else:
         fraction = (overlay.area.sum() / gdf.geometry.area.sum()) * 100
-    return fraction, overlay.area.sum() / (5280**2)
+    return fraction, overlay.area.sum() / (5280 ** 2)
 
 
 def load_historic_districts_gdf() -> gp.GeoDataFrame:

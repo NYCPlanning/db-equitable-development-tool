@@ -1,4 +1,5 @@
 import pandas as pd
+from utils.PUMA_helpers import community_district_to_PUMA
 
 race = {
     'Asian/Pacific islander': 'anh', 
@@ -31,19 +32,26 @@ def ingest(geo: str):
         'puma': 'UHF'
     }
 
-    if geo == 'puma':
-        var_ls = [] 
+    if geo == 'puma' or geo == 'citywide':
+        var_ls = [
+            'Yearnum',  
+            'Response', 
+            'Dimension Response', 
+            'Estimated Population', 
+            'Estimated Prevalence'
+        ] 
 
     elif geo == 'boro':
         var_ls = [
             'Yearnum',  
             'Response', 
             'Dimension Response', 
-            'Dim2Value'
+            'Dim2Value',
             'Estimated Population', 
-            'Estimated Prevalence']
+            'Estimated Prevalence'
+        ]
     else:
-        var_ls = ['Yearnum', 'Response', 'Dimension Response', 'Estimated Population', 'Estimated Prevalence']
+        print('invalid geography input')
 
     df = pd.read_excel('resources/quality_of_life/selfreportedhealth.xlsx',
         sheet_name=sheetname[geo], 
@@ -56,14 +64,24 @@ def transform(df: pd.DataFrame, geo: str,):
 
     if geo == 'citywide':
         df['citywide'] = 'citywide'
-        p_df = df.pivot(index='citywide', columns=['Yearnum', 'Response', 'Dimension Response'], values='Estimated Population')
-
-    if geo == 'boro':
+        df_ct = df.pivot(index='citywide', columns=['Yearnum', 'Response', 'Dimension Response'], values='Estimated Population')
+        df_pct = df.pivot(index='citywide', columns=['Yearnum', 'Response', 'Dimension Response'], values='Estimated Prevalence')
+    elif geo == 'boro':
         df.rename(columns={'Dimension Response': 'boro', 'Dim2Value': 'ethnicity', })
         df['boro'] = df['boro'].map(boro_mapper)
         df.rename(columns={'Dimension': 'boro', 'Dim2Value': 'ethnicity'})
-        p_df = df.pivot(index='boro', columns=['Yearnum', 'Response', 'Dimension Response'], values='Estimated Population')
+        df_ct = df.pivot(index='boro', columns=['Yearnum', 'Response', 'Dimension Response'], values='Estimated Population')
+        df_pct = df.pivot(index='boro', columns=['Yearnum', 'Response', 'Dimension Response'], values='Estimated Prevalence')
+    elif geo == 'puma':
+        cds = df['Dimension Response'].split(' ')[0].split('/')
+        
+        
+        pumacrosser = community_district_to_PUMA()
+        df.rename
+    else:
+        print('invalid geography input')
 
+    final = pd.concat([df_ct, df_pct], )
     #pop = pd.melt(df, id_vars=['Yearnum', 'Response', 'Dimension Response'], var_name='Estimated Population', )
     
     perc = pd.melt(df, id_vars=['Yearnum', 'Response', 'Dimension Response'], var_name='Estimated Prevalence', )

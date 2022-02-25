@@ -11,20 +11,18 @@ from utils.geocode import from_eviction_address
 geocode_functions = {"from_eviction_address": from_eviction_address}
 
 borough_code_mapper = {
-    37: "BX",
-    38: "MN",
-    39: "SI",
-    40: "BK",
-    41: "QN",
+    "037": "BX",
+    "038": "MN",
+    "039": "SI",
+    "040": "BK",
+    "041": "QN",
 }
 
 
 def puma_to_borough(record):
-    if record.puma[0] == "0":
-        borough_code_str = record.puma[1:3]
-    else:
-        borough_code_str = record.puma[:2]
-    borough_code = int(borough_code_str)
+
+    borough_code = record.puma[:3]
+
     borough = borough_code_mapper[borough_code]
     return borough
 
@@ -68,3 +66,30 @@ def PUMA_from_coord(record):
     if matched_PUMA.empty:
         return None
     return matched_PUMA.puma.values[0]
+
+
+def get_all_NYC_PUMAs():
+    """Adopted from code in PUMS_query_manager"""
+    geo_ids = [
+        range(4001, 4019),  # Brooklyn
+        range(3701, 3711),  # Bronx
+        range(4101, 4115),  # Queens
+        range(3901, 3904),  # Staten Island
+        range(3801, 3811),  # Manhattan
+    ]
+    rv = []
+    for borough in geo_ids:
+        rv.extend(["0" + str(PUMA) for PUMA in borough])
+    return rv
+
+
+def get_all_boroughs():
+    return ["BK", "BX", "MN", "QN", "SI"]
+
+
+def clean_PUMAs(puma) -> pd.DataFrame:
+    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead"""
+    puma = str(puma)
+    if puma[:2] == "36":
+        puma = puma[2:]
+    return puma

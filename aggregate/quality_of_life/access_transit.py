@@ -54,7 +54,8 @@ def set_results_for_internal_review(access_df, geography):
 def calculate_access_fraction(data, gb_col, count_col, fraction_col):
     gb = data.groupby(gb_col).sum()
 
-    gb[fraction_col] = gb[count_col] / gb["total_pop"]
+    gb[fraction_col] = ((gb[count_col] / gb["total_pop"]) * 100).round(2)
+
     return gb[[fraction_col]]
 
 

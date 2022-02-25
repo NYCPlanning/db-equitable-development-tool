@@ -1,6 +1,6 @@
-borough,safety_trafficinjuries_1014,safety_trafficinjuries_ped_1014,safety_trafficinjuries_cycle_1014,safety_trafficinjuries_motorist_1014,safety_trafficfatalities_1014,safety_trafficinjuries_1620,safety_trafficinjuries_ped_1620,safety_trafficinjuries_cycle_1620,safety_trafficinjuries_motorist_1620,safety_trafficfatalities_1620
-BK,1034.81,243.94,100.77,690.1,4.71,1043.77,228.98,110.39,704.4,4.14
-BX,836.67,220.35,38.81,577.51,4.16,858.71,205.06,48.81,604.83,3.95
-MN,1236.42,444.55,178.95,612.91,6.94,1157.88,379.99,188.46,589.43,6.36
-QN,536.82,120.32,41.04,375.45,2.88,537.31,113.06,42.93,381.32,2.66
-SI,263.02,39.36,5.6,218.06,1.45,252.09,37.97,6.47,207.64,1.21
+borough,safety_1014_trafficinjuries,safety_1014_trafficinjuries_ped,safety_1014_trafficinjuries_cycle,safety_1014_trafficinjuries_motorist,safety_1014_trafficfatalities,safety_1620_trafficinjuries,safety_1620_trafficinjuries_ped,safety_1620_trafficinjuries_cycle,safety_1620_trafficinjuries_motorist,safety_1620_trafficfatalities
+BK,1034.81,243.94,100.77,690.1,4.71,1052.73,214.01,120.01,718.71,3.57
+BX,836.67,220.35,38.81,577.51,4.16,880.75,189.78,58.81,632.16,3.75
+MN,1236.42,444.55,178.95,612.91,6.94,1079.35,315.43,197.97,565.95,5.78
+QN,536.82,120.32,41.04,375.45,2.88,537.8,105.8,44.81,387.19,2.44
+SI,263.02,39.36,5.6,218.06,1.45,241.16,36.59,7.35,197.23,0.97

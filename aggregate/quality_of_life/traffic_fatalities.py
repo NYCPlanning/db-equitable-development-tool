@@ -68,7 +68,7 @@ def traffic_fatalities_injuries(geography, save_for_internal_review=False):
             averages = mean_by_geography(
                 data=data_point_df,
                 geography=geography,
-                col_name=f"{data_point}_{year_code}",
+                col_name=f"{year_code}_traffic{data_point}",
             )
             final = final.merge(averages, left_index=True, right_index=True)
 
@@ -89,7 +89,7 @@ def remove_total_from_column_labels(df):
 
 def add_safety_column_label_prefix(df: pd.DataFrame):
 
-    df.columns = ["safety_traffic" + c for c in df.columns]
+    df.columns = ["safety_" + c for c in df.columns]
 
 
 def mean_by_geography(data, geography, col_name):

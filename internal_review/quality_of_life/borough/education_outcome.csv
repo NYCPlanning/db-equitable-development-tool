@@ -1,6 +1,6 @@
-boro,ela_proficiency_3rdto8thgrade_all_pct,ela_proficiency_3rdto8thgrade_anh_pct,ela_proficiency_3rdto8thgrade_bnh_pct,ela_proficiency_3rdto8thgrade_hsp_pct,ela_proficiency_3rdto8thgrade_onh_pct,ela_proficiency_3rdto8thgrade_wnh_pct,math_proficiency_3rdto8thgrade_all_pct,math_proficiency_3rdto8thgrade_anh_pct,math_proficiency_3rdto8thgrade_bnh_pct,math_proficiency_3rdto8thgrade_hsp_pct,math_proficiency_3rdto8thgrade_onh_pct,math_proficiency_3rdto8thgrade_wnh_pct,graduation_rate_2017_all_pct,graduation_rate_2017_anh_pct,graduation_rate_2017_bnh_pct,graduation_rate_2017_hsp_pct,graduation_rate_2017_onh_pct,graduation_rate_2017_wnh_pct
-BK,0.49019,0.63729,0.41855,0.38789,0.57047,0.66154,0.47373,0.72283,0.36869,0.34705,0.54118,0.64893,0.74425,0.86016,0.71534,0.66684,0.64259,0.79641
-BX,0.36412,0.58352,0.37589,0.33491,0.41348,0.4763,0.31444,0.58162,0.31343,0.28587,0.37659,0.44962,0.66768,0.82185,0.68,0.64983,0.2809,0.45732
-MN,0.55164,0.75732,0.41158,0.41027,0.75306,0.83456,0.52487,0.81761,0.36416,0.37234,0.69616,0.81843,0.71062,0.8706,0.59651,0.64761,0.65421,0.88468
-QN,0.52406,0.68809,0.3884,0.41675,0.54196,0.6374,0.49559,0.72481,0.29581,0.36745,0.48995,0.61664,0.80212,0.88587,0.71199,0.75236,0.7038,0.87273
-SI,0.5301,0.72027,0.30798,0.39763,0.55766,0.63774,0.46889,0.75027,0.22095,0.31664,0.44123,0.57369,0.80599,0.96605,0.64651,0.70565,0.66667,0.86834
+boro,edu_ela_pct,edu_ela_anh_pct,edu_ela_bnh_pct,edu_ela_hsp_pct,edu_ela_onh_pct,edu_ela_wnh_pct,edu_math_pct,edu_math_anh_pct,edu_math_bnh_pct,edu_math_hsp_pct,edu_math_onh_pct,edu_math_wnh_pct,edu_graduation_pct,edu_graduation_anh_pct,edu_graduation_bnh_pct,edu_graduation_hsp_pct,edu_graduation_onh_pct,edu_graduation_wnh_pct
+BK,49.02,63.73,41.86,38.79,57.05,66.15,47.37,72.28,36.87,34.7,54.12,64.89,74.43,86.02,71.53,66.68,64.26,79.64
+BX,36.41,58.35,37.59,33.49,41.35,47.63,31.44,58.16,31.34,28.59,37.66,44.96,66.77,82.18,68.0,64.98,28.09,45.73
+MN,55.16,75.73,41.16,41.03,75.31,83.46,52.49,81.76,36.42,37.23,69.62,81.84,71.06,87.06,59.65,64.76,65.42,88.47
+QN,52.41,68.81,38.84,41.68,54.2,63.74,49.56,72.48,29.58,36.74,49.0,61.66,80.21,88.59,71.2,75.24,70.38,87.27
+SI,53.01,72.03,30.8,39.76,55.77,63.77,46.89,75.03,22.1,31.66,44.12,57.37,80.6,96.6,64.65,70.56,66.67,86.83

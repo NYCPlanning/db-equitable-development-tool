@@ -1,7 +1,6 @@
-from numpy import source
 import pandas as pd
-from sqlalchemy import column
 from utils.PUMA_helpers import community_district_to_PUMA
+from internal_review.set_internal_review_file import set_internal_review_files
 
 
 def pedestrian_hospitalizations(geography, write_to_interal_review=False):
@@ -18,6 +17,11 @@ def pedestrian_hospitalizations(geography, write_to_interal_review=False):
         final = source_data.groupby("puma").mean()[["Per100k"]]
 
     final.rename(columns={"Per100k": indicator_col_label}, inplace=True)
+    if write_to_interal_review:
+        set_internal_review_files(
+            [(final, "pedestrian_hospitalizations.csv", geography)],
+            category="quality_of_life",
+        )
     return final
 
 

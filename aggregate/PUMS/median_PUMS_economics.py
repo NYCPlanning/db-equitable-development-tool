@@ -23,7 +23,10 @@ class PUMSMedianEconomics(PUMSAggregator):
     to do aggregatation in call of PUMSAggregator instead of init"""
 
     indicators_denom = [("wage", "civilian_employed_with_earnings_filter")]
-    economic_crosstabs = ["industry", "occupation"]
+    economic_crosstabs = [
+        "industry",
+        # "occupation"
+    ]
     crosstabs = ["race"]
 
     def __init__(

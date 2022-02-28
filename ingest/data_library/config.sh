@@ -19,15 +19,22 @@ function get_version {
 }
 
 function import_csv {
-  local name=$1
-  local version=$(get_version $name)
+  local version=${2:-latest}
+  local dataset=$1
+  if [ $version == "latest" ]; then
+    local filename=$dataset
+  else
+    local filename="${dataset}_${version}"
+  fi
   local target_dir=.library
   echo $target_dir
-  if [ -f $target_dir/$name.csv ]; then
-    echo "✅ $name.csv exists in cache"
+  if [ -f $target_dir/$filename.csv ]; then
+    echo "✅ $filename.csv exists in cache"
   else
-    echo "🛠 $name.csv doesn't exist in cache, downloading ..."
+    echo "🛠 $filename.csv doesn't exist in cache, downloading ..."
     mkdir -p $target_dir 
-    mc cp spaces/edm-recipes/datasets/$name/latest/$name.csv $target_dir/$name.csv
+    mc cp spaces/edm-recipes/datasets/$dataset/$version/$dataset.csv $target_dir/$filename.csv
   fi
 }
+
+function import

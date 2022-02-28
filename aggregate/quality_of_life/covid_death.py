@@ -20,26 +20,18 @@ def covid_death(geography: str, write_to_internal_review=False):
     indicator_col_label = 'total_covid_death'
 
     clean_df = load_clean_source_data()
-    #print(clean_df)
-
-    if geography in ['citywide', 'borough']:
-
-        agg = clean_df.groupby([geography, 'race']).sum(numeric_only=True).reset_index()
-        final = agg.pivot(index=geography, columns='race', values='total_covid_death')
-        
-    elif geography == 'puma':
-        # handle the and also censored data by replace them with null
-        final = clean_df.pivot(index='puma', columns='race', values='total_covid_death')#.replace('*', np.nan)
+    agg = clean_df.groupby([geography, 'race']).sum(numeric_only=True).reset_index()
+    final = agg.pivot(index=geography, columns='race', values='total_covid_death')
+    final.replace(0, np.nan, inplace=True) # needed for the censored datapoint
 
     # create the total without race breakdown
     final[''] = final.sum(axis=1)
 
     for col in final.columns:
-        final.rename(columns={col: indicator_col_label + col}, inplace=True)
+        final.rename(columns={col: f"{indicator_col_label}{col}"}, inplace=True)
 
     # rename index and redy for output
     final.index.rename(geography, inplace=True)
-    #final.reset_index(inplace=True)
 
     if write_to_internal_review:
         set_internal_review_files(

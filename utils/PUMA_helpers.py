@@ -97,6 +97,7 @@ def community_district_to_PUMA(df, CD_col):
     df["puma"] = df[CD_col].replace(mapper)
     return df
 
+
 def get_all_NYC_PUMAs():
     """Adopted from code in PUMS_query_manager"""
     geo_ids = [
@@ -122,4 +123,3 @@ def clean_PUMAs(puma) -> pd.DataFrame:
     if puma[:2] == "36":
         puma = puma[2:]
     return puma
->>>>>>> dev:utils/assign_PUMA.py

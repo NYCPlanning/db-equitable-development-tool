@@ -1,5 +1,5 @@
 import pandas as pd
-from utils.assign_PUMA import puma_to_borough
+from utils.assign_PUMA import clean_PUMAs, puma_to_borough
 from ingest.ingestion_helpers import add_leading_zero_PUMA
 from internal_review.set_internal_review_file import set_internal_review_files
 
@@ -20,8 +20,8 @@ def load_access_to_open_space():
         inplace=True,
     )
 
+    df["puma"] = df["puma"].apply(func=clean_PUMAs)
     df = assign_geo_cols(df)
-    df = add_leading_zero_PUMA(df)
 
     return df
 
@@ -36,7 +36,7 @@ def assign_geo_cols(df):
 
 
 def puma_level_aggregation(df):
-    puma_results = df.groupby("puma")["access_openspace", "total_pop_2020"].sum()
+    puma_results = df.groupby("puma")[["access_openspace", "total_pop_2020"]].sum()
     puma_results["pct_access_openspace"] = (
         puma_results["access_openspace"] / puma_results["total_pop_2020"]
     ) * 100
@@ -48,7 +48,9 @@ def puma_level_aggregation(df):
 
 
 def borough_level_aggregation(df):
-    borough_results = df.groupby("borough")["access_openspace", "total_pop_2020"].sum()
+    borough_results = df.groupby("borough")[
+        ["access_openspace", "total_pop_2020"]
+    ].sum()
     borough_results["pct_access_openspace"] = (
         borough_results["access_openspace"] / borough_results["total_pop_2020"]
     ) * 100
@@ -61,7 +63,7 @@ def borough_level_aggregation(df):
 
 def citywide_level_aggregation(df):
     citywide_results = df.groupby("citywide")[
-        "access_openspace", "total_pop_2020"
+        ["access_openspace", "total_pop_2020"]
     ].sum()
     citywide_results["pct_access_openspace"] = (
         citywide_results["access_openspace"] / citywide_results["total_pop_2020"]

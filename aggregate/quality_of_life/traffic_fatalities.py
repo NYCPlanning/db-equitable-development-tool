@@ -24,36 +24,10 @@ def traffic_fatalities_injuries(geography, save_for_internal_review=False):
     final.index.rename(geography, inplace=True)
 
     for year_code, year_range in year_ranges:
-        big_df = pd.DataFrame(data={"puma": get_all_NYC_PUMAs()})
-        for year in year_range:
-            raw_df = pd.read_csv(f".library/dcp_dot_trafficinjuries_{year}.csv")
-            injuries_col_name = f"injuries_total_{year}"
-            ped_col_name = f"injuries_ped_{year}"
-            cycle_col_name = f"injuries_cycle_{year}"
-            motorist_col_name = f"injuries_motorist_{year}"
-            fatalities_col_name = f"fatalities_total_{year}"
+        year_range_df = get_year_range_df(year_range)
 
-            raw_df.rename(
-                columns={
-                    "PUMA": "puma",
-                    "total_injuries_per_100_street_miles": injuries_col_name,
-                    "pedestrian_injuries_per_100_street_miles": ped_col_name,
-                    "cyclist_injuries_per_100_street_miles": cycle_col_name,
-                    "motorist_injuries_per_100_street_miles": motorist_col_name,
-                    "total_fatalities_per_100_street_miles": fatalities_col_name,
-                },
-                inplace=True,
-            )
-            raw_df["puma"] = raw_df["puma"].apply(clean_PUMAs)
-            big_df = big_df.merge(
-                raw_df,
-                left_on="puma",
-                right_on="puma",
-                how="outer",
-            )
-
-        big_df["borough"] = big_df.apply(axis=1, func=puma_to_borough)
-        big_df["citywide"] = "citywide"
+        year_range_df["borough"] = year_range_df.apply(axis=1, func=puma_to_borough)
+        year_range_df["citywide"] = "citywide"
 
         for data_point in [
             "injuries_total",
@@ -62,11 +36,15 @@ def traffic_fatalities_injuries(geography, save_for_internal_review=False):
             "injuries_motorist",
             "fatalities_total",
         ]:
-            data_point_df = big_df[
-                [c for c in big_df.columns if data_point in c] + [geography]
+            numerator_df = year_range_df[
+                [c for c in year_range_df.columns if data_point in c] + [geography]
+            ]
+            denom_df = year_range_df[
+                [c for c in year_range_df.columns if "street_miles" in c] + [geography]
             ]
             averages = mean_by_geography(
-                data=data_point_df,
+                numerator_df=numerator_df,
+                denominator_df=denom_df,
                 geography=geography,
                 col_name=f"{year_code}_traffic{data_point}",
             )
@@ -83,6 +61,58 @@ def traffic_fatalities_injuries(geography, save_for_internal_review=False):
     return final
 
 
+def get_year_range_df(year_range):
+    """Combines multiple years to one dataframe.
+    This uses the street miles and count per 100 street miles to solve for total number
+    of events. Later the calculation to get number per 100 street miles in done in mean_by_geography
+
+    """
+    big_df = pd.DataFrame(data={"puma": get_all_NYC_PUMAs()})
+    for year in year_range:
+        raw_df = pd.read_csv(f".library/dcp_dot_trafficinjuries_{year}.csv")
+        injuries_col_name = f"injuries_total_{year}"
+        ped_col_name = f"injuries_ped_{year}"
+        cycle_col_name = f"injuries_cycle_{year}"
+        motorist_col_name = f"injuries_motorist_{year}"
+        fatalities_col_name = f"fatalities_total_{year}"
+        street_miles_col_name = f"street_miles_{year}"
+
+        raw_df.rename(
+            columns={
+                "PUMA": "puma",
+                "total_injuries_per_100_street_miles": injuries_col_name,
+                "pedestrian_injuries_per_100_street_miles": ped_col_name,
+                "cyclist_injuries_per_100_street_miles": cycle_col_name,
+                "motorist_injuries_per_100_street_miles": motorist_col_name,
+                "total_fatalities_per_100_street_miles": fatalities_col_name,
+                "street_miles": street_miles_col_name,
+            },
+            inplace=True,
+        )
+        data_cols = [
+            injuries_col_name,
+            ped_col_name,
+            cycle_col_name,
+            motorist_col_name,
+            fatalities_col_name,
+        ]
+        for d in data_cols:
+            raw_df.loc[:, f"{d}_count"] = (
+                raw_df[d] * raw_df[street_miles_col_name]
+            ) / 100
+            raw_df.drop(columns=[d], inplace=True)
+        raw_df["puma"] = raw_df["puma"].apply(clean_PUMAs)
+
+        big_df = big_df.merge(
+            raw_df,
+            left_on="puma",
+            right_on="puma",
+            how="outer",
+        )
+
+    return big_df
+
+
 def remove_total_from_column_labels(df):
     df.columns = [c.replace("_total", "") for c in df.columns]
 
@@ -92,6 +122,12 @@ def add_safety_column_label_prefix(df: pd.DataFrame):
     df.columns = ["safety_" + c for c in df.columns]
 
 
-def mean_by_geography(data, geography, col_name):
-    averages = data.groupby(geography).mean().mean(axis=1).rename(col_name).round(2)
-    return averages
+def mean_by_geography(
+    numerator_df: pd.DataFrame, denominator_df: pd.DataFrame, geography, col_name
+):
+
+    numerator_by_geo = numerator_df.groupby(geography).sum().sum(axis=1)
+    denom_by_geo = denominator_df.groupby(geography).sum().sum(axis=1)
+    rv = ((numerator_by_geo / denom_by_geo) * 100).round(2)
+    rv.name = col_name
+    return rv

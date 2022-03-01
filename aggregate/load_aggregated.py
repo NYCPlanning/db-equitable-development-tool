@@ -16,10 +16,12 @@ categories = {
     "demographics": [
         ("counts", PUMSCountDemographics, False),
     ],
-    "economics": [
-        # ("counts", PUMSCountHouseholds, True),
+    "economics_person_counts_test": [
         ("counts", PUMSCountEconomics, False),
-        # ("medians", PUMSMedianEconomics, False),
+    ],
+    "economics_household_counts_test": [("counts", PUMSCountHouseholds, True)],
+    "economics_person_medians_test": [
+        ("medians", PUMSMedianEconomics, False),
     ],
 }
 

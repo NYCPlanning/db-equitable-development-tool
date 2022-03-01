@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from utils.assign_PUMA import assign_PUMA_col
+from utils.PUMA_helpers import assign_PUMA_col
 
 
 """"We need to download the data, separate the data by construction type (New Construction vs. Preservation)

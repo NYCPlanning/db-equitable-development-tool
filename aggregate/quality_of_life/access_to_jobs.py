@@ -13,7 +13,7 @@ def access_to_jobs(geography, write_to_internal_review=False):
     final = clean_df.groupby(geography).sum()[indicator_col_name]
     if write_to_internal_review:
         set_internal_review_files(
-            [(final, f"access_employment.csv", geography)],
+            [(final, "access_employment.csv", geography)],
             "quality_of_life",
         )
     return final

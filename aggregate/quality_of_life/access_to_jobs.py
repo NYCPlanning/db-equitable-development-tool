@@ -7,7 +7,7 @@ def access_to_jobs(geography, write_to_internal_review=False):
     indicator_col_name = "access_employment"
     clean_df = load_clean_source_data(indicator_col_name)
 
-    final = clean_df.groupby(geography).sum()[indicator_col_name]
+    final = clean_df.groupby(geography).sum()[[indicator_col_name]]
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "access_employment.csv", geography)],

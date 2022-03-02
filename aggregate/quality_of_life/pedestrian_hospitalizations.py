@@ -1,3 +1,4 @@
+from distutils.log import error
 import pandas as pd
 from utils.CD_helpers import add_CD_code
 from utils.PUMA_helpers import community_district_to_PUMA, borough_name_mapper
@@ -11,14 +12,16 @@ def pedestrian_hospitalizations(geography, write_to_internal_review=False):
     source_data = load_clean_source_data()
 
     gb = source_data.groupby(geography).sum()[["Number", "2010_pop"]]
-    final = gb["Number"] / gb["2010_pop"]
+    final = ((gb["Number"] / gb["2010_pop"]) * 10 ** 5).round(2)
+    final.replace({0: None}, inplace=True)
+    final.name = indicator_col_label
 
-    final.rename(columns={"Per100k": indicator_col_label}, inplace=True)
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "pedestrian_hospitalizations.csv", geography)],
             category="quality_of_life",
         )
+
     return final
 
 
@@ -35,6 +38,9 @@ def load_clean_source_data():
     source_data["GeoTypeName"] = source_data["GeoTypeName"].str.lower()
     source_data["citywide"] = "citywide"
 
+    source_data["Number"] = (
+        source_data["Number"].str.replace(",", "").astype(float, errors="raise")
+    )
     add_CD_code(source_data)
 
     source_data = add_2010_population(source_data)

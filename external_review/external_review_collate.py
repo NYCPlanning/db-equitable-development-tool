@@ -1,4 +1,5 @@
 """Combine indicators into .csv's to be uploaded to digital ocean"""
+from os import makedirs, path
 import pandas as pd
 import typer
 
@@ -58,7 +59,10 @@ def collate(geography_level, category):
             )
             raise e
     final_df.index.rename(geography_level, inplace=True)
-    final_df.to_csv(f"external_review/{category}/{category}_{geography_level}.csv")
+    folder_path = f".staging/{category}"
+    if not path.exists(folder_path):
+        makedirs(folder_path)
+    final_df.to_csv(f".staging/{category}/{category}_by_{geography_level}.csv")
     return final_df
 
 

@@ -1,8 +1,6 @@
 """Test that QOL indicators have correct geographies"""
 
 
-from json import load
-from os import access
 import pytest
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
 from aggregate.quality_of_life.access_to_open_space import park_access

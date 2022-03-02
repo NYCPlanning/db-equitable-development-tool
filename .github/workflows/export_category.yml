@@ -27,7 +27,8 @@ jobs:
           - borough
           - citywide
         category:
-          - housing_production
+          # - housing_production
+          - quality_of_life
  
     steps:
       - uses: actions/checkout@v2

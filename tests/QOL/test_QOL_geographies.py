@@ -20,12 +20,11 @@ indicator_functions = [
     traffic_fatalities_injuries,
     access_to_jobs,
     covid_death,
+    load_clean_heat_vulnerability,
 ]
 
 
-@pytest.mark.parametrize(
-    "ind_function", indicator_functions + [load_clean_heat_vulnerability]
-)
+@pytest.mark.parametrize("ind_function", indicator_functions)
 def test_all_PUMAs_present(ind_function):
     by_puma = ind_function("puma")
     assert by_puma.index.values.sort() == all_PUMAs.sort()

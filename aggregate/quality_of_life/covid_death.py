@@ -24,7 +24,7 @@ def covid_death(geography: str, write_to_internal_review=False):
     final.replace(0, np.nan, inplace=True)  # needed for the censored datapoint
 
     # create the total without race breakdown
-    final[""] = final.sum(axis=1)
+    final.insert(loc=0, column="", value=final.sum(axis=1))
 
     for col in final.columns:
         final.rename(columns={col: f"{indicator_col_label}{col}"}, inplace=True)

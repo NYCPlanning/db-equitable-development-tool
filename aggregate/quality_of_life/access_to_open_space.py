@@ -44,7 +44,7 @@ def puma_level_aggregation(df):
 
     print(f"finished calculating puma")
 
-    return puma_results
+    return puma_results[["pct_access_openspace", "access_openspace"]]
 
 
 def borough_level_aggregation(df):
@@ -58,7 +58,7 @@ def borough_level_aggregation(df):
 
     print(f"finished calculating borough")
 
-    return borough_results
+    return borough_results[["pct_access_openspace", "access_openspace"]]
 
 
 def citywide_level_aggregation(df):
@@ -72,7 +72,7 @@ def citywide_level_aggregation(df):
 
     print(f"finished calculating citywide")
 
-    return citywide_results
+    return citywide_results[["pct_access_openspace", "access_openspace"]]
 
 
 def park_access(geography: str) -> pd.DataFrame:

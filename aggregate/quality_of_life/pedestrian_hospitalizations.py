@@ -1,5 +1,6 @@
 import pandas as pd
-from utils.PUMA_helpers import community_district_to_PUMA
+from utils.CD_helpers import add_CD_code
+from utils.PUMA_helpers import community_district_to_PUMA, borough_name_mapper
 from internal_review.set_internal_review_file import set_internal_review_files
 
 
@@ -37,16 +38,13 @@ def load_clean_source_data():
     )
     source_data["GeoTypeName"] = source_data["GeoTypeName"].str.lower()
     source_data["citywide"] = "citywide"
-    borough_mapper = {
-        "Bronx": "BX",
-        "Manhattan": "MN",
-        "Queens": "QN",
-        "Brooklyn": "BK",
-        "Staten Island": "SI",
-    }
-    source_data["borough"] = source_data["Borough"].replace(borough_mapper)
-    source_data["borough_CD_code"] = source_data.Geography.str.extract("(\d+)")
-    source_data["CD_code"] = source_data["borough"] + source_data["borough_CD_code"]
+
+    add_CD_code(source_data)
 
     source_data = community_district_to_PUMA(source_data, "CD_code")
     return source_data
+
+
+def add_2010_population():
+    """Add column of 2010 population from assault non-fatal hospitalizations numbers"""
+    assualts = pd.read_csv

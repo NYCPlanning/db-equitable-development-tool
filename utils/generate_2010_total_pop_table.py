@@ -12,7 +12,7 @@ def generate_pop_by_CD():
     )
     add_CD_code(assaults)
     assaults.rename(columns={"2010 population": "2010_pop"}, inplace=True)
-    assaults["2010_pop"].str.replace(",", "").astype(int)
+    assaults["2010_pop"] = assaults["2010_pop"].str.replace(",", "").astype(int)
     assaults[["CD_code", "2010_pop"]].to_csv(
         "resources/quality_of_life/2010_pop_by_CD.csv", index=False
     )

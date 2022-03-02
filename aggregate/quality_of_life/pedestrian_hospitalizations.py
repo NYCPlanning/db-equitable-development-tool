@@ -10,12 +10,8 @@ def pedestrian_hospitalizations(geography, write_to_internal_review=False):
 
     source_data = load_clean_source_data()
 
-    if geography in ["citywide", "borough"]:
-        final = source_data[source_data["GeoTypeName"] == geography][
-            [geography, "Per100k"]
-        ].set_index(geography)
-    if geography == "puma":
-        final = source_data.groupby("puma").mean()[["Per100k"]]
+    gb = source_data.groupby(geography).sum()[["Number", "2010_pop"]]
+    final = gb["Number"] / gb["2010_pop"]
 
     final.rename(columns={"Per100k": indicator_col_label}, inplace=True)
     if write_to_internal_review:
@@ -41,10 +37,15 @@ def load_clean_source_data():
 
     add_CD_code(source_data)
 
+    source_data = add_2010_population(source_data)
+
     source_data = community_district_to_PUMA(source_data, "CD_code")
     return source_data
 
 
-def add_2010_population():
+def add_2010_population(df):
     """Add column of 2010 population from assault non-fatal hospitalizations numbers"""
-    assualts = pd.read_csv
+
+    pop_2010 = pd.read_csv("resources/quality_of_life/2010_pop_by_CD.csv")
+
+    return df.merge(pop_2010, left_on="CD_code", right_on="CD_code")

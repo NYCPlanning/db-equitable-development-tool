@@ -2,12 +2,15 @@
 
 
 from json import load
+from os import access
 import pytest
+from aggregate.quality_of_life.access_to_jobs import access_to_jobs
 from aggregate.quality_of_life.access_to_open_space import park_access
+from aggregate.quality_of_life.covid_death import covid_death
 from aggregate.quality_of_life.education_outcome import get_education_outcome
 from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnerability
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
-from utils.assign_PUMA import get_all_NYC_PUMAs, get_all_boroughs
+from utils.PUMA_helpers import get_all_NYC_PUMAs, get_all_boroughs
 
 all_PUMAs = get_all_NYC_PUMAs()
 all_boroughs = get_all_boroughs()
@@ -15,6 +18,8 @@ indicator_functions = [
     park_access,
     get_education_outcome,
     traffic_fatalities_injuries,
+    access_to_jobs,
+    covid_death,
 ]
 
 

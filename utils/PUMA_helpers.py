@@ -19,6 +19,14 @@ borough_code_mapper = {
     "041": "QN",
 }
 
+borough_name_mapper = {
+    "Bronx": "BX",
+    "Brooklyn": "BK",
+    "Manhattan": "MN",
+    "Queens": "QN",
+    "Staten Island": "SI",
+}
+
 
 def puma_to_borough(record):
 

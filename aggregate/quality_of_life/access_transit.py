@@ -14,7 +14,7 @@ def access_subway_and_access_ADA(geography, save_for_internal_review=False):
 
     assert geography in ["puma", "borough", "citywide"]
     subway_SBS_ind_name = "access_subwaysbs_pct"
-    ADA_ind_name = "access_ADA_pct"
+    ADA_ind_name = "access_ada_pct"
 
     access_subway_SBS = load_access_subway_SBS()
     access_ADA_subway = load_access_ADA_subway()

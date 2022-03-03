@@ -16,7 +16,7 @@ def covid_death(geography: str, write_to_internal_review=False):
     """this is used to create the final dataframe and write final output to internal review files"""
 
     assert geography in ["citywide", "borough", "puma"]
-    indicator_col_label = "total_covid_death"
+    indicator_col_label = "health_covid19deaths"
 
     clean_df = load_clean_source_data()
     agg = clean_df.groupby([geography, "race"]).sum(numeric_only=True).reset_index()

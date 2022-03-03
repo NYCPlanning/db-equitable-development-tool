@@ -31,9 +31,7 @@ def find_fraction_PUMA_historic(geography_level):
     gdf[["area_historic_pct", "area_historic_sqmiles"]] = gdf.apply(
         fraction_area_historic, axis=1, args=(hd,), result_type="expand"
     )
-    gdf = gdf.round({"area_historic_pct": 2})
-    # return gdf
-    return gdf[["area_historic_pct", "area_historic_sqmiles", "total_sqmiles"]]
+    return gdf[["area_historic_pct", "area_historic_sqmiles", "total_sqmiles"]].round(2)
 
 
 def generate_geographies(geography_level):

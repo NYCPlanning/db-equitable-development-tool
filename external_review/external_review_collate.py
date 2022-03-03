@@ -23,6 +23,9 @@ from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnera
 from aggregate.quality_of_life.pedestrian_hospitalizations import (
     pedestrian_hospitalizations,
 )
+from aggregate.quality_of_life.safety_ped_aslt_hospitalizations import (
+    assault_hospitalizations,
+)
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
 
 app = typer.Typer()
@@ -44,6 +47,7 @@ accessors = {
         ("traffic fatalities", traffic_fatalities_injuries),
         ("access to transit", access_subway_and_access_ADA),
         ("pedestrian hospitalizations", pedestrian_hospitalizations),
+        ("non fatal assault hospitalizations", assault_hospitalizations),
     ],
 }
 

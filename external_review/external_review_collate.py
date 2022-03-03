@@ -16,6 +16,7 @@ from aggregate.housing_production.hpd_housing_ny_affordable_housing import (
 )
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
 from aggregate.quality_of_life.access_to_open_space import park_access
+from aggregate.quality_of_life.access_transit import access_subway_and_access_ADA
 from aggregate.quality_of_life.covid_death import covid_death
 from aggregate.quality_of_life.education_outcome import get_education_outcome
 from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnerability
@@ -38,6 +39,7 @@ accessors = {
         ("educational outcomes", get_education_outcome),
         ("heat vulnerability", load_clean_heat_vulnerability),
         ("traffic fatalities", traffic_fatalities_injuries),
+        ("access to transit", access_subway_and_access_ADA),
     ],
 }
 

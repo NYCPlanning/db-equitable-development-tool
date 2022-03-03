@@ -60,7 +60,7 @@ def fraction_area_historic(PUMA, hd):
         return 0, 0
     else:
         fraction = (overlay.area.sum() / gdf.geometry.area.sum()) * 100
-    return fraction, overlay.area.sum() / (5280**2)
+    return fraction, overlay.area.sum() / (5280 ** 2)
 
 
 def load_historic_districts_gdf() -> gp.GeoDataFrame:

@@ -16,11 +16,9 @@ categories = {
     "demographics": [
         ("counts", PUMSCountDemographics, False),
     ],
-    "economics_person_counts_test": [
+    "economics": [
         ("counts", PUMSCountEconomics, False),
-    ],
-    "economics_household_counts_test": [("counts", PUMSCountHouseholds, True)],
-    "economics_person_medians_test": [
+        ("counts", PUMSCountHouseholds, True),
         ("medians", PUMSMedianEconomics, False),
     ],
 }
@@ -51,6 +49,7 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
             )
             aggregator = aggregator_class(limited_PUMA=test_data, geo_col=geography)
             data = aggregator.aggregated
+            del aggregator
         if rv is None:
             rv = data
         else:

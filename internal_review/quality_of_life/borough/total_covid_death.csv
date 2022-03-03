@@ -1,6 +1,6 @@
-borough,total_covid_death_anh,total_covid_death_bnh,total_covid_death_hsp,total_covid_death_onh,total_covid_death_wnh,total_covid_death
-BK,796.0,4391.0,2135.0,771.0,3923.0,12016.0
-BX,188.0,2306.0,3424.0,463.0,962.0,7343.0
-MN,438.0,1103.0,1825.0,321.0,1400.0,5087.0
-QN,1826.0,2063.0,3002.0,1208.0,3124.0,11223.0
-SI,128.0,204.0,287.0,83.0,1445.0,2147.0
+borough,health_covid19deaths,health_covid19deaths_anh,health_covid19deaths_bnh,health_covid19deaths_hsp,health_covid19deaths_onh,health_covid19deaths_wnh
+BK,439.17,214.68,601.76,413.42,511.45,405.09
+BX,498.62,277.43,549.84,424.57,959.86,735.5
+MN,300.25,199.43,552.63,453.26,405.81,176.48
+QN,466.56,278.11,540.94,449.49,803.8,568.66
+SI,433.08,217.86,435.57,296.0,545.41,519.82

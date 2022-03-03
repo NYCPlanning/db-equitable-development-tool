@@ -22,6 +22,7 @@ borough_code_mapper = {
 def puma_to_borough(record):
 
     borough_code = record.puma[:3]
+
     borough = borough_code_mapper[borough_code]
     return borough
 

@@ -7,7 +7,6 @@ import os
 
 def set_internal_review_files(data: List[Tuple[pd.DataFrame, str, str]], category):
     """Save list of dataframes as csv."""
-
     for df, name, geography in data:
         print(f"Writing {name} to internal review folder")
         df.to_csv(f"internal_review/{category}/{geography}/{name}")

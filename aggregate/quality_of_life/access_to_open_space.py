@@ -35,56 +35,23 @@ def assign_geo_cols(df):
     return df
 
 
-def puma_level_aggregation(df):
-    puma_results = df.groupby("puma")[["access_openspace", "total_pop_2020"]].sum()
-    puma_results["pct_access_openspace"] = (
-        puma_results["access_openspace"] / puma_results["total_pop_2020"]
+def calculate_open_space(df, geography):
+    aggregated = df.groupby(geography)[["access_openspace", "total_pop_2020"]].sum()
+    aggregated["access_openspace_pct"] = (
+        aggregated["access_openspace"] / aggregated["total_pop_2020"]
     ) * 100
-    puma_results = puma_results.round(2)
+    aggregated = aggregated.round(2)
 
-    print(f"finished calculating puma")
+    print(f"finished calculating {geography}")
 
-    return puma_results[["pct_access_openspace", "access_openspace"]]
-
-
-def borough_level_aggregation(df):
-    borough_results = df.groupby("borough")[
-        ["access_openspace", "total_pop_2020"]
-    ].sum()
-    borough_results["pct_access_openspace"] = (
-        borough_results["access_openspace"] / borough_results["total_pop_2020"]
-    ) * 100
-    borough_results = borough_results.round(2)
-
-    print(f"finished calculating borough")
-
-    return borough_results[["pct_access_openspace", "access_openspace"]]
-
-
-def citywide_level_aggregation(df):
-    citywide_results = df.groupby("citywide")[
-        ["access_openspace", "total_pop_2020"]
-    ].sum()
-    citywide_results["pct_access_openspace"] = (
-        citywide_results["access_openspace"] / citywide_results["total_pop_2020"]
-    ) * 100
-    citywide_results = citywide_results.round(2)
-
-    print(f"finished calculating citywide")
-
-    return citywide_results[["pct_access_openspace", "access_openspace"]]
+    return aggregated[["access_openspace", "access_openspace_pct"]]
 
 
 def park_access(geography: str) -> pd.DataFrame:
     """Main accessor for this variable"""
     assert geography in ["citywide", "borough", "puma"]
     df = load_access_to_open_space()
-    if geography == "citywide":
-        return citywide_level_aggregation(df)
-    if geography == "borough":
-        return borough_level_aggregation(df)
-    if geography == "puma":
-        return puma_level_aggregation(df)
+    return calculate_open_space(df, geography)
 
 
 def set_results_for_internal_review(df, geography):

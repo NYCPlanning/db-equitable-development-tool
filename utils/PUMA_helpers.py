@@ -34,6 +34,7 @@ def NYC_PUMA_geographies() -> gp.GeoDataFrame:
         "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
     )
     gdf = gp.GeoDataFrame.from_features(res.json()["features"])
+    gdf = gdf.set_crs(res.json()["crs"]["properties"]["name"])
     gdf.rename(columns={"PUMA": "puma"}, inplace=True)
     gdf = add_leading_zero_PUMA(gdf)
     return gdf

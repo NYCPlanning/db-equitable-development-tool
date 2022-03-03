@@ -4,6 +4,9 @@ from aggregate.quality_of_life.access_transit import access_subway_and_access_AD
 from aggregate.quality_of_life.covid_death import covid_death
 from aggregate.quality_of_life.education_outcome import get_education_outcome
 from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnerability
+from aggregate.quality_of_life.pedestrian_hospitalizations import (
+    pedestrian_hospitalizations,
+)
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
 
 accessors = [
@@ -14,4 +17,5 @@ accessors = [
     covid_death,
     load_clean_heat_vulnerability,
     access_subway_and_access_ADA,
+    pedestrian_hospitalizations,
 ]

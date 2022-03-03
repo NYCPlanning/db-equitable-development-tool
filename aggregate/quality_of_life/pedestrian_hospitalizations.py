@@ -1,4 +1,3 @@
-from distutils.log import error
 import pandas as pd
 from utils.CD_helpers import add_CD_code
 from utils.PUMA_helpers import community_district_to_PUMA, borough_name_mapper
@@ -12,9 +11,11 @@ def pedestrian_hospitalizations(geography, write_to_internal_review=False):
     source_data = load_clean_source_data()
 
     gb = source_data.groupby(geography).sum()[["Number", "2010_pop"]]
-    final = ((gb["Number"] / gb["2010_pop"]) * 10 ** 5).round(2)
+    final = pd.DataFrame(index=gb.index)
+    final[indicator_col_label] = ((gb["Number"] / gb["2010_pop"]) * 10 ** 5).round(2)
     final.replace({0: None}, inplace=True)
-    final.name = indicator_col_label
+    # final.name = indicator_col_label
+    # final = final.to_frame()
 
     if write_to_internal_review:
         set_internal_review_files(

@@ -7,6 +7,9 @@ from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnera
 from aggregate.quality_of_life.pedestrian_hospitalizations import (
     pedestrian_hospitalizations,
 )
+from aggregate.quality_of_life.safety_ped_aslt_hospitalizations import (
+    assault_hospitalizations,
+)
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
 
 accessors = [
@@ -18,4 +21,5 @@ accessors = [
     load_clean_heat_vulnerability,
     access_subway_and_access_ADA,
     pedestrian_hospitalizations,
+    assault_hospitalizations,
 ]

@@ -28,7 +28,7 @@ def pedestrian_hospitalizations(geography, write_to_internal_review=False):
 
 def load_clean_source_data():
     source_data = pd.read_csv(
-        "resources/quality_of_life/pedestrian_injuries/pedestrian_injuries.csv",
+        "resources/quality_of_life/pedestrian_injuries.csv",
         skiprows=6,
         nrows=65,
     )

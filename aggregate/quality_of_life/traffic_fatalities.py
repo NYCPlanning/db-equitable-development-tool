@@ -1,7 +1,7 @@
 from curses import raw
 import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
-from utils.assign_PUMA import (
+from utils.PUMA_helpers import (
     get_all_NYC_PUMAs,
     clean_PUMAs,
     get_all_boroughs,

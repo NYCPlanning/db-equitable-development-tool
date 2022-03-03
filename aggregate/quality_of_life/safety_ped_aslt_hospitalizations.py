@@ -8,9 +8,10 @@ from internal_review.set_internal_review_file import set_internal_review_files
 
 def assault_hospitalizations(geography, write_to_internal_review=False):
     source_data = load_clean_source_data("assaults")
-    indicator_col_label = "safety_assault_hospital_per100k"
+    indicator_col_label = "safety_assaulthospital"
     final = calculate_per100k_rate(source_data, geography)
     final.name = indicator_col_label
+    final = pd.DataFrame(final)
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "assault_hospitalizations.csv", geography)],
@@ -21,11 +22,11 @@ def assault_hospitalizations(geography, write_to_internal_review=False):
 
 def pedestrian_hospitalizations(geography, write_to_internal_review=False):
     source_data = load_clean_source_data("pedestrian")
-    indicator_col_label = "safety_ped_hospital_per100k"
+    indicator_col_label = "safety_pedhospital"
 
     final = calculate_per100k_rate(source_data, geography)
     final.name = indicator_col_label
-
+    final = pd.DataFrame(final)
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "pedestrian_hospitalizations.csv", geography)],

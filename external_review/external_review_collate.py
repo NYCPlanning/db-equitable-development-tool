@@ -19,6 +19,11 @@ from aggregate.quality_of_life.access_to_open_space import park_access
 from aggregate.quality_of_life.access_transit import access_subway_and_access_ADA
 from aggregate.quality_of_life.covid_death import covid_death
 from aggregate.quality_of_life.education_outcome import get_education_outcome
+from aggregate.quality_of_life.health_mortality import (
+    infant_mortality,
+    overdose_mortality,
+    premature_mortality,
+)
 from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnerability
 from aggregate.quality_of_life.pedestrian_hospitalizations import (
     pedestrian_hospitalizations,
@@ -48,6 +53,9 @@ accessors = {
         ("access to transit", access_subway_and_access_ADA),
         ("pedestrian hospitalizations", pedestrian_hospitalizations),
         ("non fatal assault hospitalizations", assault_hospitalizations),
+        ("infant mortality", infant_mortality),
+        ("overdose mortality", overdose_mortality),
+        ("premature mortality", premature_mortality),
     ],
 }
 

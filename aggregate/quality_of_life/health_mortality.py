@@ -9,15 +9,15 @@ from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
 
 ind_name_mapper = {
-    "infant_mortality_per1000": "health_infant_mortality",
-    "overdose_mortality_per100000": "health_overdose_mortality",
-    "premature_mortality_per100000": "health_premature_mortality",
+    "infant_mortality_per1000": "infantmortality",
+    "overdose_mortality_per100000": "overdosemortality",
+    "premature_mortality_per100000": "prematuremortality",
 }
 year_mapper = {
     'puma':{
-        '_15_19': '_2019',
-        '_10_14': '_2014',
-        '_00_04': '_2004'
+        '_15_19': '_1519',
+        '_10_14': '_1014',
+        '_00_04': '_0004'
     },
 }
 race_mapper = {
@@ -26,6 +26,15 @@ race_mapper = {
     "_H": "_hsp", 
     "_W": "_wnh"
 }
+
+borough_name_mapper = {
+    "Bronx": "BX",
+    "Brooklyn": "BK",
+    "Manhattan": "MN",
+    "Queens": "QN",
+    "Staten Island": "SI",
+}
+
 
 def infant_mortality(geography=str, write_to_internal_review=False):
     ind_name = 'infant_mortality_per1000'
@@ -89,6 +98,8 @@ def rename_columns(df: pd.DataFrame, ind_name: str, geography: str):
     if geography == "puma":
         for year_range, end_year in year_mapper[geography].items():
             cols = [c.replace(year_range, end_year) for c in cols]
+    # reorder items to standard
+    cols = ["health_{0}_{1}_{2}".format(c.split('_')[1], c.split('_')[0], c.split('_')[2]) if len(c.split('_')) == 3 else "health_{0}_{1}".format(c.split('_')[1], c.split('_')[0]) for c in cols]
     df.columns = cols
     return df
 
@@ -122,9 +133,10 @@ def load_clean_source_data(geography: str):
         source_data["puma"] = source_data["puma"].apply(func=clean_PUMAs)
     elif geography == 'citywide':
         source_data['City'] = 'citywide'
-        source_data.rename(columns={'City': 'citywide'})
+        source_data.rename(columns={'City': 'citywide'}, inplace=True)
     else:
-        source_data.rename(columns={'Borough': 'borough'})
+        source_data.rename(columns={'Borough': 'borough'}, inplace=True)
+        source_data['borough'] = source_data['borough'].map(borough_name_mapper)
     
     clean_data = source_data.set_index(geography)
 

@@ -84,12 +84,7 @@ def pivot_and_flatten_index(df, geography):
     )
 
     df_pivot.columns = ["_".join(a) for a in df_pivot.columns.to_flat_index()]
-
-
-    ##cols_pct = [c for c in df.columns if 'pct' in c]
-
-    #new_cols_pct = [c.replace('_pct', 'classa_net') + '_pct' for c in cols_pct]
-    #df.columns[-5:] = new_cols_pct
+    
     df_pivot.rename(columns={
         'classa_net_': 'classa_net',
         "pct_": "classa_net_pct",
@@ -139,8 +134,7 @@ def clean_jobs(df):
     gdf = gpd.GeoDataFrame(
         df, geometry=gpd.points_from_xy(df.longitude, df.latitude)
     )
-    #print(gdf.columns)
-    #gdf = gdf[['PUMA', 'geometry']]
+
     df = gdf.sjoin(puma, how="left", predicate="within")
 
     print(df.columns)
@@ -169,6 +163,7 @@ def change_in_units(geography: str, write_to_internal_review=False):
     all_job_type.job_type = 'All'
     results = pd.concat([results, all_job_type], axis=0)
 
+    # join with 2010 units from census 
     if geography == 'citywide':
         results["total_housing_units_2010"] = census10["total_housing_units_2010"].sum()     
     else:

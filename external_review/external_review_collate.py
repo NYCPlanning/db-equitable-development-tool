@@ -44,13 +44,19 @@ accessors = {
         ("change in units", change_in_units),
     ],
     "quality_of_life": [
+        # Category of access to employment opportunities
         ("access to jobs", access_to_jobs),
+        # Category of access to open space
         ("access to open space", park_access),
-        ("covid deaths", covid_death),
+        # Category of access to transit
+        ("access to transit", access_subway_and_access_ADA),
+        # Rate of using car to commute is coming from DCP population
+        # Category  of educational outcomes
         ("educational outcomes", get_education_outcome),
+        # Category of Health outcomes
+        ("covid deaths", covid_death),
         ("heat vulnerability", load_clean_heat_vulnerability),
         ("traffic fatalities", traffic_fatalities_injuries),
-        ("access to transit", access_subway_and_access_ADA),
         ("pedestrian hospitalizations", pedestrian_hospitalizations),
         ("non fatal assault hospitalizations", assault_hospitalizations),
         ("infant mortality", infant_mortality),

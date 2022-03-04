@@ -64,7 +64,7 @@ def load_housing_data():
 
     census10_.rename(
         columns={
-            "Total Housing Units": "total_housing_units_2010",
+            "Total Housing Units": "total_units_2010",
             "2010 DCP Borough Code": "borough",
             "PUMA": "puma"
             }, inplace=True
@@ -72,6 +72,8 @@ def load_housing_data():
     census10_.borough = census10_.borough.map(
             {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
     )
+    census10_['citywide'] = "citywide"
+    print(census10_.head())
     return df, census10_
 
 
@@ -126,23 +128,15 @@ def clean_jobs(df):
     df.drop(df.loc[df.job_type == "Alteration"].index, axis=0, inplace=True)
 
     df['citywide'] = 'citywide'
-
     df.rename(columns={"boro": "borough"}, inplace=True)
-
     puma = NYC_PUMA_geographies()
     puma = puma[['PUMA', 'geometry']]
     gdf = gpd.GeoDataFrame(
         df, geometry=gpd.points_from_xy(df.longitude, df.latitude)
     )
-
     df = gdf.sjoin(puma, how="left", predicate="within")
-
-    print(df.columns)
-
     df.rename(columns={'PUMA': 'puma'}, inplace=True)
-
     df.borough = df.borough.astype(str)
-
     df.borough = df.borough.map(
             {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
     )
@@ -163,24 +157,23 @@ def change_in_units(geography: str, write_to_internal_review=False):
     all_job_type.job_type = 'All'
     results = pd.concat([results, all_job_type], axis=0)
 
-    # join with 2010 units from census 
-    if geography == 'citywide':
-        results["total_housing_units_2010"] = census10["total_housing_units_2010"].sum()     
-    else:
-        census_units = (
-            census10.groupby(geography)["total_housing_units_2010"]
+    # join with 2010 units from census
+    census_units = (
+        census10.groupby(geography)["total_units_2010"]
             .sum()
             .reset_index()
         )
-        results = results.merge(
-            census_units, on=geography, how='left'
-        )
+    results = results.merge(
+        census_units, on=geography, how='left'
+    ) 
 
     results.job_type = results.job_type.map(job_type_mapper)
 
-    results['pct'] = results["classa_net"] / results["total_housing_units_2010"] * 100.0
+    results['pct'] = results["classa_net"] / results["total_units_2010"] * 100.0
     results['pct'] = results['pct'].round(2)
-    final = pivot_and_flatten_index(results, geography=geography)
+    results = pivot_and_flatten_index(results, geography=geography)
+
+    final = pd.concat([results, census_units.set_index(geography)], axis=1)
 
     if write_to_internal_review:
         set_internal_review_files(
@@ -189,43 +182,3 @@ def change_in_units(geography: str, write_to_internal_review=False):
         )
 
     return final
-
-
-if __name__ == "__main__":
-
-    df, census10 = load_housing_data()
-
-    df = clean_jobs(df)
-
-    # run results for everything
-    results_citywide = units_change_citywide(df, census10)
-
-    print("finsihed citywide")
-
-    results_borough = unit_change_borough(df, census10)
-
-    print("finished borough")
-
-    # start the puma
-    puma = NYC_PUMA_geographies()
-
-    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
-
-    results_puma = unit_change_puma(gdf, puma, census10)
-
-    print("finished puma")
-
-    # output everything
-    results_citywide.to_csv(
-        "internal_review/housing_production/citywide/unit_change_citywide.csv",
-        index=False,
-    )
-
-    results_borough.to_csv(
-        "internal_review/housing_production/borough/unit_change_borough.csv",
-        index=False,
-    )
-
-    results_puma.to_csv(
-        "internal_review/housing_production/puma/unit_change_puma.csv", index=False
-    )

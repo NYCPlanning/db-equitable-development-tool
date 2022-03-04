@@ -60,12 +60,12 @@ def load_housing_ny():
 
 def pivot_and_flatten_index(df, geography):
     level_mapper = {
-    "extremely_low_income_units": "eli_units",
-    "very_low_income_units": "vli_units",
-    "low_income_units": "li_units",
-    "moderate_income_units": "mi_units",
-    "middle_income_units": "midi_units",
-    "other_income_units": "oi_units",
+    "extremely_low_income_units": "units_eli",
+    "very_low_income_units": "units_vli",
+    "low_income_units": "units_li",
+    "moderate_income_units": "units_mi",
+    "middle_income_units": "units_midi",
+    "other_income_units": "units_oi",
     }
 
     df = df.pivot(

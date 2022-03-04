@@ -1,9 +1,17 @@
+#from unittest import result
 from unittest import result
 import pandas as pd
 import geopandas as gpd
 import requests
+from internal_review.set_internal_review_file import set_internal_review_files
 
-
+job_type_mapper ={
+    'All': '',
+    'Demolition': 'demo',
+    'New Building': "new",
+    "Alteration_Increase": "alt_increase",
+    "Alteration_Decrease": "alt_decrease"
+}
 def load_housing_data():
 
     df = pd.read_csv(
@@ -55,139 +63,48 @@ def load_housing_data():
     )
 
     census10_.rename(
-        columns={"Total Housing Units": "total_housing_units_2010"}, inplace=True
+        columns={
+            "Total Housing Units": "total_units_2010",
+            "2010 DCP Borough Code": "borough",
+            "PUMA": "puma"
+            }, inplace=True
     )
-
+    census10_.borough = census10_.borough.map(
+            {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
+    )
+    census10_['citywide'] = "citywide"
     return df, census10_
 
 
 def pivot_and_flatten_index(df, geography):
 
-    df = df.pivot(
+    df_pivot = df.pivot(
         index=geography,
         columns="job_type",
-        values=["classa_net", "net_change_pct_2010_census_housing_stock"],
+        values=["classa_net", "pct"],
     )
 
-    df.columns = ["_".join(a) for a in df.columns.to_flat_index()]
+    df_pivot.columns = ["_".join(a) for a in df_pivot.columns.to_flat_index()]
+    
+    df_pivot.rename(columns={
+        'classa_net_': 'classa_net',
+        "pct_": "classa_net_pct",
+        "pct_alt_decrease": "classa_net_alt_decrease_pct",
+        "pct_alt_increase": "classa_net_alt_increase_pct",
+        "pct_demo": "classa_net_demo_pct",
+        "pct_new": "classa_net_new_pct",
+        },
+    inplace=True)
 
-    df.columns = [col.lower().replace(" ", "_") for col in df.columns]
+    df_pivot.reset_index().set_index(geography, inplace=True)
 
-    df.reset_index(inplace=True)
-
-    return df
-
-
-def units_change_citywide(df, census10):
-
-    # df = pd.read_csv(".library/edm-recipes/datasets/dcp_housing.csv")
-
-    results = df.groupby("job_type").agg({"classa_net": "sum"}).reset_index()
-
-    results["total_housing_units_2010"] = census10["total_housing_units_2010"].sum()
-
-    results["net_change_pct_2010_census_housing_stock"] = (
-        results["classa_net"] / results["total_housing_units_2010"] * 100.0
-    )
-
-    results = results.round({"net_change_pct_2010_census_housing_stock": 2})
-
-    results["citywide"] = "citywide"
-
-    results = pivot_and_flatten_index(results, "citywide")
-
-    return results.set_index("citywide")
-
-
-def unit_change_borough(df, census10):
-
-    results = df.groupby(["job_type", "boro"]).agg({"classa_net": "sum"}).reset_index()
-
-    for boro in results.boro.unique():
-
-        total = {
-            "job_type": "All",
-            "boro": boro,
-            "classa_net": results.loc[results.boro == boro].classa_net.sum(),
-        }
-
-        results = results.append(total, ignore_index=True)
-
-    # join with the existing housing stock
-    boro_units = (
-        census10.groupby("2010 DCP Borough Code")["total_housing_units_2010"]
-        .sum()
-        .reset_index()
-    )
-
-    results.boro = results.boro.astype(str)
-
-    results_ = results.merge(
-        boro_units, left_on="boro", right_on="2010 DCP Borough Code", how="left"
-    )
-
-    # calculate ther percentage change to the 2010 housing stock from census
-    results_["net_change_pct_2010_census_housing_stock"] = (
-        results_["classa_net"] / results_["total_housing_units_2010"] * 100.0
-    )
-
-    results_ = results_.round({"net_change_pct_2010_census_housing_stock": 2})
-
-    results_ = pivot_and_flatten_index(results_, "boro")
-
-    results_["boro"] = results.boro.map(
-        {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
-    )
-
-    results_.rename(columns={"boro": "borough"}, inplace=True)
-
-    return results_.set_index("borough")
-
+    return df_pivot
 
 def NYC_PUMA_geographies():
     res = requests.get(
         "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
     )
     return gpd.GeoDataFrame.from_features(res.json()["features"])
-
-
-def unit_change_puma(gdf, puma, census10):
-
-    gdf_ = gdf.sjoin(puma, how="left", predicate="within")
-
-    results = (
-        gdf_.groupby(["job_type", "PUMA"]).agg({"classa_net": "sum"}).reset_index()
-    )
-
-    for puma in results.PUMA.unique():
-
-        total = {
-            "job_type": "All",
-            "PUMA": puma,
-            "classa_net": results.loc[results.PUMA == puma].classa_net.sum(),
-        }
-
-        results = results.append(total, ignore_index=True)
-
-    puma_units = (
-        census10.groupby("PUMA")["total_housing_units_2010"].sum().reset_index()
-    )
-
-    results_ = results.merge(puma_units, on="PUMA", how="left")
-
-    # calculate ther percentage change to the 2010 housing stock from census
-    results_["net_change_pct_2010_census_housing_stock"] = (
-        results_["classa_net"] / results_["total_housing_units_2010"] * 100.0
-    )
-
-    results_ = results_.round({"net_change_pct_2010_census_housing_stock": 2})
-
-    results_ = pivot_and_flatten_index(results_, "PUMA")
-
-    results_["PUMA"] = results_["PUMA"].apply(lambda x: "0" + x)
-
-    return results_.set_index("PUMA")
-
 
 def clean_jobs(df):
     # DROP INACTIVATE JOBS ACCRODING TO SAM
@@ -209,62 +126,58 @@ def clean_jobs(df):
 
     df.drop(df.loc[df.job_type == "Alteration"].index, axis=0, inplace=True)
 
+    df['citywide'] = 'citywide'
+    df.rename(columns={"boro": "borough"}, inplace=True)
+    puma = NYC_PUMA_geographies()
+    puma = puma[['PUMA', 'geometry']]
+    gdf = gpd.GeoDataFrame(
+        df, geometry=gpd.points_from_xy(df.longitude, df.latitude)
+    )
+    df = gdf.sjoin(puma, how="left", predicate="within")
+    df.rename(columns={'PUMA': 'puma'}, inplace=True)
+    df.borough = df.borough.astype(str)
+    df.borough = df.borough.map(
+            {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
+    )
+
     return df
 
 
-def change_in_units(geography):
+def change_in_units(geography: str, write_to_internal_review=False):
     """Main accessor for this function"""
     assert geography in ["citywide", "borough", "puma"]
     df, census10 = load_housing_data()
     df = clean_jobs(df)
-    if geography == "citywide":
-        return units_change_citywide(df, census10)
-    if geography == "borough":
-        return unit_change_borough(df, census10)
-    if geography == "puma":
-        puma = NYC_PUMA_geographies()
 
-        gdf = gpd.GeoDataFrame(
-            df, geometry=gpd.points_from_xy(df.longitude, df.latitude)
+    #aggregation begins here
+    results = df.groupby(["job_type", geography]).agg({"classa_net": "sum"}).reset_index()
+    all_job_type = df.groupby(geography).agg({"classa_net": "sum", "job_type": "max"}).reset_index()
+    print(all_job_type)
+    all_job_type.job_type = 'All'
+    results = pd.concat([results, all_job_type], axis=0)
+
+    # join with 2010 units from census
+    census_units = (
+        census10.groupby(geography)["total_units_2010"]
+            .sum()
+            .reset_index()
         )
-        return unit_change_puma(gdf, puma, census10)
+    results = results.merge(
+        census_units, on=geography, how='left'
+    ) 
 
+    results.job_type = results.job_type.map(job_type_mapper)
 
-if __name__ == "__main__":
+    results['pct'] = results["classa_net"] / results["total_units_2010"] * 100.0
+    results['pct'] = results['pct'].round(2)
+    results = pivot_and_flatten_index(results, geography=geography)
 
-    df, census10 = load_housing_data()
+    final = pd.concat([results, census_units.set_index(geography)], axis=1)
 
-    df = clean_jobs(df)
+    if write_to_internal_review:
+        set_internal_review_files(
+            [(final, "change_in_units.csv", geography)],
+            "housing_production",
+        )
 
-    # run results for everything
-    results_citywide = units_change_citywide(df, census10)
-
-    print("finsihed citywide")
-
-    results_borough = unit_change_borough(df, census10)
-
-    print("finished borough")
-
-    # start the puma
-    puma = NYC_PUMA_geographies()
-
-    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
-
-    results_puma = unit_change_puma(gdf, puma, census10)
-
-    print("finished puma")
-
-    # output everything
-    results_citywide.to_csv(
-        "internal_review/housing_production/citywide/unit_change_citywide.csv",
-        index=False,
-    )
-
-    results_borough.to_csv(
-        "internal_review/housing_production/borough/unit_change_borough.csv",
-        index=False,
-    )
-
-    results_puma.to_csv(
-        "internal_review/housing_production/puma/unit_change_puma.csv", index=False
-    )
+    return final

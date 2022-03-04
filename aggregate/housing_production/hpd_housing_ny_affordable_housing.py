@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from utils.PUMA_helpers import assign_PUMA_col
-
+from internal_review.set_internal_review_file import set_internal_review_files
 
 """"We need to download the data, separate the data by construction type (New Construction vs. Preservation)
 as these will be two separate indicators, unit income level, and the various citywide reporting geography 
@@ -59,6 +59,14 @@ def load_housing_ny():
 
 
 def pivot_and_flatten_index(df, geography):
+    level_mapper = {
+    "extremely_low_income_units": "units_eli",
+    "very_low_income_units": "units_vli",
+    "low_income_units": "units_li",
+    "moderate_income_units": "units_mi",
+    "middle_income_units": "units_midi",
+    "other_income_units": "units_oi",
+    }
 
     df = df.pivot(
         index=geography,
@@ -69,6 +77,15 @@ def pivot_and_flatten_index(df, geography):
     df.columns = ["_".join(a) for a in df.columns.to_flat_index()]
 
     df.columns = [col.lower().replace(" ", "_") for col in df.columns]
+
+    cols = df.columns
+
+    for full, abbr in level_mapper.items():
+        cols = [c.replace(full, abbr) for c in cols]
+
+    cols = [c.replace('new_construction', 'newconstruction') for c in cols]
+
+    df.columns = cols
 
     df.reset_index(inplace=True)
 
@@ -138,6 +155,20 @@ def affordable_housing(geography: str) -> pd.DataFrame:
         return borough_hny_units_con_type(housing_ny)
     if geography == "puma":
         return PUMA_hny_units_con_type(housing_ny)
+
+def affordable_housing_internal_review():
+    housing_ny = load_housing_ny()
+    citywide = citywide_hny_units_con_type(housing_ny)
+    by_borough = borough_hny_units_con_type(housing_ny)
+    by_puma = PUMA_hny_units_con_type(housing_ny)
+    set_internal_review_files(
+        [
+            (citywide, "affordable_housing_preservation_construction.csv", "citywide"),
+            (by_borough, "affordable_housing_preservation_construction.csv", "borough"),
+            (by_puma, "affordable_housing_preservation_construction.csv", "puma"),
+        ],
+        "housing_production",
+    )
 
 
 if __name__ == "__main__":

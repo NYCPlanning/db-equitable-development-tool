@@ -5,19 +5,32 @@ from aggregate.housing_production.area_within_historic_district import (
     find_fraction_PUMA_historic,
 )
 
+by_puma = find_fraction_PUMA_historic("puma")
+by_borough = find_fraction_PUMA_historic("borough")
+by_citywide = find_fraction_PUMA_historic("citywide")
+ind_by_geom = [by_puma, by_borough, by_citywide]
 hd = load_historic_districts_gdf()
 
 
 def test_that_zero_fraction_historic_means_zero_total_historic():
-    indicator = find_fraction_PUMA_historic("PUMA")
-    zero_fraction_historic = indicator[indicator["fraction_area_historic"] == 0]
-    assert zero_fraction_historic["total_area_historic"].sum() == 0
+    zero_fraction_historic = by_puma[by_puma["area_historic_pct"] == 0]
+    assert zero_fraction_historic["area_historic_sqmiles"].sum() == 0
 
 
-@pytest.mark.parametrize("geography_level", ["PUMA", "borough"])
-def test_all_historic_area_assigned_to_PUMA(geography_level):
+@pytest.mark.parametrize("indicator", [by_puma, by_borough])
+def test_all_historic_area_assigned_to_PUMA(indicator):
     """Check that total is equal to within a foot tolerance"""
-    indicator = find_fraction_PUMA_historic(geography_level)
     assert np.isclose(
-        hd.area.sum() / (5280 ** 2), indicator["total_area_historic"].sum(), atol=1
+        hd.area.sum() / (5280 ** 2),
+        indicator["area_historic_sqmiles"].sum(),
+        atol=1,
     )
+
+
+@pytest.mark.parametrize("ind", ind_by_geom)
+def test_that_denom_correct(ind):
+    assert np.isclose(
+        ind.area_historic_sqmiles / ind.total_sqmiles,
+        ind.area_historic_pct / 100,
+        atol=0.01,
+    ).all()

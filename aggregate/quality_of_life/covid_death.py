@@ -19,18 +19,34 @@ def covid_death(geography: str, write_to_internal_review=False):
     indicator_col_label = "health_covid19deaths"
 
     clean_df = load_clean_source_data()
-    agg = clean_df.groupby([geography, "race"]).sum(numeric_only=True).reset_index()
-    final = agg.pivot(index=geography, columns="race", values="total_covid_death")
-    final.replace(0, np.nan, inplace=True)  # needed for the censored datapoint
 
+    agg_by_race = (
+        clean_df.groupby([geography, "race"]).sum(numeric_only=True).reset_index()
+    )
+    calculate_rate_by_100k(indicator_col_label, agg_by_race)
+    pivot_by_race = agg_by_race.pivot(
+        index=geography, columns="race", values=indicator_col_label
+    )
+    pivot_by_race.replace(0, np.nan, inplace=True)  # needed for the censored datapoint
+
+    for col in pivot_by_race.columns:
+        pivot_by_race.rename(columns={col: f"{indicator_col_label}{col}"}, inplace=True)
+
+    agg_all_races = clean_df.groupby(geography).sum(numeric_only=True).reset_index()
+    calculate_rate_by_100k(indicator_col_label, agg_all_races)
+    final = pivot_by_race.merge(
+        agg_all_races[[geography, indicator_col_label]],
+        left_on=[geography],
+        right_on=[geography],
+    )
     # create the total without race breakdown
-    final.insert(loc=0, column="", value=final.sum(axis=1))
-
-    for col in final.columns:
-        final.rename(columns={col: f"{indicator_col_label}{col}"}, inplace=True)
+    # pivot_by_race[""] = pivot_by_race.sum(axis=1)
 
     # rename index and redy for output
+    final = final.set_index(geography)
+    final = final.sort_index(axis=1, ascending=True)
     final.index.rename(geography, inplace=True)
+    final = final.round(2)
 
     if write_to_internal_review:
         set_internal_review_files(
@@ -38,6 +54,12 @@ def covid_death(geography: str, write_to_internal_review=False):
         )
 
     return final
+
+
+def calculate_rate_by_100k(new_col, aggregated):
+    aggregated[new_col] = (
+        aggregated["total_covid_death"] / aggregated["population"]
+    ) * 10 ** 5
 
 
 def load_clean_source_data():
@@ -65,5 +87,44 @@ def load_clean_source_data():
     source_data["total_covid_death"] = source_data["total_covid_death"].replace(
         "*", np.nan
     )
-
+    source_data = add_pop_2020(source_data)
     return source_data
+
+
+def add_pop_2020(df):
+    census_race_coder = {
+        "ANH20": "_anh",
+        "BNH20": "_bnh",
+        "Hsp20": "_hsp",
+        "OTwoNH20": "_onh",
+        "WNH20": "_wnh",
+    }
+    census_race_cols = list(census_race_coder.keys())
+    census = pd.read_csv(
+        "resources/quality_of_life/Census_Aggregations_fromErica.csv",
+        header=2,
+        usecols=[
+            "GeogType",
+            "GeoID",
+        ]
+        + census_race_cols,
+    )
+
+    census.columns = [census_race_coder.get(c, c) for c in census.columns]
+
+    census = census[census["GeogType"] == "PUMA2010"]
+    census["puma"] = "0" + census["GeoID"].astype(int).astype(str)
+    # census = census.set_index("puma")
+    census_melted = census.melt(
+        id_vars=["puma"], value_vars=["_anh", "_bnh", "_hsp", "_onh", "_wnh"]
+    )
+
+    census_melted["value"] = census_melted["value"].str.replace(",", "").astype(float)
+    census_melted.rename(columns={"value": "population"}, inplace=True)
+    merged = df.merge(
+        census_melted,
+        left_on=["puma", "race"],
+        right_on=["puma", "variable"],
+        how="left",
+    )
+    return merged

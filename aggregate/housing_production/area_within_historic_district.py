@@ -26,22 +26,21 @@ def area_historic_internal_review():
 def find_fraction_PUMA_historic(geography_level):
     """Main accessor of indicator"""
     gdf = generate_geographies(geography_level)
+    gdf["total_sqmiles"] = gdf.geometry.area / (5280 ** 2)
     hd = load_historic_districts_gdf()
-    gdf[["area_historic_pct", "total_area_historic_sq_miles"]] = gdf.apply(
+    gdf[["area_historic_pct", "area_historic_sqmiles"]] = gdf.apply(
         fraction_area_historic, axis=1, args=(hd,), result_type="expand"
     )
-    gdf = gdf.round({"area_historic_pct": 2})
-    return gdf[["area_historic_pct", "total_area_historic_sq_miles"]]
+    return gdf[["area_historic_pct", "area_historic_sqmiles", "total_sqmiles"]].round(2)
 
 
 def generate_geographies(geography_level):
     NYC_PUMAs = NYC_PUMA_geographies()
+    NYC_PUMAs = NYC_PUMAs.to_crs("EPSG:2263")
     if geography_level == "puma":
         return NYC_PUMAs.set_index("puma")
     if geography_level == "borough":
-        NYC_PUMAs["borough"] = (
-            NYC_PUMAs["puma"].astype(str).str[1:3].apply(puma_to_borough)
-        )
+        NYC_PUMAs["borough"] = NYC_PUMAs.apply(axis=1, func=puma_to_borough)
         by_borough = NYC_PUMAs.dissolve(by="borough")
         return by_borough
     if geography_level == "citywide":
@@ -53,8 +52,7 @@ def generate_geographies(geography_level):
 
 
 def fraction_area_historic(PUMA, hd):
-    gdf = gp.GeoDataFrame(geometry=[PUMA.geometry], crs="EPSG:4326")
-    gdf = gdf.to_crs("EPSG:2263")
+    gdf = gp.GeoDataFrame(geometry=[PUMA.geometry], crs="EPSG:2263")
     overlay = gp.overlay(hd, gdf, "intersection")
     if overlay.empty:
         return 0, 0

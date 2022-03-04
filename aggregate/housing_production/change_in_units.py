@@ -70,19 +70,36 @@ def load_housing_data():
 
 def pivot_and_flatten_index(df, geography):
 
-    df = df.pivot(
+    df_pivot = df.pivot(
         index=geography,
         columns="job_type",
         values=["classa_net", "pct"],
     )
 
-    df.columns = ["_".join(a) for a in df.columns.to_flat_index()]
+    df_pivot.columns = ["_".join(a) for a in df_pivot.columns.to_flat_index()]
 
-    df.columns = [col.lower().replace(" ", "_") for col in df.columns]
+    print(df_pivot.columns)
 
-    df.reset_index(inplace=True)
+    ##cols_pct = [c for c in df.columns if 'pct' in c]
 
-    return df
+    #new_cols_pct = [c.replace('_pct', 'classa_net') + '_pct' for c in cols_pct]
+    #df.columns[-5:] = new_cols_pct
+    df_pivot.rename(columns={
+        'classa_net_': 'classa_net',
+        "pct_": "classa_net_pct",
+        "pct_alt_decrease": "classa_net_alt_decrease_pct",
+        "pct_alt_increase": "classa_net_alt_increase_pct",
+        "pct_demo": "classa_net_demo_pct",
+        "pct_new": "classa_net_new_pct",
+        },
+    inplace=True)
+
+    print(df_pivot.columns)
+    #df.columns = [col.lower().replace(" ", "_") for col in df.columns]
+
+    df_pivot.reset_index(inplace=True)
+
+    return df_pivot
 
 def NYC_PUMA_geographies():
     res = requests.get(
@@ -149,6 +166,10 @@ def clean_jobs(df):
 
     df.drop(df.loc[df.job_type == "Alteration"].index, axis=0, inplace=True)
 
+    df['citywide'] = 'citywide'
+
+    df.rename(columns={"boro": "borough"}, inplace=True)
+
     return df
 
 
@@ -157,19 +178,17 @@ def change_in_units(geography: str):
     assert geography in ["citywide", "borough", "puma"]
     df, census10 = load_housing_data()
     df = clean_jobs(df)
-    if geography == "citywide":
-        results = df.groupby("job_type").agg({"classa_net": "sum"}).reset_index()
-        results["total_housing_units_2010"] = census10["total_housing_units_2010"].sum()
-        results["citywide"] = "citywide"
-        #return units_change_citywide(df, census10)
-    if geography == "borough":
 
-        df.rename(columns={"boro": "borough"}, inplace=True)
-        results = df.groupby(["job_type", geography]).agg({"classa_net": "sum"}).reset_index()
-        #print(df.groupby('boro').agg({"classa_net": "sum", "job_type": "sum"}))
-        all_job_type = df.groupby(geography).agg({"classa_net": "sum", "job_type": "sum"}).reset_index()
-        all_job_type.job_type = 'All'
-        results = pd.concat([results, all_job_type], axis=0)
+    #aggregation begins here
+    results = df.groupby(["job_type", geography]).agg({"classa_net": "sum"}).reset_index()
+    all_job_type = df.groupby(geography).agg({"classa_net": "sum", "job_type": "max"}).reset_index()
+    print(all_job_type)
+    all_job_type.job_type = 'All'
+    results = pd.concat([results, all_job_type], axis=0)
+
+    if geography == 'citywide':
+        results["total_housing_units_2010"] = census10["total_housing_units_2010"].sum()     
+    if geography == "borough":
         # join with the existing housing stock
         boro_units = (
             census10.groupby("2010 DCP Borough Code")["total_housing_units_2010"]
@@ -180,7 +199,7 @@ def change_in_units(geography: str):
         results = results.merge(
             boro_units, left_on=geography, right_on="2010 DCP Borough Code", how="left"
         )
-        result.borough = results.borough.map(
+        results.borough = results.borough.map(
             {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
         )
 
@@ -216,8 +235,6 @@ def change_in_units(geography: str):
     results = pivot_and_flatten_index(results, geography=geography)
 
     return results
-    #results['_pct'] = results[] 
-        #return unit_change_puma(gdf, puma, census10)
 
 
 if __name__ == "__main__":

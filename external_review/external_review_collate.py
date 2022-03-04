@@ -72,10 +72,18 @@ def collate(geography_level, category):
     for ind_name, ind_accessor in accessor_functions:
         try:
             ind = ind_accessor(geography_level)
+            print("indicator is ")
+            print(ind)
+            print()
             if final_df.empty:
                 final_df = ind
             else:
-                final_df = final_df.merge(ind, right_index=True, left_index=True)
+                final_df = final_df.merge(
+                    ind, right_index=True, left_index=True, how="left"
+                )
+            print("final df is")
+            print(final_df)
+            print()
         except Exception as e:
             print(
                 f"Error merging indicator {ind_name} at geography level {geography_level}"

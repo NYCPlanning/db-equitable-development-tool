@@ -91,51 +91,6 @@ def NYC_PUMA_geographies():
     return gpd.GeoDataFrame.from_features(res.json()["features"])
 
 
-def unit_change_borough(df, census10):
-
-    results = df.groupby(["job_type", "boro"]).agg({"classa_net": "sum"}).reset_index()
-
-    for boro in results.boro.unique():
-
-        total = {
-            "job_type": "All",
-            "boro": boro,
-            "classa_net": results.loc[results.boro == boro].classa_net.sum(),
-        }
-
-        results = results.append(total, ignore_index=True)
-
-    # join with the existing housing stock
-    boro_units = (
-        census10.groupby("2010 DCP Borough Code")["total_housing_units_2010"]
-        .sum()
-        .reset_index()
-    )
-
-    results.boro = results.boro.astype(str)
-
-    results_ = results.merge(
-        boro_units, left_on="boro", right_on="2010 DCP Borough Code", how="left"
-    )
-
-    # calculate ther percentage change to the 2010 housing stock from census
-    results_["net_change_pct_2010_census_housing_stock"] = (
-        results_["classa_net"] / results_["total_housing_units_2010"] * 100.0
-    )
-
-    results_ = results_.round({"net_change_pct_2010_census_housing_stock": 2})
-
-    results_ = pivot_and_flatten_index(results_, "boro")
-
-    results_["boro"] = results.boro.map(
-        {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
-    )
-
-    results_.rename(columns={"boro": "borough"}, inplace=True)
-
-    return results_.set_index("borough")
-
-
 def unit_change_puma(gdf, puma, census10):
 
     gdf_ = gdf.sjoin(puma, how="left", predicate="within")
@@ -228,16 +183,6 @@ def change_in_units(geography: str):
         result.borough = results.borough.map(
             {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
         )
-
-        # for boro in results.boro.unique():
-
-        #     total = {
-        #         "job_type": "All",
-        #         "boro": boro,
-        #         "classa_net": results.loc[results.boro == boro].classa_net.sum(),
-        #     }
-
-        #     results = results.append(total, ignore_index=True)
 
     if geography == "puma":
         puma = NYC_PUMA_geographies()

@@ -3,6 +3,7 @@ from unittest import result
 import pandas as pd
 import geopandas as gpd
 import requests
+from internal_review.set_internal_review_file import set_internal_review_files
 
 job_type_mapper ={
     'All': '',
@@ -99,7 +100,7 @@ def pivot_and_flatten_index(df, geography):
         },
     inplace=True)
 
-    df_pivot.reset_index(inplace=True)
+    df_pivot.reset_index().set_index(geography, inplace=True)
 
     return df_pivot
 
@@ -155,7 +156,7 @@ def clean_jobs(df):
     return df
 
 
-def change_in_units(geography: str):
+def change_in_units(geography: str, write_to_internal_review=False):
     """Main accessor for this function"""
     assert geography in ["citywide", "borough", "puma"]
     df, census10 = load_housing_data()
@@ -184,9 +185,15 @@ def change_in_units(geography: str):
 
     results['pct'] = results["classa_net"] / results["total_housing_units_2010"] * 100.0
     results['pct'] = results['pct'].round(2)
-    results = pivot_and_flatten_index(results, geography=geography)
+    final = pivot_and_flatten_index(results, geography=geography)
 
-    return results
+    if write_to_internal_review:
+        set_internal_review_files(
+            [(final, "change_in_units.csv", geography)],
+            "housing_production",
+        )
+
+    return final
 
 
 if __name__ == "__main__":

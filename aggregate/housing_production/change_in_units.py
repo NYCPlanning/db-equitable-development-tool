@@ -165,7 +165,6 @@ def change_in_units(geography: str, write_to_internal_review=False):
         .agg({"classa_net": "sum", "job_type": "max"})
         .reset_index()
     )
-    print(all_job_type)
     all_job_type.job_type = "All"
     results = pd.concat([results, all_job_type], axis=0)
 

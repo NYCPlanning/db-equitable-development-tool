@@ -60,12 +60,12 @@ def load_housing_ny():
 
 def pivot_and_flatten_index(df, geography):
     level_mapper = {
-    "extremely_low_income_units": "units_eli",
-    "very_low_income_units": "units_vli",
-    "low_income_units": "units_li",
-    "moderate_income_units": "units_mi",
-    "middle_income_units": "units_midi",
-    "other_income_units": "units_oi",
+        "extremely_low_income_units": "units_eli",
+        "very_low_income_units": "units_vli",
+        "low_income_units": "units_li",
+        "moderate_income_units": "units_mi",
+        "middle_income_units": "units_midi",
+        "other_income_units": "units_oi",
     }
 
     df = df.pivot(
@@ -83,7 +83,7 @@ def pivot_and_flatten_index(df, geography):
     for full, abbr in level_mapper.items():
         cols = [c.replace(full, abbr) for c in cols]
 
-    cols = [c.replace('new_construction', 'newconstruction') for c in cols]
+    cols = [c.replace("new_construction", "newconstruction") for c in cols]
 
     df.columns = cols
 
@@ -156,6 +156,7 @@ def affordable_housing(geography: str) -> pd.DataFrame:
     if geography == "puma":
         return PUMA_hny_units_con_type(housing_ny)
 
+
 def affordable_housing_internal_review():
     housing_ny = load_housing_ny()
     citywide = citywide_hny_units_con_type(housing_ny)
@@ -177,15 +178,9 @@ if __name__ == "__main__":
 
     results_citywide = citywide_hny_units_con_type(df)
 
-    print(f"finished citywide")
-
     results_borough = borough_hny_units_con_type(df)
 
-    print(f"finished borough")
-
     results_puma = PUMA_hny_units_con_type(df)
-
-    print(f"finished PUMA")
 
     # output to csv for data checks  - these need to be dumped in DO edm-recipes
 

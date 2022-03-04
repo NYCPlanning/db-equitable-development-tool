@@ -56,12 +56,13 @@ accessors = {
         # Category of Health outcomes
         ("covid deaths", covid_death),
         ("heat vulnerability", load_clean_heat_vulnerability),
-        ("traffic fatalities", traffic_fatalities_injuries),
-        ("pedestrian hospitalizations", pedestrian_hospitalizations),
-        ("non fatal assault hospitalizations", assault_hospitalizations),
         ("infant mortality", infant_mortality),
         ("overdose mortality", overdose_mortality),
         ("premature mortality", premature_mortality),
+        # Public Safety
+        ("traffic fatalities", traffic_fatalities_injuries),
+        ("pedestrian hospitalizations", pedestrian_hospitalizations),
+        ("non fatal assault hospitalizations", assault_hospitalizations),
     ],
 }
 

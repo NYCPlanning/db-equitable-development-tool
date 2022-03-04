@@ -62,9 +62,15 @@ def load_housing_data():
     )
 
     census10_.rename(
-        columns={"Total Housing Units": "total_housing_units_2010"}, inplace=True
+        columns={
+            "Total Housing Units": "total_housing_units_2010",
+            "2010 DCP Borough Code": "borough",
+            "PUMA": "puma"
+            }, inplace=True
     )
-
+    census10_.borough = census10_.borough.map(
+            {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
+    )
     return df, census10_
 
 
@@ -78,7 +84,6 @@ def pivot_and_flatten_index(df, geography):
 
     df_pivot.columns = ["_".join(a) for a in df_pivot.columns.to_flat_index()]
 
-    print(df_pivot.columns)
 
     ##cols_pct = [c for c in df.columns if 'pct' in c]
 
@@ -94,9 +99,6 @@ def pivot_and_flatten_index(df, geography):
         },
     inplace=True)
 
-    print(df_pivot.columns)
-    #df.columns = [col.lower().replace(" ", "_") for col in df.columns]
-
     df_pivot.reset_index(inplace=True)
 
     return df_pivot
@@ -106,45 +108,6 @@ def NYC_PUMA_geographies():
         "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
     )
     return gpd.GeoDataFrame.from_features(res.json()["features"])
-
-
-def unit_change_puma(gdf, puma, census10):
-
-    gdf_ = gdf.sjoin(puma, how="left", predicate="within")
-
-    results = (
-        gdf_.groupby(["job_type", "PUMA"]).agg({"classa_net": "sum"}).reset_index()
-    )
-
-    for puma in results.PUMA.unique():
-
-        total = {
-            "job_type": "All",
-            "PUMA": puma,
-            "classa_net": results.loc[results.PUMA == puma].classa_net.sum(),
-        }
-
-        results = results.append(total, ignore_index=True)
-
-    puma_units = (
-        census10.groupby("PUMA")["total_housing_units_2010"].sum().reset_index()
-    )
-
-    results_ = results.merge(puma_units, on="PUMA", how="left")
-
-    # calculate ther percentage change to the 2010 housing stock from census
-    results_["net_change_pct_2010_census_housing_stock"] = (
-        results_["classa_net"] / results_["total_housing_units_2010"] * 100.0
-    )
-
-    results_ = results_.round({"net_change_pct_2010_census_housing_stock": 2})
-
-    results_ = pivot_and_flatten_index(results_, "PUMA")
-
-    results_["PUMA"] = results_["PUMA"].apply(lambda x: "0" + x)
-
-    return results_.set_index("PUMA")
-
 
 def clean_jobs(df):
     # DROP INACTIVATE JOBS ACCRODING TO SAM
@@ -170,6 +133,25 @@ def clean_jobs(df):
 
     df.rename(columns={"boro": "borough"}, inplace=True)
 
+    puma = NYC_PUMA_geographies()
+    puma = puma[['PUMA', 'geometry']]
+    gdf = gpd.GeoDataFrame(
+        df, geometry=gpd.points_from_xy(df.longitude, df.latitude)
+    )
+    #print(gdf.columns)
+    #gdf = gdf[['PUMA', 'geometry']]
+    df = gdf.sjoin(puma, how="left", predicate="within")
+
+    print(df.columns)
+
+    df.rename(columns={'PUMA': 'puma'}, inplace=True)
+
+    df.borough = df.borough.astype(str)
+
+    df.borough = df.borough.map(
+            {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
+    )
+
     return df
 
 
@@ -188,48 +170,18 @@ def change_in_units(geography: str):
 
     if geography == 'citywide':
         results["total_housing_units_2010"] = census10["total_housing_units_2010"].sum()     
-    if geography == "borough":
-        # join with the existing housing stock
-        boro_units = (
-            census10.groupby("2010 DCP Borough Code")["total_housing_units_2010"]
+    else:
+        census_units = (
+            census10.groupby(geography)["total_housing_units_2010"]
             .sum()
             .reset_index()
         )
-        results.borough = results.borough.astype(str)
         results = results.merge(
-            boro_units, left_on=geography, right_on="2010 DCP Borough Code", how="left"
+            census_units, on=geography, how='left'
         )
-        results.borough = results.borough.map(
-            {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
-        )
-
-    if geography == "puma":
-        puma = NYC_PUMA_geographies()
-        gdf = gpd.GeoDataFrame(
-            df, geometry=gpd.points_from_xy(df.longitude, df.latitude)
-        )
-        gdf_ = gdf.sjoin(puma, how="left", predicate="within")
-
-        results = (
-            gdf_.groupby(["job_type", "PUMA"]).agg({"classa_net": "sum"}).reset_index()
-        )
-        
-        for puma in results.PUMA.unique():
-
-            total = {
-                "job_type": "All",
-                "PUMA": puma,
-                "classa_net": results.loc[results.PUMA == puma].classa_net.sum(),
-            }
-
-            results = results.append(total, ignore_index=True)
-        puma_units = (
-            census10.groupby("PUMA")["total_housing_units_2010"].sum().reset_index()
-        )
-
-        results = results.merge(puma_units, on="PUMA", how="left")
 
     results.job_type = results.job_type.map(job_type_mapper)
+
     results['pct'] = results["classa_net"] / results["total_housing_units_2010"] * 100.0
     results['pct'] = results['pct'].round(2)
     results = pivot_and_flatten_index(results, geography=geography)

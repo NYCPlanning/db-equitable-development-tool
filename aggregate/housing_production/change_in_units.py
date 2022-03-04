@@ -73,7 +73,6 @@ def load_housing_data():
             {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
     )
     census10_['citywide'] = "citywide"
-    print(census10_.head())
     return df, census10_
 
 

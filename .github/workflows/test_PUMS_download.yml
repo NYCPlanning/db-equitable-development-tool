@@ -3,11 +3,11 @@ name: Test PUMS Download
 on:
   push:
     paths:
-      - "ingest/PUMS/**.py"
-      - "tests/PUMS/**.py"
+      # - "ingest/PUMS/**.py"
+      # - "tests/PUMS/**.py"
       - ".github/workflows/test_PUMS_download.yml"
-      - "poetry.lock"
-      - "pyproject.toml"
+      # - "poetry.lock"
+      # - "pyproject.toml"
 
 jobs:
   test:

@@ -58,20 +58,20 @@ def calculate_fractions(
         single_fraction.drop(columns=[geo_col], inplace=True)
         if race_crosstab is None:
             columns = [
-                f"{category}-fraction",
-                f"{category}-fraction-SE",
-                f"{category}-fraction-CV",
-                f"{category}-fraction-denom",
+                f"{category}-pct",
+                f"{category}-pct-se",
+                f"{category}-pct-cv",
+                f"{category}-pct-denom",
             ]
         else:
             columns = [
-                f"{category}-{race_crosstab}-fraction",
-                f"{category}-{race_crosstab}-fraction-SE",
-                f"{category}-{race_crosstab}-fraction-CV",
-                f"{category}-{race_crosstab}-fraction-denom",
+                f"{category}-{race_crosstab}-pct",
+                f"{category}-{race_crosstab}-pct-se",
+                f"{category}-{race_crosstab}-pct-cv",
+                f"{category}-{race_crosstab}-pct-denom",
             ]
-            
-        denom = data.groupby(geo_col).sum()[weight_col] 
+
+        denom = data.groupby(geo_col).sum()[weight_col]
         single_fraction["denominator"] = denom
         single_fraction.rename(
             columns={

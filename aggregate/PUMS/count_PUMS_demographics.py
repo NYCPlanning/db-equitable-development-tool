@@ -22,6 +22,9 @@ class PUMSCountDemographics(PUMSCount):
         single_indicator=False,
         geo_col="puma",
     ) -> None:
+        print(
+            f"top of pums count demographics init. indicators denom is {self.indicators_denom}"
+        )
         self.indicators_denom.extend(
             [
                 ("LEP", "over_five_filter"),
@@ -31,15 +34,16 @@ class PUMSCountDemographics(PUMSCount):
         )
         if single_indicator:
             self.indicators_denom = self.indicators_denom[0:1]
-        self.indicators_denom = list(
-            set(self.indicators_denom)
-        )  # To-do: figure out problem and undo hot fix
+        # self.indicators_denom = list(
+        #     set(self.indicators_denom)
+        # )  # To-do: figure out problem and undo hot fix
         self.crosstabs = ["race"]
         self.categories = {}
         self.include_counts = include_counts
         self.include_fractions = include_fractions
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        self.EDDT_category = "demographics"
         PUMSCount.__init__(
             self,
             variable_types=["demographics"],

@@ -23,7 +23,7 @@ accessors = {
         ),
         ("affordable housing construction/preservation", affordable_housing),
         ("change in units", change_in_units),
-    ]
+    ],
 }
 
 

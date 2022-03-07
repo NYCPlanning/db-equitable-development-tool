@@ -1,16 +1,9 @@
-name: Export Category
+name: Export PUMS Aggregated
 
 on:
   push:
-    paths:
-      - ".github/workflows/export_category.yml"
-  workflow_dispatch:
-    inputs:
-      category:
-        description: 'Corresponds to tab of 1572-B data matrix '
-        required: true
-        default: housing_production
-
+   paths:
+      - ".github/workflows/export_PUMS_aggregated.yml"
 
 jobs:
   export:
@@ -19,6 +12,7 @@ jobs:
       AWS_S3_ENDPOINT: ${{ secrets.DO_S3_ENDPOINT }}
       AWS_ACCESS_KEY_ID: ${{ secrets.DO_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SECRET_ACCESS_KEY }}
+      CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
       
     strategy:
       matrix:
@@ -27,7 +21,11 @@ jobs:
           - borough
           - citywide
         category:
-          - housing_production
+          - demographics
+          - economics
+        year:
+          - 2012
+          - 2019
  
     steps:
       - uses: actions/checkout@v2
@@ -52,13 +50,19 @@ jobs:
           pip install poetry
           poetry install      
 
-      - name: dataloading
-        run: ./ingest/data_library/dataloading.sh
+      - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '4.1.2' # The R version to download (if necessary) and use.
+
+      - name: Add dependencies
+        run: |
+          install.packages('survey')
+        shell: Rscript {0}
 
       - name: export
         run: |
-          poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} ${{matrix.category}}
-          ./external_review/export_DO.sh export ${{matrix.geography}} ${{matrix.category}}
+          poetry run python3 -m external_review.external_review_PUMS ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
+          ./external_review/export_DO.sh export_PUMS ${{matrix.category}} ${{matrix.geography}}  ${{matrix.year}}
 
 
 

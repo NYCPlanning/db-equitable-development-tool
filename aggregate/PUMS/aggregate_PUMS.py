@@ -158,19 +158,20 @@ class PUMSAggregator(BaseAggregator):
         self.add_aggregated_data(
             new_var=new_indicator_aggregated,
         )
-        for ct in self.crosstabs:
-            self.add_category(ct)  # To-do: move higher up, maybe to init
-            count_aggregated_ct = calculate_counts(
-                data=subset,
-                variable_col=indicator,
-                rw_cols=self.rw_cols,
-                weight_col=self.weight_col,
-                geo_col=self.geo_col,
-                crosstab=ct,
-                add_MOE=self.add_MOE,
-                keep_SE=self.keep_SE,
-            )
-            self.add_aggregated_data(new_var=count_aggregated_ct)
+        if indicator != "total_pop":  # Refactor from if statement to something better
+            for ct in self.crosstabs:
+                self.add_category(ct)  # To-do: move higher up, maybe to init
+                count_aggregated_ct = calculate_counts(
+                    data=subset,
+                    variable_col=indicator,
+                    rw_cols=self.rw_cols,
+                    weight_col=self.weight_col,
+                    geo_col=self.geo_col,
+                    crosstab=ct,
+                    add_MOE=self.add_MOE,
+                    keep_SE=self.keep_SE,
+                )
+                self.add_aggregated_data(new_var=count_aggregated_ct)
 
     def add_fractions(self, indicator, subset):
         fraction_aggregated = calculate_fractions(
@@ -184,7 +185,7 @@ class PUMSAggregator(BaseAggregator):
             keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(new_var=fraction_aggregated)
-        if not self.household:
+        if not self.household and indicator != "total_pop":  # Refactor out if statement
             for race in self.categories["race"]:
                 records_in_race = subset[subset["race"] == race]
                 if not records_in_race.empty:
@@ -236,10 +237,22 @@ class PUMSAggregator(BaseAggregator):
 
     def order_columns(self):
         """This can be DRY'd out, written quickly to meet deadline"""
-
-        col_order = []
-        for ind_denom in self.indicators_denom:
-            ind = ind_denom[0]
+        inds_to_order = [
+            ind_denom[0]
+            for ind_denom in self.indicators_denom
+            if ind_denom[0] != "total_pop"
+        ]
+        # Don't love hardcoding the beginning of this list, can be refactored
+        col_order = [
+            "total_pop-count",
+            "total_pop-count-cv",
+            "total_pop-count-moe",
+            "total_pop-pct",
+            "total_pop-pct-cv",
+            "total_pop-pct-denom",
+            "total_pop-pct-moe",
+        ]
+        for ind in inds_to_order:
             for ind_category in self.categories[ind]:
                 for measure in ["count", "pct"]:
                     col_order.append(f"{ind_category}-{measure}")

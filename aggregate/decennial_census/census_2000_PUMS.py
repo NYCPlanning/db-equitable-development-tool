@@ -12,7 +12,7 @@ col_new = {
     "a00": "00_anh",
     "b00": "00_bnh",
     "h00": "00_hsp",
-    "o00": "00_onh",
+    #   "o00": "00_onh", No other non hispanic in excel file
     "w00": "00_wnh",
     ### Standardize total pop and popu16 column headers
     "pop": "total_pop",

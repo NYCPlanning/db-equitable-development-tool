@@ -53,8 +53,9 @@ def calculate_fractions(
             by=data[[geo_col]],
             design=survey_design,
             FUN=survey_package.svymean,
-            vartype=base.c("se", "ci", "var", "cv"),
+            vartype=base.c("se", "ci", "var"),
         )
+        variance_measures(single_fraction, add_MOE)
         single_fraction.drop(columns=[geo_col], inplace=True)
         if race_crosstab is None:
             columns = [
@@ -88,8 +89,13 @@ def calculate_fractions(
         all_fractions = all_fractions.merge(
             single_fraction[columns], left_index=True, right_index=True
         )
+        
     all_fractions = variance_measures(all_fractions, add_MOE, keep_SE)
-    return all_fractions
+    # if not keep_SE:
+    #     remove_SE(all_fractions)
+    #     return all_fractions
+    # else: 
+    #     return all_fractions
 
 
 def SE_to_zero_no_respondents(geography):
@@ -98,3 +104,7 @@ def SE_to_zero_no_respondents(geography):
     if not geography.iloc[0]:
         geography.iloc[1:3] = None
     return geography
+
+def remove_SE(df: pd.DataFrame):
+    df.drop(columns=[c for c in df.columns if c[-3:] == "-se"], inplace=True)
+    return df

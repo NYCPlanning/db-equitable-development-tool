@@ -14,6 +14,7 @@ import rpy2.robjects.packages as rpackages
 from rpy2.robjects.vectors import StrVector
 
 from statistical.MOE import variance_measures
+#from statistical.CV import 
 
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
@@ -59,8 +60,12 @@ def calculate_counts(
         by=data[[geo_col, variable_col]],
         design=survey_design,
         FUN=survey_package.svytotal,
-        vartype=base.c("se", "ci", "var", "cv"),
+        vartype=base.c("se", "ci", "var"),
     )
+    print(aggregated)
+    aggregated = variance_measures(aggregated, add_MOE)
+    print(aggregated)
+    """why not have all the calculation done here before moving on to the """
     aggregated.rename(
         columns={"V1": "count", "se": "count-se", "cv": "count-cv"}, inplace=True
     )
@@ -73,7 +78,8 @@ def calculate_counts(
     )
     pivot_table.columns = [f"{var}-{stat}" for stat, var in pivot_table.columns]
     counts_to_zero(pivot_table)
-    pivot_table = variance_measures(pivot_table, add_MOE, keep_SE)
+    if not keep_SE:
+        remove_SE(pivot_table)
     return pivot_table
 
 
@@ -84,3 +90,7 @@ def counts_to_zero(df: pd.DataFrame):
     for c in df.columns:
         if c[-6:] == "-count":
             df[c].replace({np.NaN: 0}, inplace=True)
+
+def remove_SE(df: pd.DataFrame):
+    df.drop(columns=[c for c in df.columns if c[-3:] == "-se"], inplace=True)
+    return df

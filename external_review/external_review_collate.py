@@ -87,7 +87,7 @@ def collate(geography_level, category):
     folder_path = f".staging/{category}"
     if not path.exists(folder_path):
         makedirs(folder_path)
-    final_df.to_csv(f".staging/{category}/{category}_by_{geography_level}.csv")
+    final_df.to_csv(f".staging/{category}/{category}_{geography_level}.csv")
     return final_df
 
 

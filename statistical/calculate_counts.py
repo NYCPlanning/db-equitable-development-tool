@@ -37,7 +37,7 @@ def calculate_counts(
     data["a"] = 1
     data[rw_cols] = data[rw_cols].replace(
         {0: 0.01}
-    ) # this is a fix for replacate weight issue econ aggregator
+    )  # this is a fix for replacate weight issue econ aggregator
 
     if crosstab:
         original_var = variable_col
@@ -62,12 +62,12 @@ def calculate_counts(
         vartype=base.c("se", "ci", "var", "cv"),
     )
     aggregated.rename(
-        columns={"V1": "count", "se": "count-SE", "cv": "count-CV"}, inplace=True
+        columns={"V1": "count", "se": "count-se", "cv": "count-cv"}, inplace=True
     )
 
     pivot_table = pd.pivot_table(
         data=aggregated,
-        values=["count", "count-SE", "count-CV"],
+        values=["count", "count-se", "count-cv"],
         columns=variable_col,
         index=geo_col,
     )

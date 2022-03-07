@@ -19,9 +19,14 @@ logger = create_logger("request_logger", "logs/PUMS-GET.log")
 def make_GET_request(url: str, request_name: str) -> pd.DataFrame:
     start_time = time.perf_counter()
     logger.info(f"GET url for {request_name} is {url}")
-    res = requests.get(url)
+    counter = 0
+    res = None
+    req_limit = 5
+    while (res is None or res.status_code != 200) and counter < req_limit:
+        res = requests.get(url)
+
     if res.status_code != 200:
-        logger.error(f"error in processing request for {request_name}: {res.text}")
+        logger.error(f"{req_limit} attempts made for for {request_name}: {res.text}")
         raise Exception(f"error making GET request for {request_name}: {res.text}")
     end_time = time.perf_counter()
     logger.info(f"this get request took {end_time - start_time} seconds")

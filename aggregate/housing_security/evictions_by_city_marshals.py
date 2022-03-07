@@ -1,5 +1,5 @@
 import pandas as pd
-from utils.assign_PUMA import assign_PUMA_col
+from utils.PUMA_helpers import assign_PUMA_col
 from utils.geocode import geocode_address
 
 

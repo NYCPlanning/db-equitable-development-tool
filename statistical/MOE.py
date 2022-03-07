@@ -19,13 +19,13 @@ def variance_measures(df, add_MOE, keep_SE):
 
 def SE_to_MOE(df):
     for c in df.columns:
-        if "-SE" == c[-3:]:
+        if "-se" == c[-3:]:
             var = c.rsplit("-", 1)[0]
-            df[f"{var}-MOE"] = df[c] * z_score
+            df[f"{var}-moe"] = df[c] * z_score
 
     return df
 
 
 def remove_SE(df: pd.DataFrame):
-    df.drop(columns=[c for c in df.columns if c[-3:] == "-SE"], inplace=True)
+    df.drop(columns=[c for c in df.columns if c[-3:] == "-se"], inplace=True)
     return df

@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import func
 
-from utils.PUMA_helpers import assign_PUMA, puma_to_borough
+from utils.PUMA_helpers import assign_PUMA, clean_PUMAs, puma_to_borough
 
 """To do: make this central module from which all other code is called. Write 
 class method for aggregate step to access.  Class method will return cached data or
@@ -138,6 +138,7 @@ class PUMSData:
         df.drop(columns=["SPORDER"], inplace=True)
 
     def clean_data(self):
+        self.vi_data["puma"] = self.vi_data["puma"].apply(clean_PUMAs)
         self.vi_data["borough"] = self.vi_data.apply(axis=1, func=puma_to_borough)
         self.vi_data["citywide"] = "citywide"
 

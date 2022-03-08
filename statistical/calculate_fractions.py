@@ -12,7 +12,7 @@ import rpy2
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.vectors import DataFrame, StrVector
-from statistical.MOE import variance_measures
+from statistical.variance_measures import variance_measures
 
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
@@ -86,17 +86,17 @@ def calculate_fractions(
             },
             inplace=True,
         )
-        #print(single_fraction)
+        # print(single_fraction)
         single_fraction = single_fraction.apply(
             SE_to_zero_no_respondents, axis=1, result_type="expand"
         )
         all_fractions = all_fractions.merge(
             single_fraction[columns], left_index=True, right_index=True
         )
-        
+
     if not keep_SE:
         remove_SE(all_fractions)
-    
+
     return all_fractions
 
 
@@ -106,6 +106,7 @@ def SE_to_zero_no_respondents(geography):
     if not geography.iloc[0]:
         geography.iloc[1:3] = None
     return geography
+
 
 def remove_SE(df: pd.DataFrame):
     df.drop(columns=[c for c in df.columns if c[-3:] == "-se"], inplace=True)

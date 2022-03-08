@@ -6,22 +6,23 @@ import pandas as pd
 from scipy import stats
 import numpy as np
 
-z_score = stats.norm.ppf(0.95)
+z_score = stats.norm.ppf(0.9)
+
 
 def variance_measures(df, add_MOE):
     if add_MOE:
         df = SE_to_MOE(df)
-    df = add_CV(df) 
+    df = add_CV(df)
     return df
 
 
 def SE_to_MOE(df):
-    df['moe'] = df['se'] * z_score
+    df["moe"] = df["se"] * z_score
     return df
 
-def add_CV(df: pd.DataFrame):    
 
-    df['cv'] = df['se'] / df['V1'] * 100
+def add_CV(df: pd.DataFrame):
 
-    return df 
+    df["cv"] = df["se"] / df["V1"] * 100
 
+    return df

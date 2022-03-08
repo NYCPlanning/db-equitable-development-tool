@@ -3,19 +3,24 @@ import json
 import pandas as pd
 
 
-def calculate_median_LI(PUMS, indicator_name, geo_col):
-    bin_dict = lookup_bins(indicator_name)
+def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
+    bin_dict = lookup_bins(variable_col)
+    if new_col_label == None:
+        new_col_label = variable_col
     final = pd.DataFrame(
-        index=PUMS[geo_col].unique(),
+        index=data[geo_col].unique(),
         columns=[
-            f"{indicator_name}-median",
-            f"{indicator_name}-median-moe",
-            f"{indicator_name}-median-cv",
+            f"{new_col_label}-median",
+            f"{new_col_label}-median-moe",
+            f"{new_col_label}-median-cv",
         ],
     )
-    geo_bin_counts = frequency_per_bin_geo(PUMS, indicator_name, geo_col, bin_dict)
+    geo_bin_counts = frequency_per_bin_geo(data, variable_col, geo_col, bin_dict)
     for puma, bin_counts in geo_bin_counts.groupby(level=0):
-        bin_counts["cum_sum"] = bin_counts.cumsum(axis=0)
+        bin_counts["cum_sum_below"] = (
+            bin_counts.cumsum(axis=0).frequency - bin_counts.frequency
+        )
+        bin_counts = bin_counts.loc[puma]
         final.loc[puma] = calculate(bin_counts=bin_counts, bin_dict=bin_dict)
     return final
 
@@ -28,17 +33,17 @@ def calculate(bin_counts, bin_dict):
     i = 0
     while C < N / 2 and i <= bin_counts.shape[0] - 1:
         # Calculate cumulative frequency until half of all units are accounted for
-        C = bin_counts.iloc[i]["cum_sum"]
         i += 1
-    bin_name = bin_counts.index[i]
+        C = bin_counts.iloc[i]["cum_sum_below"]
     i = i - 1
+    median_bin = bin_counts.index[i]
     if i == 0 or C == 0 or i == bin_counts.shape[0] - 1:
         raise Exception("some corner case")
     else:
         print("Found N/2 bin in middle :>) ")
-        lower_bound_of_median_containing_bin = bin_dict[bin_name][0]
-        cum_sum_lower_bins = bin_counts.iloc[: i - 1].frequency.sum()
-        width_median_containing_bin = bin_dict[bin_name][1] - bin_dict[bin_name][0]
+        lower_bound_of_median_containing_bin = bin_dict[median_bin][0]
+        cum_sum_lower_bins = bin_counts.iloc[i]["cum_sum_below"]
+        width_median_containing_bin = bin_dict[median_bin][1] - bin_dict[median_bin][0]
         frequency_of_median_containing_bin = bin_counts.iloc[i].frequency
         median = lower_bound_of_median_containing_bin + (
             (N / 2) - cum_sum_lower_bins

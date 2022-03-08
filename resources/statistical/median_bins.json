@@ -1,5 +1,5 @@
 {
-    "AGEP": {
+    "age": {
         "design_factor": 1.1,
         "top_coding": true,
         "bottom_coding": true,

@@ -3,32 +3,20 @@ from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
 
 
-def load_decennial_census_00_10_20():
+def load_decennial_census_001020():
     """Load in the xlsx file, fill the missing values with the values from geogtype, rename the columns
     following conventions, drop the duplicate column"""
 
     df = pd.read_excel(
-        "./resources/decennial_census_data/EDDT_Census00-10-20_MUTU.xlsx", skiprows=2
-    )
-    df.GeoID.fillna(df.GeogType, inplace=True)
-
-    df = df.replace(
-        {
-            "GeoID": {
-                "Bronx": "BX",
-                "Brooklyn": "BK",
-                "Manhattan": "MN",
-                "Queens": "QN",
-                "Staten Island": "SI",
-                "NYC": "citywide",
-            }
-        }
+        "./resources/decennial_census_data/EDDT_Census00-10-20_MUTU.xlsx",
+        skiprows=2,
+        dtype={"GeogType": str, "GeoID": str},
     )
 
     df.rename(
         columns={
-            #            "GeogType" ,
-            #            "GeoID",
+            "GeogType": "geo_type",
+            "GeoID": "geo_id",
             "Pop20": "total_pop_20",
             "Pop20P": "total_pop_20_pct",
             "Hsp20": "total_pop_20_hsp",
@@ -68,10 +56,24 @@ def load_decennial_census_00_10_20():
         },
         inplace=True,
     )
+    df.geo_id.fillna(df.geo_type, inplace=True)
 
-    df.drop("GeogType", inplace=True)
+    df = df.replace(
+        {
+            "geo_id": {
+                "Bronx": "BX",
+                "Brooklyn": "BK",
+                "Manhattan": "MN",
+                "Queens": "QN",
+                "Staten Island": "SI",
+                "NYC": "citywide",
+            }
+        }
+    )
 
-    df.set_index("GeoID", inplace=True)
+    df.drop("geo_type", axis=1, inplace=True)
+
+    df.set_index("geo_id", inplace=True)
 
     return df
 
@@ -79,14 +81,14 @@ def load_decennial_census_00_10_20():
 def create_geo_level_df(df):
     """create the dataframes by geography type and export to internal review"""
     df_citywide = (
-        df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})
+        df.loc[["citywide"]].reset_index().rename(columns={"geo_id": "citywide"})
     )
     df_borough = (
         df.loc[["BX", "BK", "MN", "QN", "SI"]]
         .reset_index()
-        .rename(columns={"GeoID": "borough"})
+        .rename(columns={"geo_id": "borough"})
     )
-    df_puma = df.loc[3701:4114].reset_index().rename(columns={"GeoID": "puma"})
+    df_puma = df.loc["3701":"4114"].reset_index().rename(columns={"geo_id": "puma"})
     df_puma["puma"] = df_puma["puma"].apply(func=clean_PUMAs)
     print(
         "Shape of new dataframes - df_citywide{} , df_borough{}, df_puma{}".format(

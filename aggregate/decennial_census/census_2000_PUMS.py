@@ -6,6 +6,9 @@ breakdowns]).
 """
 
 import pandas as pd
+from sqlalchemy import column
+from utils.PUMA_helpers import clean_PUMAs
+from internal_review.set_internal_review_file import set_internal_review_files
 
 col_new = {
     ## Rename the demographic race columns with wiki conventions
@@ -71,13 +74,28 @@ def rename_columns(df):
 
 
 def create_geo_level_df(df):
-    df_citywide = df.loc["citywide"]
-    df_borough = df.loc[["BX", "BK", "MN", "QN", "SI"]]
-    df_puma = df.loc[3701:4114]
+    df_citywide = (
+        df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})
+    )
+    df_borough = (
+        df.loc[["BX", "BK", "MN", "QN", "SI"]]
+        .reset_index()
+        .rename(columns={"GeoID": "borough"})
+    )
+    df_puma = df.loc[3701:4114].reset_index().rename(columns={"GeoID": "puma"})
+    df_puma["puma"] = df_puma["puma"].apply(func=clean_PUMAs)
     print(
-        "Shape of new dataframes - df_citwide{} , df_borough{}, df_puma{}".format(
+        "Shape of new dataframes - df_citywide{} , df_borough{}, df_puma{}".format(
             df_citywide.shape, df_borough.shape, df_puma.shape
         )
+    )
+    set_internal_review_files(
+        [
+            (df_citywide, "demographics_00_PUMS.csv", "citywide"),
+            (df_borough, "demographics_00_PUMS.csv", "borough"),
+            (df_puma, "demographics_00_PUMS.csv", "puma"),
+        ],
+        "demographics",
     )
 
     return df_citywide, df_borough, df_puma

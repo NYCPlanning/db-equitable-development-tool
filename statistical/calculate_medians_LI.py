@@ -1,10 +1,12 @@
 """Calculate medians using linear interpolation"""
 import json
+import numpy as np
 import pandas as pd
 
 
 def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
-    bin_dict = lookup_bins(variable_col)
+    print(f"calculate median LI for {new_col_label}")
+    bin_dict = lookup_metadata(variable_col, "ranges")
     if new_col_label == None:
         new_col_label = variable_col
     final = pd.DataFrame(
@@ -12,7 +14,7 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
         columns=[
             f"{new_col_label}-median",
             f"{new_col_label}-median-moe",
-            f"{new_col_label}-median-cv",
+            # f"{new_col_label}-median-cv",
         ],
     )
     geo_bin_counts = frequency_per_bin_geo(data, variable_col, geo_col, bin_dict)
@@ -21,11 +23,13 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
             bin_counts.cumsum(axis=0).frequency - bin_counts.frequency
         )
         bin_counts = bin_counts.loc[puma]
-        final.loc[puma] = calculate(bin_counts=bin_counts, bin_dict=bin_dict)
+        final.loc[puma] = calculate(
+            bin_counts=bin_counts, bin_dict=bin_dict, indicator_name=variable_col
+        )
     return final
 
 
-def calculate(bin_counts, bin_dict):
+def calculate(bin_counts, bin_dict, indicator_name):
     """Adopted from PFF. We have a different data structure, using a dataframe instead
     of a list."""
     N = bin_counts.frequency.sum()
@@ -48,9 +52,64 @@ def calculate(bin_counts, bin_dict):
         median = lower_bound_of_median_containing_bin + (
             (N / 2) - cum_sum_lower_bins
         ) * (width_median_containing_bin / frequency_of_median_containing_bin)
-    MOE = None
-    CV = None
-    return median, MOE, CV
+    MOE = calculate_MOE(bin_counts, indicator_name, median_bin, bin_dict)
+    return median, MOE
+
+
+def calculate_MOE(bin_counts, indicator_name, median_bin, bin_dict):
+
+    B = bin_counts.frequency.sum()
+    DF = lookup_metadata(indicator_name, "design_factor")
+
+    se_50 = DF * ((93 / (7 * B)) * 2500) ** 0.5
+    p_lower = 50 - se_50
+    p_upper = 50 + se_50
+
+    bin_counts["cum_pct"] = (
+        bin_counts.cumsum(axis=0).frequency / bin_counts.frequency.sum()
+    ) * 100
+
+    # print(f"calculate MOE using bin counts of ")
+    # print(bin_counts)
+
+    # print(f"p lower is {p_lower} and p upper is {p_upper} ")
+    lower_bin_index = [
+        i for i in range(bin_counts.shape[0]) if bin_counts.iloc[i].cum_pct > p_lower
+    ][0]
+    upper_bin_index = [
+        i for i in range(bin_counts.shape[0]) if bin_counts.iloc[i].cum_pct > p_upper
+    ][0]
+
+    lower_boundary = get_CI_boundary(
+        p=p_lower, bin_counts=bin_counts, bin_index=lower_bin_index, bin_dict=bin_dict
+    )
+
+    upper_boundary = get_CI_boundary(
+        p=p_upper, bin_counts=bin_counts, bin_index=upper_bin_index, bin_dict=bin_dict
+    )
+    print(f"upper boundary is {upper_boundary}")
+    print(f"upper boundary is {lower_boundary}")
+    return (upper_boundary - lower_boundary) * 1.645 / 2
+
+
+def get_CI_boundary(p, bin_counts, bin_index, bin_dict):
+    print(f"get CI boundary passed bin index of {bin_index}")
+    boundary_bin = bin_counts.index[bin_index]
+    print(f"so boundary bin is {boundary_bin}")
+
+    A1, A2 = bin_dict[boundary_bin]
+    C1 = bin_counts.iloc[bin_index - 1]["cum_pct"]
+    C2 = bin_counts.iloc[bin_index]["cum_pct"]
+    print(f"calculating bounds with p={p}, A1={A1}, A2={A2}, C1={C2}, C2={C2}  ")
+    return get_bound(p, A1, A2, C1, C2)
+
+
+def get_bound(p, A1, A2, C1, C2):
+    """Straight from PFF"""
+    if ((C2 - C1) + A1) != 0:
+        return (p - C1) * (A2 - A1) / (C2 - C1) + A1
+    else:
+        return np.nan
 
 
 def frequency_per_bin_geo(PUMS: pd.DataFrame, indicator_name, geo_col, bins: dict):
@@ -68,9 +127,9 @@ def frequency_per_bin_geo(PUMS: pd.DataFrame, indicator_name, geo_col, bins: dic
     return gb.rename(columns={"PWGTP": "frequency"})
 
 
-def lookup_bins(indicator_name):
+def lookup_metadata(indicator_name, k):
     with open("resources/statistical/median_bins.json") as f:
         median_bins = json.load(f)
-    dict = median_bins[indicator_name]["ranges"]
+    dict = median_bins[indicator_name][k]
 
     return dict

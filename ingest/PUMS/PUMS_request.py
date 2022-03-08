@@ -24,7 +24,9 @@ def make_GET_request(url: str, request_name: str) -> pd.DataFrame:
     req_limit = 5
     while (res is None or res.status_code != 200) and counter < req_limit:
         res = requests.get(url)
-        counter = +1
+        logger.info(f"making GET request to {url}")
+        logger.info(f"got back {res.status_code}")
+        counter += 1
 
     if res.status_code != 200:
         logger.error(f"{req_limit} attempts made for for {request_name}: {res.text}")

@@ -8,7 +8,7 @@ import numpy as np
 
 z_score = stats.norm.ppf(0.95)
 
-def variance_measures(df, add_MOE, keep_SE):
+def variance_measures(df, add_MOE):
     if add_MOE:
         df = SE_to_MOE(df)
     df = add_CV(df) 

@@ -62,6 +62,7 @@ def calculate_fractions(
                 f"{category}-pct",
                 f"{category}-pct-se",
                 f"{category}-pct-cv",
+                f"{category}-pct-moe",
                 f"{category}-pct-denom",
             ]
         else:
@@ -69,6 +70,7 @@ def calculate_fractions(
                 f"{category}-{race_crosstab}-pct",
                 f"{category}-{race_crosstab}-pct-se",
                 f"{category}-{race_crosstab}-pct-cv",
+                f"{category}-{race_crosstab}-pct-moe",
                 f"{category}-{race_crosstab}-pct-denom",
             ]
 
@@ -79,10 +81,12 @@ def calculate_fractions(
                 "V1": columns[0],
                 "se": columns[1],
                 "cv": columns[2],
-                "denominator": columns[3],
+                "moe": columns[3],
+                "denominator": columns[4],
             },
             inplace=True,
         )
+        #print(single_fraction)
         single_fraction = single_fraction.apply(
             SE_to_zero_no_respondents, axis=1, result_type="expand"
         )
@@ -90,12 +94,10 @@ def calculate_fractions(
             single_fraction[columns], left_index=True, right_index=True
         )
         
-    all_fractions = variance_measures(all_fractions, add_MOE, keep_SE)
-    # if not keep_SE:
-    #     remove_SE(all_fractions)
-    #     return all_fractions
-    # else: 
-    #     return all_fractions
+    if not keep_SE:
+        remove_SE(all_fractions)
+    
+    return all_fractions
 
 
 def SE_to_zero_no_respondents(geography):

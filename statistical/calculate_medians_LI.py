@@ -88,20 +88,15 @@ def calculate_MOE(bin_counts, indicator_name, median_bin, bin_dict):
     upper_boundary = get_CI_boundary(
         p=p_upper, bin_counts=bin_counts, bin_index=upper_bin_index, bin_dict=bin_dict
     )
-    print(f"upper boundary is {upper_boundary}")
-    print(f"upper boundary is {lower_boundary}")
     return (upper_boundary - lower_boundary) * 1.645 / 2
 
 
 def get_CI_boundary(p, bin_counts, bin_index, bin_dict):
-    print(f"get CI boundary passed bin index of {bin_index}")
     boundary_bin = bin_counts.index[bin_index]
-    print(f"so boundary bin is {boundary_bin}")
 
     A1, A2 = bin_dict[boundary_bin]
     C1 = bin_counts.iloc[bin_index - 1]["cum_pct"]
     C2 = bin_counts.iloc[bin_index]["cum_pct"]
-    print(f"calculating bounds with p={p}, A1={A1}, A2={A2}, C1={C2}, C2={C2}  ")
     return get_bound(p, A1, A2, C1, C2)
 
 

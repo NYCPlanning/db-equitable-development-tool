@@ -63,6 +63,7 @@ class PUMSAggregator(BaseAggregator):
         household=False,
         geo_col="puma",
         PUMS: pd.DataFrame = None,
+        include_rw = True
         order_columns=True,  # jank, should come out during refactor
     ) -> None:
         self.limited_PUMA = limited_PUMA
@@ -79,6 +80,7 @@ class PUMSAggregator(BaseAggregator):
                 year=year,
                 requery=requery,
                 household=household,
+                include_rw=include_rw
             )
         else:
             self.PUMS = PUMS

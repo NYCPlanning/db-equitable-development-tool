@@ -34,6 +34,7 @@ class PUMSMedians(PUMSAggregator):
             requery=requery,
             geo_col=geo_col,
             order_columns=False,
+            include_rw=False,
         )
 
     def calculate_add_new_variable(self, ind_denom):

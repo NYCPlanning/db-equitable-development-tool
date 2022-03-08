@@ -23,9 +23,9 @@ col_new = {
     ### Standardize suffix for columns
     "e$": "_est",
     "m$": "_moe",
-    "c$": "_cv",
+    "c$": "_pct_cv",
     "p$": "_pct",
-    "z$": "_zscore",
+    "z$": "_pct_moe",
 }
 
 
@@ -33,6 +33,7 @@ def load_dec_2000_demographic_pop_demo():
     df = pd.read_excel(
         "./resources/decennial_census_data/EDDT_Census2000PUMS.xlsx",
         skiprows=1,
+        dtype={"GeoID": str},
     )
     df = df.replace(
         {
@@ -65,7 +66,7 @@ def remove_duplicate_cols(df):
     return df
 
 
-def rename_columns(df):
+def rename_cols(df):
     """Rename column headers to lower case and pass the dictionary to replace values from Erica's file"""
     df.columns = map(str.lower, df.columns)
     df.columns = df.columns.to_series().replace(col_new, regex=True)
@@ -82,7 +83,7 @@ def create_geo_level_df(df):
         .reset_index()
         .rename(columns={"GeoID": "borough"})
     )
-    df_puma = df.loc[3701:4114].reset_index().rename(columns={"GeoID": "puma"})
+    df_puma = df.loc["3701":"4114"].reset_index().rename(columns={"GeoID": "puma"})
     df_puma["puma"] = df_puma["puma"].apply(func=clean_PUMAs)
     print(
         "Shape of new dataframes - df_citywide{} , df_borough{}, df_puma{}".format(

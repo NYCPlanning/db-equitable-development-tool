@@ -1,7 +1,10 @@
 """Calculate medians using linear interpolation"""
 import json
+from scipy import stats
 import numpy as np
 import pandas as pd
+
+z_score_90 = stats.norm.ppf(0.9)
 
 
 def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
@@ -9,14 +12,7 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
     bin_dict = lookup_metadata(variable_col, "ranges")
     if new_col_label == None:
         new_col_label = variable_col
-    final = pd.DataFrame(
-        index=data[geo_col].unique(),
-        columns=[
-            f"{new_col_label}-median",
-            f"{new_col_label}-median-moe",
-            # f"{new_col_label}-median-cv",
-        ],
-    )
+    final = pd.DataFrame(index=data[geo_col].unique(), columns=["median", "moe"])
     geo_bin_counts = frequency_per_bin_geo(data, variable_col, geo_col, bin_dict)
     for puma, bin_counts in geo_bin_counts.groupby(level=0):
         bin_counts["cum_sum_below"] = (
@@ -26,6 +22,15 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
         final.loc[puma] = calculate(
             bin_counts=bin_counts, bin_dict=bin_dict, indicator_name=variable_col
         )
+    final["cv"] = (final["moe"] / z_score_90) / final["median"] * 100
+    final.rename(
+        columns={
+            "median": f"{new_col_label}-median",
+            "moe": f"{new_col_label}-median-moe",
+            "cv": f"{new_col_label}-median-cv",
+        },
+        inplace=True,
+    )
     return final
 
 
@@ -69,10 +74,6 @@ def calculate_MOE(bin_counts, indicator_name, median_bin, bin_dict):
         bin_counts.cumsum(axis=0).frequency / bin_counts.frequency.sum()
     ) * 100
 
-    # print(f"calculate MOE using bin counts of ")
-    # print(bin_counts)
-
-    # print(f"p lower is {p_lower} and p upper is {p_upper} ")
     lower_bin_index = [
         i for i in range(bin_counts.shape[0]) if bin_counts.iloc[i].cum_pct > p_lower
     ][0]

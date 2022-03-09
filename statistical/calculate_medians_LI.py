@@ -31,6 +31,10 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
         },
         inplace=True,
     )
+    final = final.astype(float)
+    print(final)
+
+    print(final.dtypes)
     return final
 
 

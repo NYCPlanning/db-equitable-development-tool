@@ -22,7 +22,7 @@ jobs:
           - citywide
         category:
           - demographics
-          - economics
+          # - economics
         year:
           - 2012
           - 2019

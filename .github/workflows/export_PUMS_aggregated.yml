@@ -24,8 +24,8 @@ jobs:
           - demographics
           # - economics
         year:
-          - 2012
-          - 2019
+          - "0812"
+          - "1519"
  
     steps:
       - uses: actions/checkout@v2

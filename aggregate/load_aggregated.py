@@ -62,6 +62,6 @@ def initialize_dataframe_geo_index(geography):
     indicies = {
         "puma": get_all_NYC_PUMAs(),
         "borough": get_all_boroughs(),
-        "citywide": "citywide",
+        "citywide": ["citywide"],
     }
     return pd.DataFrame(index=indicies[geography])

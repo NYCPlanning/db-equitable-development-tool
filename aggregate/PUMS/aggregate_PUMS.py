@@ -241,6 +241,7 @@ class PUMSAggregator(BaseAggregator):
     def order_columns(self):
         """This can be DRY'd out, written quickly to meet deadline"""
 
+        # Don't love hardcoding the beginning of this list, can be refactored
         col_order = []
         for ind_denom in self.indicators_denom:
             ind = ind_denom[0]
@@ -263,9 +264,6 @@ class PUMSAggregator(BaseAggregator):
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
         self.aggregated = self.aggregated.reindex(columns=col_order)
 
-    def total_pop_assign(self, person):
-        return "total_pop"
-
     def race_assign(self, person):
         return PUMS_race_assign(person)
 
@@ -273,5 +271,5 @@ class PUMSAggregator(BaseAggregator):
 class PUMSCount(PUMSAggregator):
     """Need some way to introduce total pop indicator here"""
 
-    indicators_denom = [("total_pop",)]
+    indicators_denom = []
     calculation_type = "counts"

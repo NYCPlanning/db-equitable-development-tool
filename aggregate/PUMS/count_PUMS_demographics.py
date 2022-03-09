@@ -10,6 +10,12 @@ class PUMSCountDemographics(PUMSCount):
 
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
 
+    indicators_denom = [
+        ("LEP", "over_five_filter"),
+        ("foreign_born",),
+        ("age_bucket",),
+    ]
+
     def __init__(
         self,
         limited_PUMA=False,
@@ -25,13 +31,7 @@ class PUMSCountDemographics(PUMSCount):
         print(
             f"top of pums count demographics init. indicators denom is {self.indicators_denom}"
         )
-        self.indicators_denom.extend(
-            [
-                ("LEP", "over_five_filter"),
-                ("foreign_born",),
-                ("age_bucket",),
-            ]
-        )
+
         if single_indicator:
             self.indicators_denom = self.indicators_denom[0:1]
         # self.indicators_denom = list(

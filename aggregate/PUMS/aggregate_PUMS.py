@@ -246,21 +246,21 @@ class PUMSAggregator(BaseAggregator):
             ind = ind_denom[0]
             for ind_category in self.categories[ind]:
                 for measure in ["count", "pct"]:
-                    col_order.append(f"{ind_category}-{measure}")
-                    col_order.append(f"{ind_category}-{measure}-cv")
-                    col_order.append(f"{ind_category}-{measure}-moe")
-                col_order.append(f"{ind_category}-pct-denom")
+                    col_order.append(f"{ind_category}_{measure}")
+                    col_order.append(f"{ind_category}_{measure}_cv")
+                    col_order.append(f"{ind_category}_{measure}_moe")
+                col_order.append(f"{ind_category}_pct_denom")
             if not self.household:
                 for ind_category in self.categories[ind]:
                     for race_crosstab in self.categories["race"]:
                         for measure in ["count", "pct"]:
                             column_label_base = (
-                                f"{ind_category}-{race_crosstab}-{measure}"
+                                f"{ind_category}_{race_crosstab}_{measure}"
                             )
                             col_order.append(f"{column_label_base}")
-                            col_order.append(f"{column_label_base}-cv")
-                            col_order.append(f"{column_label_base}-moe")
-                        col_order.append(f"{ind_category}-{race_crosstab}-pct-denom")
+                            col_order.append(f"{column_label_base}_cv")
+                            col_order.append(f"{column_label_base}_moe")
+                        col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
         self.aggregated = self.aggregated.reindex(columns=col_order)
 
     def total_pop_assign(self, person):

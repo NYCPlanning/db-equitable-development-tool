@@ -43,8 +43,8 @@ def calculate_counts(
 
     if crosstab:
         original_var = variable_col
-        variable_col = f"{variable_col}-{crosstab}"
-        data.loc[:, variable_col] = data[original_var] + "-" + data[crosstab]
+        variable_col = f"{variable_col}_{crosstab}"
+        data.loc[:, variable_col] = data[original_var] + "_" + data[crosstab]
         data[variable_col] = data[variable_col].replace({np.NaN: None})
 
     survey_design = survey_package.svrepdesign(
@@ -65,17 +65,17 @@ def calculate_counts(
     )
     aggregated = variance_measures(aggregated, add_MOE)
     aggregated.rename(
-        columns={"V1": "count", "se": "count-se", "cv": "count-cv", "moe": "count-moe"},
+        columns={"V1": "count", "se": "count_se", "cv": "count_cv", "moe": "count_moe"},
         inplace=True,
     )
 
     pivot_table = pd.pivot_table(
         data=aggregated,
-        values=["count", "count-se", "count-cv", "count-moe"],
+        values=["count", "count_se", "count_cv", "count_moe"],
         columns=variable_col,
         index=geo_col,
     )
-    pivot_table.columns = [f"{var}-{stat}" for stat, var in pivot_table.columns]
+    pivot_table.columns = [f"{var}_{stat}" for stat, var in pivot_table.columns]
     counts_to_zero(pivot_table)
     if not keep_SE:
         remove_SE(pivot_table)
@@ -87,10 +87,10 @@ def counts_to_zero(df: pd.DataFrame):
     convert corresponding value from NA to zero. For example there are were no black
     non-hispanic respondents in 3901 with limited english proficiency in 2019"""
     for c in df.columns:
-        if c[-6:] == "-count":
+        if c[-6:] == "_count":
             df[c].replace({np.NaN: 0}, inplace=True)
 
 
 def remove_SE(df: pd.DataFrame):
-    df.drop(columns=[c for c in df.columns if c[-3:] == "-se"], inplace=True)
+    df.drop(columns=[c for c in df.columns if c[-3:] == "_se"], inplace=True)
     return df

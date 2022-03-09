@@ -25,9 +25,9 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
     final["cv"] = (final["moe"] / z_score_90) / final["median"] * 100
     final.rename(
         columns={
-            "median": f"{new_col_label}-median",
-            "moe": f"{new_col_label}-median-moe",
-            "cv": f"{new_col_label}-median-cv",
+            "median": f"{new_col_label}_median",
+            "moe": f"{new_col_label}_median_moe",
+            "cv": f"{new_col_label}_median_cv",
         },
         inplace=True,
     )

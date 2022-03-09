@@ -239,7 +239,7 @@ class PUMSAggregator(BaseAggregator):
 
         # Don't love hardcoding the beginning of this list, can be refactored
         col_order = []
-        for ind_denom in self.ind_denom:
+        for ind_denom in self.indicators_denom:
             ind = ind_denom[0]
             for ind_category in self.categories[ind]:
                 for measure in ["count", "pct"]:

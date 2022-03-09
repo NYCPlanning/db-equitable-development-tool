@@ -1,4 +1,4 @@
-borough,total_pop,total_pop_pct,pop_hsp,pop_hsp_pct,pop_wnh,pop_wnh_pct,pop_bnh,pop_bnh_pct,pop_anh,pop_anh_pct,pop_onh,pop_onh_pct
+borough,pop,pop_pct,pop_hsp,pop_hsp_pct,pop_wnh,pop_wnh_pct,pop_bnh,pop_bnh_pct,pop_anh,pop_anh_pct,pop_onh,pop_onh_pct
 BX,1472654,100,806463,54.8,130796,8.9,419393,28.5,67766,4.6,48236,3.3
 BK,2736074,100,516426,18.9,968427,35.4,729696,26.7,370776,13.6,150749,5.5
 MN,1694251,100,402640,23.8,793294,46.8,199592,11.8,219624,13.0,79101,4.7

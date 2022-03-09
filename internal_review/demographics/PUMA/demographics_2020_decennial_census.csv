@@ -1,4 +1,4 @@
-puma,total_pop,total_pop_pct,pop_hsp,pop_hsp_pct,pop_wnh,pop_wnh_pct,pop_bnh,pop_bnh_pct,pop_anh,pop_anh_pct,pop_onh,pop_onh_pct
+puma,pop,pop_pct,pop_hsp,pop_hsp_pct,pop_wnh,pop_wnh_pct,pop_bnh,pop_bnh_pct,pop_anh,pop_anh_pct,pop_onh,pop_onh_pct
 03701,113700,100,56187,49.4,34285,30.2,13297,11.7,5874,5.2,4057,3.6
 03702,148709,100,39442,26.5,8930,6.0,90173,60.6,3170,2.1,6994,4.7
 03703,123837,100,48297,39.0,31402,25.4,35268,28.5,4856,3.9,4014,3.2

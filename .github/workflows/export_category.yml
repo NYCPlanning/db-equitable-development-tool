@@ -1,4 +1,4 @@
-name: Export Category
+name: Export Category 
 
 on:
   push:
@@ -28,6 +28,7 @@ jobs:
           - citywide
         category:
           - housing_production
+          - quality_of_life
  
     steps:
       - uses: actions/checkout@v2

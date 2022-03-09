@@ -1,17 +1,20 @@
-#from unittest import result
+# from unittest import result
 from unittest import result
 import pandas as pd
 import geopandas as gpd
 import requests
 from internal_review.set_internal_review_file import set_internal_review_files
+from utils.PUMA_helpers import clean_PUMAs
 
-job_type_mapper ={
-    'All': '',
-    'Demolition': 'demo',
-    'New Building': "new",
+job_type_mapper = {
+    "All": "",
+    "Demolition": "demo",
+    "New Building": "new",
     "Alteration_Increase": "alt_increase",
-    "Alteration_Decrease": "alt_decrease"
+    "Alteration_Decrease": "alt_decrease",
 }
+
+
 def load_housing_data():
 
     df = pd.read_csv(
@@ -55,6 +58,8 @@ def load_housing_data():
         puma_cross["2010 Census Bureau FIPS County Code"]
         + puma_cross["2010 Census Tract"]
     )
+    puma_cross["PUMA"] = puma_cross["PUMA"].apply(clean_PUMAs)
+    puma_cross["PUMA"] = puma_cross["PUMA"].apply(clean_PUMAs)
 
     census10_ = census10.merge(puma_cross[["nycct", "PUMA"]], how="left", on="nycct")
 
@@ -66,13 +71,14 @@ def load_housing_data():
         columns={
             "Total Housing Units": "total_units_2010",
             "2010 DCP Borough Code": "borough",
-            "PUMA": "puma"
-            }, inplace=True
+            "PUMA": "puma",
+        },
+        inplace=True,
     )
     census10_.borough = census10_.borough.map(
-            {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
+        {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
     )
-    census10_['citywide'] = "citywide"
+    census10_["citywide"] = "citywide"
     return df, census10_
 
 
@@ -85,26 +91,30 @@ def pivot_and_flatten_index(df, geography):
     )
 
     df_pivot.columns = ["_".join(a) for a in df_pivot.columns.to_flat_index()]
-    
-    df_pivot.rename(columns={
-        'classa_net_': 'classa_net',
-        "pct_": "classa_net_pct",
-        "pct_alt_decrease": "classa_net_alt_decrease_pct",
-        "pct_alt_increase": "classa_net_alt_increase_pct",
-        "pct_demo": "classa_net_demo_pct",
-        "pct_new": "classa_net_new_pct",
+
+    df_pivot.rename(
+        columns={
+            "classa_net_": "classa_net",
+            "pct_": "classa_net_pct",
+            "pct_alt_decrease": "classa_net_alt_decrease_pct",
+            "pct_alt_increase": "classa_net_alt_increase_pct",
+            "pct_demo": "classa_net_demo_pct",
+            "pct_new": "classa_net_new_pct",
         },
-    inplace=True)
+        inplace=True,
+    )
 
     df_pivot.reset_index().set_index(geography, inplace=True)
 
     return df_pivot
+
 
 def NYC_PUMA_geographies():
     res = requests.get(
         "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
     )
     return gpd.GeoDataFrame.from_features(res.json()["features"])
+
 
 def clean_jobs(df):
     # DROP INACTIVATE JOBS ACCRODING TO SAM
@@ -126,19 +136,16 @@ def clean_jobs(df):
 
     df.drop(df.loc[df.job_type == "Alteration"].index, axis=0, inplace=True)
 
-    df['citywide'] = 'citywide'
+    df["citywide"] = "citywide"
     df.rename(columns={"boro": "borough"}, inplace=True)
     puma = NYC_PUMA_geographies()
-    puma = puma[['PUMA', 'geometry']]
-    gdf = gpd.GeoDataFrame(
-        df, geometry=gpd.points_from_xy(df.longitude, df.latitude)
-    )
+    puma = puma[["PUMA", "geometry"]]
+    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
     df = gdf.sjoin(puma, how="left", predicate="within")
-    df.rename(columns={'PUMA': 'puma'}, inplace=True)
+    df.rename(columns={"PUMA": "puma"}, inplace=True)
+    df["puma"] = df["puma"].apply(func=clean_PUMAs)
     df.borough = df.borough.astype(str)
-    df.borough = df.borough.map(
-            {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"}
-    )
+    df.borough = df.borough.map({"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"})
 
     return df
 
@@ -149,27 +156,26 @@ def change_in_units(geography: str, write_to_internal_review=False):
     df, census10 = load_housing_data()
     df = clean_jobs(df)
 
-    #aggregation begins here
-    results = df.groupby(["job_type", geography]).agg({"classa_net": "sum"}).reset_index()
-    all_job_type = df.groupby(geography).agg({"classa_net": "sum", "job_type": "max"}).reset_index()
-    print(all_job_type)
-    all_job_type.job_type = 'All'
+    # aggregation begins here
+    results = (
+        df.groupby(["job_type", geography]).agg({"classa_net": "sum"}).reset_index()
+    )
+    all_job_type = (
+        df.groupby(geography)
+        .agg({"classa_net": "sum", "job_type": "max"})
+        .reset_index()
+    )
+    all_job_type.job_type = "All"
     results = pd.concat([results, all_job_type], axis=0)
 
     # join with 2010 units from census
-    census_units = (
-        census10.groupby(geography)["total_units_2010"]
-            .sum()
-            .reset_index()
-        )
-    results = results.merge(
-        census_units, on=geography, how='left'
-    ) 
+    census_units = census10.groupby(geography)["total_units_2010"].sum().reset_index()
+    results = results.merge(census_units, on=geography, how="left")
 
     results.job_type = results.job_type.map(job_type_mapper)
 
-    results['pct'] = results["classa_net"] / results["total_units_2010"] * 100.0
-    results['pct'] = results['pct'].round(2)
+    results["pct"] = results["classa_net"] / results["total_units_2010"] * 100.0
+    results["pct"] = results["pct"].round(2)
     results = pivot_and_flatten_index(results, geography=geography)
 
     final = pd.concat([results, census_units.set_index(geography)], axis=1)

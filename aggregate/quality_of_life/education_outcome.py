@@ -1,4 +1,3 @@
-from unicodedata import numeric
 import pandas as pd
 
 races = ["ALL", "ASN", "BLK", "HIS", "OTH", "WHT"]

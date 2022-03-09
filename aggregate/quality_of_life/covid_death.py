@@ -1,4 +1,3 @@
-from unicodedata import numeric
 import pandas as pd
 from utils.PUMA_helpers import puma_to_borough
 from internal_review.set_internal_review_file import set_internal_review_files
@@ -51,8 +50,7 @@ def covid_death(geography: str, write_to_internal_review=False):
 
     if write_to_internal_review:
         set_internal_review_files(
-            [(final, "total_covid_death.csv", geography)],
-            category="quality_of_life",
+            [(final, "total_covid_death.csv", geography)], category="quality_of_life"
         )
 
     return final

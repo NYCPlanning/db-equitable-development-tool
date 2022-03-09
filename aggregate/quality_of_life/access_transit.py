@@ -67,7 +67,7 @@ def calculate_access_fraction(data, gb_col, count_col, fraction_col):
 
 
 def load_access_subway_SBS() -> pd.DataFrame:
-    access = pd.read_csv(".library/dcp_access_subway_SBS.csv")
+    access = pd.read_csv(".library/dcp_access_subway_sbs.csv")
     access = remove_state_code_from_PUMA(access)
     access.rename(
         columns={
@@ -85,7 +85,7 @@ def remove_state_code_from_PUMA(access: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_access_ADA_subway() -> pd.DataFrame:
-    access = pd.read_csv(".library/dcp_access_ADA_subway.csv")
+    access = pd.read_csv(".library/dcp_access_ada_subway.csv")
 
     access = remove_state_code_from_PUMA(access)
     access.rename(

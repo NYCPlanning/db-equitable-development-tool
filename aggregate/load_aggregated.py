@@ -53,9 +53,7 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
             aggregator = aggregator_class(limited_PUMA=test_data, geo_col=geography)
             data = aggregator.aggregated
             del aggregator
-        print(data)
         rv = rv.merge(data, left_index=True, right_index=True, how="inner")
-        print(rv)
     return rv
 
 

@@ -112,6 +112,7 @@ class PUMSAggregator(BaseAggregator):
             )
         if order_columns:
             self.order_columns()
+        self.aggregated = self.aggregated.round(2)
         self.cache_flat_csv()
 
     def sort_aggregated_columns_alphabetically(self):

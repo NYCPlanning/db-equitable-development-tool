@@ -1,4 +1,4 @@
-name: Export PUMS Aggregated 
+name: Export PUMS Aggregated
 
 on:
   push:

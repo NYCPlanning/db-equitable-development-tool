@@ -28,14 +28,14 @@ categories = {
 
 def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
     """To do: include households"""
-
+    year_mapper = {"1519": 2019, "0812": 2012}
     setup_directory(".output/")
     rv = initialize_dataframe_geo_index(geography)
     for calculation_type, aggregator_class, household in categories[EDDT_category]:
         cache_fn = PUMS_cache_fn(
             EDDT_category,
             calculation_type=calculation_type,
-            year=year,
+            year=year_mapper[year],
             geography=geography,
             limited_PUMA=test_data,
             by_household=household,

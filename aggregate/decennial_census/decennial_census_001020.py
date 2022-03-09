@@ -1,6 +1,9 @@
+from typing import final
 import pandas as pd
 from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
+
+year_map = {2000: "00", 2010: "10", 2020: "20"}
 
 
 def load_decennial_census_001020() -> pd.DataFrame:
@@ -78,26 +81,20 @@ def load_decennial_census_001020() -> pd.DataFrame:
     return df
 
 
-def create_citywide_level_df_by_year(df):
+def create_citywide_level_df_by_year(df, year):
     """create the dataframes by geography type and year, strip year from columns"""
     df_citywide = (
         df.loc[["citywide"]].reset_index().rename(columns={"geo_id": "citywide"})
     )
     df_citywide.set_index("citywide", inplace=True)
 
-    df_citywide_00 = df_citywide.filter(regex="citywide|00")
-    df_citywide_00.columns = df_citywide_00.columns.str.replace("_00", "")
+    final = df_citywide.filter(regex=f"citywide|{year}")
+    final.columns = final.columns.str.replace(f"_{year}", "")
 
-    df_citywide_10 = df_citywide.filter(regex="citywide|10")
-    df_citywide_10.columns = df_citywide_10.columns.str.replace("_10", "")
-
-    df_citywide_20 = df_citywide.filter(regex="citywide|20")
-    df_citywide_20.columns = df_citywide_20.columns.str.replace("_20", "")
-
-    return df_citywide_00, df_citywide_10, df_citywide_20
+    return final
 
 
-def create_borough_level_df_by_year(df):
+def create_borough_level_df_by_year(df, year):
     """create the dataframes by geography type and year, strip year from columns"""
     df_borough = (
         df.loc[["BX", "BK", "MN", "QN", "SI"]]
@@ -106,77 +103,51 @@ def create_borough_level_df_by_year(df):
     )
     df_borough.set_index("borough", inplace=True)
 
-    df_borough_00 = df_borough.filter(regex="borough|00")
-    df_borough_00.columns = df_borough_00.columns.str.replace("_00", "")
+    final = df_borough.filter(regex=f"borough|{year}")
+    final.columns = final.columns.str.replace(f"_{year}", "")
 
-    df_borough_10 = df_borough.filter(regex="borough|10")
-    df_borough_10.columns = df_borough_10.columns.str.replace("_10", "")
-
-    df_borough_20 = df_borough.filter(regex="borough|20")
-    df_borough_20.columns = df_borough_20.columns.str.replace("_20", "")
-
-    return df_borough_00, df_borough_10, df_borough_20
+    return final
 
 
-def create_puma_level_df_by_year(df):
+def create_puma_level_df_by_year(df, year):
     """create the dataframes by geography type and year, strip year from columns"""
     df_puma = df.loc["3701":"4114"].reset_index().rename(columns={"geo_id": "puma"})
     df_puma["puma"] = df_puma["puma"].apply(func=clean_PUMAs)
     df_puma.set_index("puma", inplace=True)
 
-    df_puma_00 = df_puma.filter(regex="puma|00")
-    df_puma_00.columns = df_puma_00.columns.str.replace("_00", "")
+    final = df_puma.filter(regex=f"puma|{year}")
+    final.columns = final.columns.str.replace(f"_{year}", "")
 
-    df_puma_10 = df_puma.filter(regex="puma|10")
-    df_puma_10.columns = df_puma_10.columns.str.replace("_10", "")
-
-    df_puma_20 = df_puma.filter(regex="puma|20")
-    df_puma_20.columns = df_puma_20.columns.str.replace("_20", "")
-
-    print(
-        "Shape of new dataframes - df_puma_00{} , df_puma_10{}, df_puma_20{}".format(
-            df_puma_00.shape, df_puma_10.shape, df_puma_20.shape
-        )
-    )
-    return df_puma_00, df_puma_10, df_puma_20
+    return final
 
 
 def decennial_census_data(
-    geography: str, write_to_internal_review=False
+    geography: str, year: int, write_to_internal_review=False
 ) -> pd.DataFrame:
     assert geography in ["citywide", "borough", "puma"]
+    assert year in [2000, 2010, 2020]
 
     df = load_decennial_census_001020()
 
-    df_citywide_00, df_citywide_10, df_citywide_20 = create_citywide_level_df_by_year(
-        df
-    )
+    if geography == "citywide":
+        final = create_citywide_level_df_by_year(df, year_map[year])
 
-    df_borough_00, df_borough_10, df_borough_20 = create_borough_level_df_by_year(df)
+    if geography == "borough":
+        final = create_borough_level_df_by_year(df, year_map[year])
 
-    df_puma_00, df_puma_10, df_puma_20 = create_puma_level_df_by_year(df)
+    if geography == "puma":
+        final = create_puma_level_df_by_year(df, year_map[year])
 
     if write_to_internal_review:
         set_internal_review_files(
             data=[
-                (df_citywide_00, "demographics_2000_decennial_census.csv", "citywide"),
-                (df_citywide_10, "demographics_2010_decennial_census.csv", "citywide"),
-                (df_citywide_20, "demographics_2020_decennial_census.csv", "citywide"),
-                (df_borough_00, "demographics_2000_decennial_census.csv", "borough"),
-                (df_borough_10, "demographics_2010_decennial_census.csv", "borough"),
-                (df_borough_20, "demographics_2020_decennial_census.csv", "borough"),
-                (df_puma_00, "demographics_2000_decennial_census.csv", "puma"),
-                (df_puma_10, "demographics_2010_decennial_census.csv", "puma"),
-                (df_puma_20, "demographics_2020_decennial_census.csv", "puma"),
+                (
+                    final,
+                    f"demographics_{year}_decennial_census.csv",
+                    geography,
+                )
             ],
             category="demographics",
         )
 
-    if geography == "citywide":
-        return df_citywide_00, df_citywide_10, df_citywide_20
-
-    if geography == "borough":
-        return df_borough_00, df_borough_10, df_borough_20
-
-    if geography == "puma":
-        return df_puma_00, df_puma_10, df_puma_20
+    return final

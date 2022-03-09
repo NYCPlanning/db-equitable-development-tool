@@ -4,7 +4,7 @@ from scipy import stats
 import numpy as np
 import pandas as pd
 
-z_score_90 = stats.norm.ppf(0.95)
+z_score = stats.norm.ppf(0.95)
 
 
 def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
@@ -22,7 +22,7 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
         final.loc[puma] = calculate(
             bin_counts=bin_counts, bin_dict=bin_dict, indicator_name=variable_col
         )
-    final["cv"] = (final["moe"] / z_score_90) / final["median"] * 100
+    final["cv"] = (final["moe"] / z_score) / final["median"] * 100
     final.rename(
         columns={
             "median": f"{new_col_label}_median",

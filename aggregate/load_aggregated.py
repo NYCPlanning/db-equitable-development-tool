@@ -44,7 +44,8 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
         print(f"looking for aggregated results at {cache_fp}")
         if path.exists(cache_fp):
             print("found cached aggregated data")
-            data = pd.read_csv(cache_fp, index_col=geography)
+            data = pd.read_csv(cache_fp, dtype={geography: str})
+            data = data.set_index(geography)
         else:
             print(
                 f"didn't find cached aggregated data, aggregating with {aggregator_class.__name__}"
@@ -52,7 +53,9 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
             aggregator = aggregator_class(limited_PUMA=test_data, geo_col=geography)
             data = aggregator.aggregated
             del aggregator
-        rv = rv.merge(data, left_index=True, right_index=True)
+        print(data)
+        rv = rv.merge(data, left_index=True, right_index=True, how="inner")
+        print(rv)
     return rv
 
 

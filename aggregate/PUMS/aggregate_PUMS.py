@@ -237,7 +237,6 @@ class PUMSAggregator(BaseAggregator):
     def order_columns(self):
         """This can be DRY'd out, written quickly to meet deadline"""
 
-        # Don't love hardcoding the beginning of this list, can be refactored
         col_order = []
         for ind_denom in self.indicators_denom:
             ind = ind_denom[0]

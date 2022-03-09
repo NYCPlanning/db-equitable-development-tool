@@ -6,7 +6,7 @@ import pandas as pd
 from scipy import stats
 import numpy as np
 
-z_score = stats.norm.ppf(0.9)
+z_score = stats.norm.ppf(0.95)
 
 
 def variance_measures(df, add_MOE):

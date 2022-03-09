@@ -47,6 +47,12 @@ class PUMSData:
         :data: dataframe originally populated with variables
         """
         self.include_rw = include_rw
+        if not include_rw:
+            self.rw_cols = []
+        elif household:
+            self.rw_cols = [f"WGTP{x}" for x in range(1, 81)]
+        else:
+            self.rw_cols = [f"PWGTP{x}" for x in range(1, 81)]
         self.cache_path = self.get_cache_fn(
             variable_types, limited_PUMA, year, include_rw
         )
@@ -141,13 +147,11 @@ class PUMSData:
         self.vi_data["citywide"] = "citywide"
 
         if self.household:
-            rw_cols = [f"WGTP{x}" for x in range(1, 81)]
             self.vi_data["WGTP"] = self.vi_data["WGTP"].astype(int)
-            self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
+            self.vi_data[self.rw_cols] = self.vi_data[self.rw_cols].astype(int)
         else:
-            rw_cols = [f"PWGTP{x}" for x in range(1, 81)]
             self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
-            self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
+            self.vi_data[self.rw_cols] = self.vi_data[self.rw_cols].astype(int)
         cleaner = PUMSCleaner()
         for v in self.variables:
             self.vi_data = cleaner.__getattribute__(v[1])(self.vi_data, v[0])

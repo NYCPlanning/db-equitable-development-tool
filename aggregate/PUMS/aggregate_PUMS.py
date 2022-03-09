@@ -236,14 +236,11 @@ class PUMSAggregator(BaseAggregator):
 
     def order_columns(self):
         """This can be DRY'd out, written quickly to meet deadline"""
-        inds_to_order = [
-            ind_denom[0]
-            for ind_denom in self.indicators_denom
-            if ind_denom[0] != "total_pop"
-        ]
+
         # Don't love hardcoding the beginning of this list, can be refactored
         col_order = []
-        for ind in inds_to_order:
+        for ind_denom in self.ind_denom:
+            ind = ind_denom[0]
             for ind_category in self.categories[ind]:
                 for measure in ["count", "pct"]:
                     col_order.append(f"{ind_category}-{measure}")

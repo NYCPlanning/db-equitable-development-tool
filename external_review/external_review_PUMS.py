@@ -19,7 +19,7 @@ def save_PUMS(
     year,
     test_data: bool = False,
 ):
-    """--test_data will aggregate on only first puma in each borough"""
+    """--test-data will aggregate on only first puma in each borough"""
 
     data = load_aggregated_PUMS(
         EDDT_category=eddt_category,

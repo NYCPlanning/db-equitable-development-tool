@@ -1,4 +1,4 @@
-name: Export PUMS Aggregated
+name: Export PUMS Aggregated 
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
           - citywide
         category:
           - demographics
-          - economics
+          # - economics
         year:
           - 2012
           - 2019

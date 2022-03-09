@@ -21,10 +21,10 @@ class PUMSMedianDemographics(PUMSMedians):
         keep_SE=False,
         geo_col="puma",
     ) -> None:
-        raise Exception("Medians as written in this base class are incorrect")
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
         self.EDDT_category = "demographics"
+        self.categories = {}
         PUMSMedians.__init__(
             self,
             variable_types=["demographics"],

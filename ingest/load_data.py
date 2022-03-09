@@ -29,7 +29,12 @@ def load_PUMS(
     assert correct_wd(), "Code is not being run from root directory"
     setup_directory("data/")
 
-    cache_path = PUMSData.get_cache_fn(variable_types, limited_PUMA, year, include_rw, household)
+    cache_path = PUMSData.get_cache_fn(
+        variable_types=variable_types,
+        limited_PUMA=limited_PUMA,
+        year=year,
+        include_rw=include_rw,
+    )
     if requery or not exists(cache_path):
         logger.info(f"Making get request to generate data sent to {cache_path}")
         ingestor = PUMSData(
@@ -39,6 +44,8 @@ def load_PUMS(
             include_rw=include_rw,
             household=household,
         )
+    else:
+        print(f"reading raw data from cache path {cache_path}")
     PUMS_data = pd.read_pickle(cache_path)
     if return_ingestor:
         rv = ingestor

@@ -141,6 +141,7 @@ logs/
 
 # Local Output
 .output/
+.staging/
 
 #Cached data library datasets
 .library/

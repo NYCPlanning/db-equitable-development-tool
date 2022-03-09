@@ -9,10 +9,20 @@ function export_DO {
     SPACES="spaces/edm-publishing/db-eddt/${category}"
     mc cp .staging/$category/$filename $SPACES/$filename
 
+function export_DO_PUMS {
+    EDDT_category=$1
+    geography=$2
+   
+    year=$3
+    filename="${year}_by_${geography}.csv"
+    SPACES="spaces/edm-publishing/db-eddt/${EDDT_category}/${geography}"
+    mc cp .staging/$EDDT_category/$filename $SPACES/$filename
+
 }
 
 case $1 in
-    export ) export_DO $2 $3
+    export ) export_DO $2 $3 ;;
+    export_PUMS ) export_DO_PUMS $2 $3 $4
 esac
 
 # export_DO housing_production_citywide.csv housing_production

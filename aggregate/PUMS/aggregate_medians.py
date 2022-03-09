@@ -23,6 +23,7 @@ class PUMSMedians(PUMSAggregator):
     ) -> None:
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        self.calculation_type = "medians"
         PUMSAggregator.__init__(
             self,
             variable_types=variable_types,

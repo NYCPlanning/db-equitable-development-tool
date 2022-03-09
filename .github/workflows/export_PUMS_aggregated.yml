@@ -1,0 +1,68 @@
+name: Export PUMS Aggregated
+
+on:
+  push:
+   paths:
+      - ".github/workflows/export_PUMS_aggregated.yml"
+
+jobs:
+  export:
+    runs-on: ubuntu-20.04
+    env:
+      AWS_S3_ENDPOINT: ${{ secrets.DO_S3_ENDPOINT }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.DO_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SECRET_ACCESS_KEY }}
+      CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+      
+    strategy:
+      matrix:
+        geography:
+          - puma
+          - borough
+          - citywide
+        category:
+          - demographics
+          - economics
+        year:
+          - 2012
+          - 2019
+ 
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      
+      - name: install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip python3-distutils
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+          curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
+          chmod +x mc
+          sudo mv ./mc /usr/bin
+          mc config host add spaces $AWS_S3_ENDPOINT $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --api S3v4
+
+      - name: Poetry Install
+        run: |
+          . $HOME/.poetry/env
+          pip install poetry
+          poetry install      
+
+      - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '4.1.2' # The R version to download (if necessary) and use.
+
+      - name: Add dependencies
+        run: |
+          install.packages('survey')
+        shell: Rscript {0}
+
+      - name: export
+        run: |
+          poetry run python3 -m external_review.external_review_PUMS ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
+          ./external_review/export_DO.sh export_PUMS ${{matrix.category}} ${{matrix.geography}}  ${{matrix.year}}
+
+
+

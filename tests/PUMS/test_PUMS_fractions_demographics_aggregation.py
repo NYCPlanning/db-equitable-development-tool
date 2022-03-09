@@ -1,6 +1,9 @@
 """Use process like 
 aggregator.aggregated[[f'{r}-fraction' for r in aggregator.categories['race']]].sum(axis=1)
-should all be close to one for each indicator. categories attribute is dictionary created for this purpose"""
+should all be close to one for each indicator. categories attribute is dictionary created for this purpose
+Note that changes from fraction to pct will break these tests
+
+"""
 
 import pytest
 from tests.util import races
@@ -23,9 +26,9 @@ def test_all_fractions_sum_to_one():
     aggregator = local_loader.count_aggregator
     for ind in aggregator.indicators_denom:
         assert np.isclose(
-            aggregator.aggregated[
-                [f"{r}-fraction" for r in aggregator.categories[ind]]
-            ].sum(axis=1),
+            aggregator.aggregated[[f"{r}-pct" for r in aggregator.categories[ind]]].sum(
+                axis=1
+            ),
             1,
         ).all()
 
@@ -33,8 +36,8 @@ def test_all_fractions_sum_to_one():
 @pytest.mark.test_aggregation
 def test_total_pop_one_no_se():
     aggregator = local_loader.count_aggregator
-    assert (aggregator.aggregated["total_pop-fraction"] == 1).all()
-    assert (aggregator.aggregated["total_pop-fraction-se"] == 0).all()
+    assert (aggregator.aggregated["total_pop-pct"] == 1).all()
+    assert (aggregator.aggregated["total_pop-pct-se"] == 0).all()
 
 
 @pytest.mark.test_aggregation
@@ -43,8 +46,7 @@ def test_crosstabs_sum_to_one():
     for ind, ct in itertools.product(aggregator.indicators_denom, aggregator.crosstabs):
         for ct_category in aggregator.categories[ct]:
             ct_columns = [
-                f"{ind_cat}-{ct_category}-fraction"
-                for ind_cat in aggregator.categories[ind]
+                f"{ind_cat}-{ct_category}-pct" for ind_cat in aggregator.categories[ind]
             ]
             print(aggregator.aggregated[ct_columns])
             print()

@@ -12,7 +12,7 @@ import rpy2
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.vectors import DataFrame, StrVector
-from statistical.MOE import variance_measures
+from statistical.variance_measures import variance_measures
 
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
@@ -53,42 +53,50 @@ def calculate_fractions(
             by=data[[geo_col]],
             design=survey_design,
             FUN=survey_package.svymean,
-            vartype=base.c("se", "ci", "var", "cv"),
+            vartype=base.c("se", "ci", "var"),
         )
+        variance_measures(single_fraction, add_MOE)
         single_fraction.drop(columns=[geo_col], inplace=True)
         if race_crosstab is None:
             columns = [
-                f"{category}-fraction",
-                f"{category}-fraction-SE",
-                f"{category}-fraction-CV",
-                f"{category}-fraction-denom",
+                f"{category}-pct",
+                f"{category}-pct-se",
+                f"{category}-pct-cv",
+                f"{category}-pct-moe",
+                f"{category}-pct-denom",
             ]
         else:
             columns = [
-                f"{category}-{race_crosstab}-fraction",
-                f"{category}-{race_crosstab}-fraction-SE",
-                f"{category}-{race_crosstab}-fraction-CV",
-                f"{category}-{race_crosstab}-fraction-denom",
+                f"{category}-{race_crosstab}-pct",
+                f"{category}-{race_crosstab}-pct-se",
+                f"{category}-{race_crosstab}-pct-cv",
+                f"{category}-{race_crosstab}-pct-moe",
+                f"{category}-{race_crosstab}-pct-denom",
             ]
-            
-        denom = data.groupby(geo_col).sum()[weight_col] 
+
+        denom = data.groupby(geo_col).sum()[weight_col]
         single_fraction["denominator"] = denom
         single_fraction.rename(
             columns={
                 "V1": columns[0],
                 "se": columns[1],
                 "cv": columns[2],
-                "denominator": columns[3],
+                "moe": columns[3],
+                "denominator": columns[4],
             },
             inplace=True,
         )
+        # print(single_fraction)
         single_fraction = single_fraction.apply(
             SE_to_zero_no_respondents, axis=1, result_type="expand"
         )
         all_fractions = all_fractions.merge(
             single_fraction[columns], left_index=True, right_index=True
         )
-    all_fractions = variance_measures(all_fractions, add_MOE, keep_SE)
+
+    if not keep_SE:
+        remove_SE(all_fractions)
+
     return all_fractions
 
 
@@ -98,3 +106,8 @@ def SE_to_zero_no_respondents(geography):
     if not geography.iloc[0]:
         geography.iloc[1:3] = None
     return geography
+
+
+def remove_SE(df: pd.DataFrame):
+    df.drop(columns=[c for c in df.columns if c[-3:] == "-se"], inplace=True)
+    return df

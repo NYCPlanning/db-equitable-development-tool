@@ -15,7 +15,7 @@ from aggregate.PUMS.median_PUMS_demographics import PUMSMedianDemographics
 categories = {
     "demographics": [
         ("counts", PUMSCountDemographics, False),
-        ("medians", PUMSMedianEconomics, False),
+        ("medians", PUMSMedianDemographics, False),
     ],
     "economics": [
         ("counts", PUMSCountEconomics, False),

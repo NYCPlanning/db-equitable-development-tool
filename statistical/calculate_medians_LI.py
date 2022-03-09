@@ -4,7 +4,7 @@ from scipy import stats
 import numpy as np
 import pandas as pd
 
-z_score_90 = stats.norm.ppf(0.9)
+z_score_90 = stats.norm.ppf(0.95)
 
 
 def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
@@ -88,7 +88,7 @@ def calculate_MOE(bin_counts, indicator_name, median_bin, bin_dict):
     upper_boundary = get_CI_boundary(
         p=p_upper, bin_counts=bin_counts, bin_index=upper_bin_index, bin_dict=bin_dict
     )
-    return (upper_boundary - lower_boundary) * 1.645 / 2
+    return (upper_boundary - lower_boundary) * z_score / 2
 
 
 def get_CI_boundary(p, bin_counts, bin_index, bin_dict):

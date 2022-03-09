@@ -9,6 +9,8 @@ from os import path, makedirs
 import typer
 
 from aggregate.load_aggregated import load_aggregated_PUMS
+from aggregate.decennial_census.decennial_census_001020 import decennial_census_data
+from aggregate.decennial_census.census_2000_PUMS import pums_2000
 
 app = typer.Typer()
 
@@ -32,6 +34,25 @@ def save_PUMS(
         makedirs(folder_path)
     data.to_csv(f".staging/{eddt_category}/{str(year)}_by_{geography}.csv")
 
+def save_demographics(
+    eddt_category,
+    geography,
+    year,
+    test_data: bool = False,
+):
 
+    dec_census = decennial_census_data(geography, year)
+
+    if year == 2000:
+        data = pums_2000(geography)
+    else:
+        data = load_aggregated_PUMS(
+            EDDT_category=eddt_category,
+            geography=geography,
+            year=year,
+            test_data=test_data,
+        )
+    pd.concat([dec_census, data], axis=1)
+    
 if __name__ == "__main__":
     typer.run(save_PUMS)

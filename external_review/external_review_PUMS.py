@@ -22,17 +22,18 @@ def save_PUMS(
     year,
     test_data: bool = False,
 ):
-    """--test_data will aggregate on only first puma in each borough"""
-    data = load_aggregated_PUMS(
-        EDDT_category=eddt_category,
-        geography=geography,
-        year=year,
-        test_data=test_data,
-    )
+    """--test_data will aggregate on only first puma in each borough
+    This needs to be updated to handle economics correctly"""
     if eddt_category == "demographics":
         if year == "2000":
-            final = decennial_census_data(geography, decennial_census_data[year])
+            final = decennial_census_data(geography, dec_census_year_mapper[year])
         else:
+            data = load_aggregated_PUMS(
+                EDDT_category=eddt_category,
+                geography=geography,
+                year=year,
+                test_data=test_data,
+            )
             dec_census = decennial_census_data(geography, dec_census_year_mapper[year])
             final = pd.concat([dec_census, data], axis=1)
 

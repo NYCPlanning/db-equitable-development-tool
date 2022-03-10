@@ -24,6 +24,7 @@ jobs:
           - demographics
           # - economics
         year:
+          - "2000"
           - "0812"
           - "1519"
  

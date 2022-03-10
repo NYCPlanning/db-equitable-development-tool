@@ -214,7 +214,7 @@ class PUMSAggregator(BaseAggregator):
         Probably a cleaner way to handle cases where categories have specific order
         """
         if indicator == "age_bucket":
-            self.categories["age_bucket"] = ["PopU16", "P16t64", "P65pl"]
+            self.categories["age_bucket"] = ["popu16", "p16t64", "p65pl"]
         elif indicator == "household_income_bands":
             self.categories["household_income_bands"] = [
                 "ELI",
@@ -247,20 +247,22 @@ class PUMSAggregator(BaseAggregator):
         for ind_denom in self.indicators_denom:
             ind = ind_denom[0]
             for ind_category in self.categories[ind]:
-                for measure in ["count", "pct"]:
-                    col_order.append(f"{ind_category}_{measure}")
-                    col_order.append(f"{ind_category}_{measure}_cv")
-                    col_order.append(f"{ind_category}_{measure}_moe")
+                for measure in ["", "_pct"]:
+                    col_order.append(f"{ind_category}{measure}")
+                    if measure == "count":
+                        col_order.append(f"{ind_category}{measure}_cv")
+                    col_order.append(f"{ind_category}{measure}_moe")
                 col_order.append(f"{ind_category}_pct_denom")
             if not self.household:
                 for ind_category in self.categories[ind]:
                     for race_crosstab in self.categories["race"]:
-                        for measure in ["count", "pct"]:
+                        for measure in ["", "_pct"]:
                             column_label_base = (
-                                f"{ind_category}_{race_crosstab}_{measure}"
+                                f"{ind_category}_{race_crosstab}{measure}"
                             )
                             col_order.append(f"{column_label_base}")
-                            col_order.append(f"{column_label_base}_cv")
+                            if measure == "count":
+                                col_order.append(f"{column_label_base}_cv")
                             col_order.append(f"{column_label_base}_moe")
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
         self.aggregated = self.aggregated.reindex(columns=col_order)

@@ -26,7 +26,7 @@ def health_diabetes(geography: str, write_to_internal_review=False):
     
     final = clean_df[["pct", "lower_pct_moe","upper_pct_moe"]]
     final.columns = ["health_diabetes_" + x for x in final.columns]
-    
+
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "health_diabetes.csv", geography)],
@@ -75,15 +75,16 @@ def load_clean_source_data(indicator: str, geography: str):
     
     if geography == "puma":
         boro = {
-            "1": "BX",
-            "2": "BK",
-            "3": "MN",
+            "2": "BX",
+            "3": "BK",
+            "1": "MN",
             "4": "QN",
             "5": "SI"
         }
         
         df["CD Code"] = df["CD Number"].astype(str).str[0].map(boro) + df["CD Number"].astype(str).str[-2:].astype(int).astype(str)
         df = community_district_to_PUMA(df, CD_col="CD Code")
+        df.drop_duplicates(subset=["puma"], keep="first", inplace=True)
     elif geography == "borough":
         df["borough"] = df["Borough Name"].str.strip().map(boro_mapper)
     else:

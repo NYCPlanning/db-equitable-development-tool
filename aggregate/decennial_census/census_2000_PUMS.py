@@ -75,6 +75,12 @@ def rename_columns(df):
     cols = [col.replace("p16t64", "age_p16t64") for col in cols]
     cols = [col.replace("p65pl", "age_p65pl") for col in cols]
     cols = [col.replace("p5pl", "age_p5pl") for col in cols]
+    cols = [col.replace("_median_anh", "_anh_median") for col in cols]
+    cols = [col.replace("_median_bnh", "_bnh_median") for col in cols]
+    cols = [col.replace("_median_hsp", "_hsp_median") for col in cols]
+    cols = [col.replace("_median_wnh", "_wnh_median") for col in cols]
+
+    print(cols)
 
     df.columns = cols
     return df

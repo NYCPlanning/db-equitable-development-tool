@@ -66,12 +66,15 @@ def rename_columns(df):
     cols = [col.replace("_00e", "") for col in cols]
     # print(cols)
     cols = [col.replace("_00m", "_moe") for col in cols]
-    cols = [col.replace("_00c", "_pct_cv") for col in cols]
+    cols = [col.replace("_00c", "_cv") for col in cols]
     cols = [col.replace("_00p", "_pct") for col in cols]
     cols = [col.replace("_00z", "_pct_moe") for col in cols]
 
     cols = [col.replace("mdage", "age_median") for col in cols]
-    cols = [col.replace("pu16", "popu16") for col in cols]
+    cols = [col.replace("pu16", "age_popu16") for col in cols]
+    cols = [col.replace("p16t64", "age_p16t64") for col in cols]
+    cols = [col.replace("p65pl", "age_p65pl") for col in cols]
+    cols = [col.replace("p5pl", "age_p5pl") for col in cols]
 
     df.columns = cols
     return df

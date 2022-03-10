@@ -72,7 +72,15 @@ def calculate_counts(
         columns=variable_col,
         index=geo_col,
     )
-    pivot_table.columns = [f"{var}_{stat}" for stat, var in pivot_table.columns]
+    label_mapper = {
+        "count": "",
+        "count_se": "_se",
+        "count_cv": "_cv",
+        "count_moe": "_moe",
+    }
+    pivot_table.columns = [
+        f"{var}{label_mapper[stat]}" for stat, var in pivot_table.columns
+    ]
     counts_to_zero(pivot_table)
     if not keep_SE:
         remove_SE(pivot_table)

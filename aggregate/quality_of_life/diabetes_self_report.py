@@ -17,7 +17,7 @@ boro_mapper = {
     "Staten Island": "SI"
 }
 
-def health_diabetes(geography: str):
+def health_diabetes(geography: str, write_to_internal_review=False):
 
     clean_df = load_clean_source_data("diabetes", geography)
 
@@ -26,10 +26,15 @@ def health_diabetes(geography: str):
     
     final = clean_df[["pct", "lower_pct_moe","upper_pct_moe"]]
     final.columns = ["health_diabetes_" + x for x in final.columns]
-
+    
+    if write_to_internal_review:
+        set_internal_review_files(
+            [(final, "health_diabetes.csv", geography)],
+            category="quality_of_life",
+        )
     return final
 
-def health_self_reported(geography: str):
+def health_self_reported(geography: str, write_to_internal_review=False):
 
     clean_df = load_clean_source_data("self_reported", geography)
 
@@ -38,7 +43,12 @@ def health_self_reported(geography: str):
     
     final = clean_df[["pct", "lower_pct_moe","upper_pct_moe"]]
     final.columns = ["health_selfreportedhealth_" + x for x in final.columns]
-    #final clean_df
+
+    if write_to_internal_review:
+        set_internal_review_files(
+            [(final, "health_selfreportedhealth.csv", geography)],
+            category="quality_of_life",
+        )
     return final 
 
 
@@ -63,13 +73,17 @@ def load_clean_source_data(indicator: str, geography: str):
 
     df = pd.read_excel(**read_excel_arg)
     
-    df["borough"] = df["Borough Name"].str.strip().map(boro_mapper)
-
     if geography == "puma":
-        df["borough"] = df["Borough Name"].str.strip().map(boro_mapper)
+        boro = {
+            "1": "BX",
+            "2": "BK",
+            "3": "MN",
+            "4": "QN",
+            "5": "SI"
+        }
         
-        df["CD Code"] = df[] + df["CD Number"].astype(str).str[-2:].astype(int)
-        df = community_district_to_PUMA(df, CD_col="CD Number")
+        df["CD Code"] = df["CD Number"].astype(str).str[0].map(boro) + df["CD Number"].astype(str).str[-2:].astype(int).astype(str)
+        df = community_district_to_PUMA(df, CD_col="CD Code")
     elif geography == "borough":
         df["borough"] = df["Borough Name"].str.strip().map(boro_mapper)
     else:

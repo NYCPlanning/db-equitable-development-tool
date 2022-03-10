@@ -19,7 +19,6 @@ demo_suffix = {
 }
 
 
-
 def load_dec_2000_demographic_pop_demo():
     df = pd.read_excel(
         "./resources/decennial_census_data/EDDT_Census2000PUMS.xlsx",
@@ -63,21 +62,22 @@ def rename_columns(df):
     cols = map(str.lower, df.columns)
     for code, race in demo_suffix.items():
         cols = [col.replace(code, race) for col in cols]
-    #print(cols)
+    # print(cols)
     cols = [col.replace("_00e", "") for col in cols]
-    #print(cols)
+    # print(cols)
     cols = [col.replace("_00m", "_moe") for col in cols]
     cols = [col.replace("_00c", "_pct_cv") for col in cols]
     cols = [col.replace("_00p", "_pct") for col in cols]
     cols = [col.replace("_00z", "_pct_moe") for col in cols]
-    
+
     cols = [col.replace("mdage", "age_median") for col in cols]
     cols = [col.replace("pu16", "popu16") for col in cols]
-    
+
     df.columns = cols
     return df
 
-def census_2000_pums(geography:str, write_to_internal_review=False):
+
+def census_2000_pums(geography: str, write_to_internal_review=False):
 
     df = load_dec_2000_demographic_pop_demo()
 
@@ -87,17 +87,15 @@ def census_2000_pums(geography:str, write_to_internal_review=False):
 
     df = rename_columns(df)
 
-    if geography == 'citywide':
-        final = (
-            df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})
-        )
+    if geography == "citywide":
+        final = df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})
     elif geography == "borough":
         final = (
             df.loc[["BX", "BK", "MN", "QN", "SI"]]
             .reset_index()
             .rename(columns={"GeoID": "borough"})
         )
-    else: 
+    else:
         final = df.loc["3701":"4114"].reset_index().rename(columns={"GeoID": "puma"})
         final["puma"] = final["puma"].apply(func=clean_PUMAs)
 
@@ -107,11 +105,10 @@ def census_2000_pums(geography:str, write_to_internal_review=False):
         set_internal_review_files(
             [
                 (final, "demographics_00_PUMS.csv", geography),
-                #(df_borough, "demographics_00_PUMS.csv", "borough"),
-                #(df_puma, "demographics_00_PUMS.csv", "puma"),
+                # (df_borough, "demographics_00_PUMS.csv", "borough"),
+                # (df_puma, "demographics_00_PUMS.csv", "puma"),
             ],
             "demographics",
         )
 
-
-    return final 
+    return final

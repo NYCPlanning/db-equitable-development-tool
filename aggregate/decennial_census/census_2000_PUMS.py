@@ -21,10 +21,10 @@ demo_suffix = {
 
 
 ### Standardize total pop and popu16 column headers
-standardize_pop = {"pop_00": "pop", "pu16": "popu16", "MdAge": "age_median"}
-
-### Standardize suffix for columns
-stat_suffix = {
+standardize_pop = {
+    "pop_00": "pop",
+    "pu16": "popu16",
+    "MdAge": "age_median",
     "00": "",
     "e$": "_est",
     "m$": "_moe",
@@ -76,7 +76,7 @@ def remove_duplicate_cols(df):
 def rename_cols(df):
     """Rename column headers to lower case and pass the dictionary to replace values from Erica's file"""
     df.columns = map(str.lower, df.columns)
-    df.columns = df.columns.to_series().replace(demo_suffix, regex=True)
+    df.columns = df.columns.to_series().replace(demo_suffix, regex=True).tolist()
 
     # df.columns = df.columms.to_series().replace(standardize_pop, regex=True)
     # df.columns = df.columms.to_series().replace(stat_suffix, regex=True)
@@ -85,13 +85,7 @@ def rename_cols(df):
 
 
 def rename_pop_cols(df):
-    df.columns = df.columns.to_series().replace(standardize_pop, regex=True)
-
-    return df
-
-
-def rename_stat_cols(df):
-    df.columns = df.columms.to_series().replace(stat_suffix, regex=True)
+    df.columns = df.columns.to_series().replace(standardize_pop, regex=True).tolist()
 
     return df
 

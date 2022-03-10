@@ -15,9 +15,7 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
     final = pd.DataFrame(index=data[geo_col].unique(), columns=["median", "moe"])
     geo_bin_counts = frequency_per_bin_geo(data, variable_col, geo_col, bin_dict)
     for puma, bin_counts in geo_bin_counts.groupby(level=0):
-        bin_counts["cum_sum_below"] = (
-            bin_counts.cumsum(axis=0).frequency - bin_counts.frequency
-        )
+        bin_counts["cum_sum"] = bin_counts.cumsum(axis=0).frequency
         bin_counts = bin_counts.loc[puma]
         final.loc[puma] = calculate(
             bin_counts=bin_counts, bin_dict=bin_dict, indicator_name=variable_col
@@ -42,12 +40,18 @@ def calculate(bin_counts, bin_dict, indicator_name):
     i = 0
     while C < N / 2 and i <= bin_counts.shape[0] - 1:
         # Calculate cumulative frequency until half of all units are accounted for
+        print(f"C is {C}")
+        print(f"i is {i}")
         i += 1
-        C = bin_counts.iloc[i]["cum_sum_below"]
+        C = bin_counts.iloc[i - 1]["cum_sum"]
     i = i - 1
     median_bin = bin_counts.index[i]
-    if i == 0 or C == 0 or i == bin_counts.shape[0] - 1:
-        raise Exception("some corner case")
+    if i == 0:  # Always bottom code
+        return bin_dict[median_bin][1]
+    if C == 0:
+        return None
+    if i == bin_counts.shape[0] - 1:
+        return bin_dict[median_bin][0]
     else:
         print("Found N/2 bin in middle :>) ")
         lower_bound_of_median_containing_bin = bin_dict[median_bin][0]

@@ -48,7 +48,7 @@ def save_demographics(
     year,
     test_data: bool = False,
 ):
-
+    """Not used, can deleted if export works"""
     dec_census = decennial_census_data(geography, dec_census_year_mapper[year])
 
     if year == 2002:

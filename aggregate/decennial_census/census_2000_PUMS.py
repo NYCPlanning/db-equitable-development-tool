@@ -6,7 +6,6 @@ breakdowns]).
 """
 
 import pandas as pd
-from sqlalchemy import column
 from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
 
@@ -95,9 +94,28 @@ def rename_stat_cols(df):
 
     return df
 
+def final_col_cleaning(df):
+    cols = df.columns
+    cols = [col.replace("popopu16", "popu16") for col in cols]
+    cols = [col.replace("mo_est", "moe") for col in cols]
+    cols = [col.replace("mdage", "age_median") for col in cols]
+
+    df.columns = cols
+    return df
+
 def census_2000_pums(geography:str):
 
     df = load_dec_2000_demographic_pop_demo()
+
+    df = filter_to_demo_indicators(df)
+
+    df = remove_duplicate_cols(df)
+
+    df = rename_cols(df)
+
+    df = rename_pop_cols(df)
+
+    df = final_col_cleaning(df)
 
     if geography == 'citywide':
         final = (
@@ -115,7 +133,7 @@ def census_2000_pums(geography:str):
 
     return final 
 
-    
+
 def create_geo_level_df(df):
     df_citywide = (
         df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})

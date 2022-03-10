@@ -61,7 +61,7 @@ def calculate_fractions(
             columns = [
                 f"{category}_pct",
                 f"{category}_pct_se",
-                f"{category}_pct_cv",
+                # f"{category}_pct_cv",
                 f"{category}_pct_moe",
                 f"{category}_pct_denom",
             ]
@@ -69,7 +69,7 @@ def calculate_fractions(
             columns = [
                 f"{category}_{race_crosstab}_pct",
                 f"{category}_{race_crosstab}_pct_se",
-                f"{category}_{race_crosstab}_pct_cv",
+                # f"{category}_{race_crosstab}_pct_cv",
                 f"{category}_{race_crosstab}_pct_moe",
                 f"{category}_{race_crosstab}_pct_denom",
             ]
@@ -80,9 +80,9 @@ def calculate_fractions(
             columns={
                 "V1": columns[0],
                 "se": columns[1],
-                "cv": columns[2],
-                "moe": columns[3],
-                "denominator": columns[4],
+                # "cv": columns[2],
+                "moe": columns[2],
+                "denominator": columns[3],
             },
             inplace=True,
         )

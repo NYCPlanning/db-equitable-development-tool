@@ -1,7 +1,9 @@
-name: Export Category
+name: Export Category 
 
 on:
   push:
+    paths:
+      - ".github/workflows/export_category.yml"
   workflow_dispatch:
     inputs:
       category:
@@ -26,6 +28,7 @@ jobs:
           - citywide
         category:
           - housing_production
+          - quality_of_life
  
     steps:
       - uses: actions/checkout@v2

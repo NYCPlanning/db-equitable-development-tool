@@ -2,28 +2,36 @@ import geopandas as gp
 from shapely.geometry import Point
 import pandas as pd
 from numpy import add, nan
-#import usaddress
+import usaddress
 import requests
-#from geosupport import Geosupport, GeosupportError
+from geosupport import Geosupport, GeosupportError
 from ingest.ingestion_helpers import add_leading_zero_PUMA
-#from utils.geocode import from_eviction_address
+from utils.geocode import from_eviction_address
 import re
 
-#geocode_functions = {"from_eviction_address": from_eviction_address}
+geocode_functions = {"from_eviction_address": from_eviction_address}
 
 borough_code_mapper = {
-    37: "BX",
-    38: "MN",
-    39: "SI",
-    40: "BK",
-    41: "QN",
+    "037": "BX",
+    "038": "MN",
+    "039": "SI",
+    "040": "BK",
+    "041": "QN",
+}
+
+borough_name_mapper = {
+    "Bronx": "BX",
+    "Brooklyn": "BK",
+    "Manhattan": "MN",
+    "Queens": "QN",
+    "Staten Island": "SI",
 }
 
 
 def puma_to_borough(record):
 
-    borough_code_str = record.puma[:2]
-    borough_code = int(borough_code_str)
+    borough_code = record.puma[:3]
+
     borough = borough_code_mapper[borough_code]
     return borough
 
@@ -36,6 +44,7 @@ def NYC_PUMA_geographies() -> gp.GeoDataFrame:
         "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
     )
     gdf = gp.GeoDataFrame.from_features(res.json()["features"])
+    gdf = gdf.set_crs(res.json()["crs"]["properties"]["name"])
     gdf.rename(columns={"PUMA": "puma"}, inplace=True)
     gdf = add_leading_zero_PUMA(gdf)
     return gdf
@@ -94,6 +103,35 @@ def community_district_to_PUMA(df, CD_col):
         for cd_num in re.findall(r"\d+", row["CD"]):
             cd_code = row["CD"][:2] + cd_num
             mapper[cd_code] = row["PUMACode"]
-    print(mapper)
+
     df["puma"] = df[CD_col].replace(mapper)
     return df
+
+
+def get_all_NYC_PUMAs():
+    """Adopted from code in PUMS_query_manager"""
+    geo_ids = [
+        range(4001, 4019),  # Brooklyn
+        range(3701, 3711),  # Bronx
+        range(4101, 4115),  # Queens
+        range(3901, 3904),  # Staten Island
+        range(3801, 3811),  # Manhattan
+    ]
+    rv = []
+    for borough in geo_ids:
+        rv.extend(["0" + str(PUMA) for PUMA in borough])
+    return rv
+
+
+def get_all_boroughs():
+    return ["BK", "BX", "MN", "QN", "SI"]
+
+
+def clean_PUMAs(puma) -> pd.DataFrame:
+    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead"""
+    puma = str(puma)
+    if puma[:2] == "36":
+        puma = puma[2:]
+    elif puma[0] != "0":
+        puma = "0" + puma
+    return puma

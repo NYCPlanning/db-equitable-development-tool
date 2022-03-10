@@ -1,9 +1,7 @@
 """Between PUMS aggregator and base classes"""
+from distutils.util import subst_vars
 from aggregate.PUMS.aggregate_PUMS import PUMSAggregator
-from statistical.calculate_medians import (
-    calculate_median,
-    calculate_median_with_crosstab,
-)
+from statistical.calculate_medians_LI import calculate_median_LI
 
 
 class PUMSMedians(PUMSAggregator):
@@ -23,6 +21,7 @@ class PUMSMedians(PUMSAggregator):
     ) -> None:
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        self.calculation_type = "medians"
         PUMSAggregator.__init__(
             self,
             variable_types=variable_types,
@@ -30,6 +29,8 @@ class PUMSMedians(PUMSAggregator):
             year=year,
             requery=requery,
             geo_col=geo_col,
+            order_columns=False,
+            include_rw=False,
         )
 
     def calculate_add_new_variable(self, ind_denom):
@@ -38,27 +39,21 @@ class PUMSMedians(PUMSAggregator):
         self.assign_indicator(indicator)
         subset = self.apply_denominator(ind_denom)
 
-        new_indicator_aggregated = calculate_median(
-            data=subset,
+        new_indicator_aggregated = calculate_median_LI(
+            data=subset.copy(),
             variable_col=indicator,
-            rw_cols=self.rw_cols,
-            weight_col=self.weight_col,
             geo_col=self.geo_col,
-            add_MOE=self.add_MOE,
-            keep_SE=self.keep_SE,
         )
         self.add_aggregated_data(new_indicator_aggregated)
 
-        for crosstab in self.crosstabs:
-            self.assign_indicator(crosstab)
-            new_indicator_aggregated_with_crosstab = calculate_median_with_crosstab(
-                self.PUMS,
-                indicator,
-                crosstab,
-                self.rw_cols,
-                self.weight_col,
-                self.geo_col,
-                add_MOE=self.add_MOE,
-                keep_SE=self.keep_SE,
-            )
-            self.add_aggregated_data(new_indicator_aggregated_with_crosstab)
+        for race in self.categories["race"]:
+            records_in_race = subset[subset["race"] == race]
+            new_col_label = f"{indicator}-{race}"
+            if not records_in_race.empty:
+                median_aggregated_crosstab = calculate_median_LI(
+                    data=records_in_race.copy(),
+                    variable_col=indicator,
+                    geo_col=self.geo_col,
+                    new_col_label=new_col_label,
+                )
+            self.add_aggregated_data(median_aggregated_crosstab)

@@ -23,6 +23,8 @@ class PUMSMedianDemographics(PUMSMedians):
     ) -> None:
         self.add_MOE = add_MOE
         self.keep_SE = keep_SE
+        self.EDDT_category = "demographics"
+        self.categories = {}
         PUMSMedians.__init__(
             self,
             variable_types=["demographics"],

@@ -97,10 +97,14 @@ def generate_urls(base: str, geos: List, variable_queries: List, year: int):
         region_urls = []
         for geo_ids in geos:
             if year == 2019:
-                region_urls.append(f"{base}{query}&ucgid={geo_ids}")
+                region_urls.append(f"{base}{query}&ucgid={geo_ids}&key={api_key}")
             if year == 2012:
-                region_urls.append(f"{base}{query}&ucgid=0400000US36&PUMA00={geo_ids}")
-                region_urls.append(f"{base}{query}&ucgid=0400000US36&PUMA10={geo_ids}")
+                region_urls.append(
+                    f"{base}{query}&ucgid=0400000US36&PUMA00={geo_ids}&key={api_key}"
+                )
+                region_urls.append(
+                    f"{base}{query}&ucgid=0400000US36&PUMA10={geo_ids}&key={api_key}"
+                )
 
         rv[k] = region_urls
     return rv

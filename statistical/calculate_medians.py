@@ -13,7 +13,7 @@ from rpy2.robjects.vectors import StrVector
 survey_package = rpackages.importr("survey")
 base = rpackages.importr("base")
 
-from statistical.MOE import variance_measures
+from statistical.variance_measures import variance_measures
 
 from rpy2.robjects import r, pandas2ri
 
@@ -51,8 +51,8 @@ def calculate_median(
     )
     columns = [
         f"{variable_col}-median",
-        f"{variable_col}-median-SE",
-        f"{variable_col}-median-CV",
+        f"{variable_col}-median-se",
+        f"{variable_col}-median-cv",
     ]
     aggregated.rename(
         columns={
@@ -98,8 +98,8 @@ def calculate_median_with_crosstab(
         data_point_label = variable_col
 
     median_col_name = f"{data_point_label}-median"
-    se_col_name = f"{data_point_label}-median-SE"
-    cv_col_name = f"{data_point_label}-median-CV"
+    se_col_name = f"{data_point_label}-median-se"
+    cv_col_name = f"{data_point_label}-median-cv"
     aggregated.rename(
         columns={
             variable_col: median_col_name,

@@ -1,9 +1,8 @@
 from typing import List
 import pandas as pd
 import numpy as np
-from sqlalchemy import func
 
-from utils.assign_PUMA import assign_PUMA, puma_to_borough
+from utils.PUMA_helpers import assign_PUMA, clean_PUMAs, puma_to_borough
 
 """To do: make this central module from which all other code is called. Write 
 class method for aggregate step to access.  Class method will return cached data or
@@ -48,8 +47,14 @@ class PUMSData:
         :data: dataframe originally populated with variables
         """
         self.include_rw = include_rw
+        if not include_rw:
+            self.rw_cols = []
+        elif household:
+            self.rw_cols = [f"WGTP{x}" for x in range(1, 81)]
+        else:
+            self.rw_cols = [f"PWGTP{x}" for x in range(1, 81)]
         self.cache_path = self.get_cache_fn(
-            variable_types, limited_PUMA, year, include_rw, household
+            variable_types, limited_PUMA, year, include_rw
         )
         self.variables = variables_for_processing(variable_types=variable_types)
         self.limited_PUMA = limited_PUMA
@@ -70,13 +75,12 @@ class PUMSData:
         self.download_and_cache()
 
     @classmethod
-    def get_cache_fn(self, variable_types, limited_PUMA, year, include_rw, household):
+    def get_cache_fn(self, variable_types, limited_PUMA, year, include_rw):
         return make_PUMS_cache_fn(
             variable_types=variable_types,
             limited_PUMA=limited_PUMA,
             year=year,
             include_rw=include_rw,
-            household=household,
         )
 
     def populate_dataframes(self):
@@ -138,17 +142,16 @@ class PUMSData:
         df.drop(columns=["SPORDER"], inplace=True)
 
     def clean_data(self):
+        self.vi_data["puma"] = self.vi_data["puma"].apply(clean_PUMAs)
         self.vi_data["borough"] = self.vi_data.apply(axis=1, func=puma_to_borough)
         self.vi_data["citywide"] = "citywide"
 
         if self.household:
-            rw_cols = [f"WGTP{x}" for x in range(1, 81)]
             self.vi_data["WGTP"] = self.vi_data["WGTP"].astype(int)
-            self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
+            self.vi_data[self.rw_cols] = self.vi_data[self.rw_cols].astype(int)
         else:
-            rw_cols = [f"PWGTP{x}" for x in range(1, 81)]
             self.vi_data["PWGTP"] = self.vi_data["PWGTP"].astype(int)
-            self.vi_data[rw_cols] = self.vi_data[rw_cols].astype(int)
+            self.vi_data[self.rw_cols] = self.vi_data[self.rw_cols].astype(int)
         cleaner = PUMSCleaner()
         for v in self.variables:
             self.vi_data = cleaner.__getattribute__(v[1])(self.vi_data, v[0])

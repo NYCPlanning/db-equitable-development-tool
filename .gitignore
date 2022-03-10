@@ -141,9 +141,13 @@ logs/
 
 # Local Output
 .output/
+.staging/
 
 #Cached data library datasets
 .library/
+
+# Files to be uploaded to DO
+.staging/
 
 #
 .vscode/

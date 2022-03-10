@@ -80,8 +80,6 @@ def rename_columns(df):
     cols = [col.replace("_median_hsp", "_hsp_median") for col in cols]
     cols = [col.replace("_median_wnh", "_wnh_median") for col in cols]
 
-    print(cols)
-
     df.columns = cols
     return df
 

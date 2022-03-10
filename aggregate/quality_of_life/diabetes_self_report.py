@@ -24,7 +24,7 @@ def health_diabetes(geography: str, write_to_internal_review=False):
     clean_df["lower_pct_moe"] = clean_df["Lower 95% CI"] - clean_df["pct"]
     clean_df["upper_pct_moe"] = clean_df["Upper 95% CI"] - clean_df["pct"]
     
-    final = clean_df[["pct", "lower_pct_moe","upper_pct_moe"]]
+    final = clean_df[["pct", "lower_pct_moe","upper_pct_moe"]].round(2)
     final.columns = ["health_diabetes_" + x for x in final.columns]
 
     if write_to_internal_review:
@@ -41,7 +41,7 @@ def health_self_reported(geography: str, write_to_internal_review=False):
     clean_df["lower_pct_moe"] = clean_df["Lower 95% CI"] - clean_df["pct"]
     clean_df["upper_pct_moe"] = clean_df["Upper 95% CI"] - clean_df["pct"]
     
-    final = clean_df[["pct", "lower_pct_moe","upper_pct_moe"]]
+    final = clean_df[["pct", "lower_pct_moe","upper_pct_moe"]].round(2)
     final.columns = ["health_selfreportedhealth_" + x for x in final.columns]
 
     if write_to_internal_review:

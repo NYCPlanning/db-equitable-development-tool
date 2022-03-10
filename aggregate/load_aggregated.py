@@ -65,4 +65,7 @@ def initialize_dataframe_geo_index(geography):
         "borough": get_all_boroughs(),
         "citywide": ["citywide"],
     }
-    return pd.DataFrame(index=indicies[geography])
+
+    rv = pd.DataFrame(index=indicies[geography])
+    rv.index.rename(geography, inplace=True)
+    return rv

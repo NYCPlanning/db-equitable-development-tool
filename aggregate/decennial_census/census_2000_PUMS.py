@@ -73,7 +73,27 @@ def rename_cols(df):
 
     return df
 
+def census_2000_pums(geography:str):
 
+    df = load_dec_2000_demographic_pop_demo()
+
+    if geography == 'citywide':
+        final = (
+            df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})
+        )
+    elif geography == "borough":
+        final = (
+            df.loc[["BX", "BK", "MN", "QN", "SI"]]
+            .reset_index()
+            .rename(columns={"GeoID": "borough"})
+        )
+    else: 
+        final = df.loc["3701":"4114"].reset_index().rename(columns={"GeoID": "puma"})
+        final["puma"] = final["puma"].apply(func=clean_PUMAs)
+
+    return final 
+
+    
 def create_geo_level_df(df):
     df_citywide = (
         df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})

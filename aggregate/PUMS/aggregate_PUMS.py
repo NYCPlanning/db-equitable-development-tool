@@ -4,6 +4,7 @@ Reference for applying weights: https://www2.census.gov/programs-surveys/acs/tec
 
 To-do: refactor into two files, PUMS aggregator and PUMS demographic aggregator
 """
+from email.errors import InvalidMultipartContentTransferEncodingDefect
 import os
 import pandas as pd
 import time
@@ -11,7 +12,10 @@ import numpy as np
 from ingest.load_data import load_PUMS
 from statistical.calculate_counts import calculate_counts
 from aggregate.race_assign import PUMS_race_assign
-from aggregate.clean_aggregated import sort_columns
+from aggregate.clean_aggregated import (
+    get_category,
+    order_aggregated_columns,
+)
 from utils.make_logger import create_logger
 from statistical.calculate_fractions import (
     calculate_fractions,
@@ -111,13 +115,14 @@ class PUMSAggregator(BaseAggregator):
                 f"aggregating {ind_denom[0]} took {time.perf_counter()-agg_start}"
             )
         if order_columns:
-            self.order_columns()
+            self.aggregated = order_aggregated_columns(
+                df=self.aggregated,
+                indicators_denom=self.indicators_denom,
+                categories=self.categories,
+                household=self.household,
+            )
         self.aggregated = self.aggregated.round(2)
         self.cache_flat_csv()
-
-    def sort_aggregated_columns_alphabetically(self):
-        """Put each variable next to it's standard error"""
-        self.aggregated = sort_columns(self.aggregated)
 
     def add_aggregated_data(self, new_var: pd.DataFrame):
 
@@ -213,59 +218,9 @@ class PUMSAggregator(BaseAggregator):
         can't thik of what it is right now. Refactor if there is easier way
         Probably a cleaner way to handle cases where categories have specific order
         """
-        if indicator == "age_bucket":
-            self.categories["age_bucket"] = ["age_popu16", "age_p16t64", "age_p65pl"]
-        elif indicator == "household_income_bands":
-            self.categories["household_income_bands"] = [
-                "ELI",
-                "VLI",
-                "LI",
-                "MI",
-                "MIDI",
-                "HI",
-            ]
-        elif indicator == "education":
-            self.categories["education"] = [
-                "Bachelors_or_higher",
-                "Some_college",
-                "high_school_or_equiv",
-                "less_than_hs_or_equiv",
-            ]
-        else:
+        categories = get_category(indicator, self.PUMS)
 
-            categories = list(self.PUMS[indicator].unique())
-            if None in categories:
-                categories.remove(None)
-            categories.sort()
-            self.categories[indicator] = categories
-
-    def order_columns(self):
-        """This can be DRY'd out, written quickly to meet deadline"""
-
-        # Don't love hardcoding the beginning of this list, can be refactored
-        col_order = []
-        for ind_denom in self.indicators_denom:
-            ind = ind_denom[0]
-            for ind_category in self.categories[ind]:
-                for measure in ["", "_pct"]:
-                    col_order.append(f"{ind_category}{measure}")
-                    if measure == "":
-                        col_order.append(f"{ind_category}{measure}_cv")
-                    col_order.append(f"{ind_category}{measure}_moe")
-                col_order.append(f"{ind_category}_pct_denom")
-            if not self.household:
-                for ind_category in self.categories[ind]:
-                    for race_crosstab in self.categories["race"]:
-                        for measure in ["", "_pct"]:
-                            column_label_base = (
-                                f"{ind_category}_{race_crosstab}{measure}"
-                            )
-                            col_order.append(f"{column_label_base}")
-                            if measure == "":
-                                col_order.append(f"{column_label_base}_cv")
-                            col_order.append(f"{column_label_base}_moe")
-                        col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
-        self.aggregated = self.aggregated.reindex(columns=col_order)
+        self.categories[indicator] = categories
 
     def race_assign(self, person):
         return PUMS_race_assign(person)

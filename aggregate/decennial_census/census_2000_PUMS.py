@@ -6,8 +6,10 @@ breakdowns]).
 """
 
 import pandas as pd
+from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
 from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
+from aggregate.clean_aggregated import order_aggregated_columns, get_category
 
 demo_suffix = {
     ## Rename the demographic race columns with wiki conventions
@@ -119,6 +121,25 @@ def census_2000_pums(geography: str, write_to_internal_review=False):
         )
 
     # Following code should be refactored to something more elegant
-    final = final[[c for c in final.columns if "pop_" not in c]]
+    # final = final[[c for c in final.columns if "pop_" not in c]]
+    final = order_decennial(final)
+    return final
 
+
+def order_decennial(final: pd.DataFrame):
+    """Quick function written up against deadline, can definitely be refactored"""
+    indicators_denom = PUMSCountDemographics.indicators_denom
+    categories = {
+        "LEP": ["lep"],
+        "foreign_born": ["fb"],
+        "age_bucket": get_category("age_bucket"),
+        "race": ["anh", "bnh", "hsp", "onh", "wnh"],  # Refactor to not be hard-coded
+    }
+    final = order_aggregated_columns(
+        df=final,
+        indicators_denom=indicators_denom,
+        categories=categories,
+        household=False,
+        census_PUMS=True,
+    )
     return final

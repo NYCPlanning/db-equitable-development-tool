@@ -119,6 +119,6 @@ def census_2000_pums(geography: str, write_to_internal_review=False):
         )
 
     # Following code should be refactored to something more elegant
-    final = final[[c for c in final.columns if "pop" not in c]]
+    final = final[[c for c in final.columns if "pop_" not in c]]
 
     return final

@@ -17,7 +17,7 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
     for puma, bin_counts in geo_bin_counts.groupby(level=0):
         bin_counts["cum_sum"] = bin_counts.cumsum(axis=0).frequency
         bin_counts = bin_counts.loc[puma]
-        final.loc[puma] = calculate(
+        final.loc[puma] = bins_to_medians_MOE(
             bin_counts=bin_counts, bin_dict=bin_dict, indicator_name=variable_col
         )
     final["cv"] = (final["moe"] / z_score_90) / final["median"] * 100
@@ -32,7 +32,7 @@ def calculate_median_LI(data, variable_col, geo_col, new_col_label=None):
     return final
 
 
-def calculate(bin_counts, bin_dict, indicator_name):
+def bins_to_medians_MOE(bin_counts, bin_dict, indicator_name):
     """Adopted from PFF. We have a different data structure, using a dataframe instead
     of a list."""
     N = bin_counts.frequency.sum()

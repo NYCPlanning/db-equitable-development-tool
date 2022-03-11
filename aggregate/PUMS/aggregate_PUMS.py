@@ -12,7 +12,7 @@ import numpy as np
 from ingest.load_data import load_PUMS
 from statistical.calculate_counts import calculate_counts
 from aggregate.race_assign import PUMS_race_assign
-from aggregate.clean_aggregated import (
+from aggregate.aggregation_helpers import (
     get_category,
     order_aggregated_columns,
 )

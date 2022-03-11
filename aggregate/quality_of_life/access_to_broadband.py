@@ -54,7 +54,7 @@ def access_broadband(geography: str, write_to_internal_review=False):
 
     if write_to_internal_review:
         set_internal_review_files(
-            [(final, "access_broadway.csv", geography)],
+            [(final, "access_broadband.csv", geography)],
             "quality_of_life",
         )
 

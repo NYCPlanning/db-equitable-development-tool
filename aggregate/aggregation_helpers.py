@@ -1,4 +1,5 @@
 import pandas as pd
+from utils.PUMA_helpers import census_races
 
 
 def order_aggregated_columns(
@@ -6,7 +7,6 @@ def order_aggregated_columns(
 ) -> pd.DataFrame:
     """This can be DRY'd out, written quickly to meet deadline"""
 
-    # Don't love hardcoding the beginning of this list, can be refactored
     col_order = []
     for ind_denom in indicators_denom:
         ind = ind_denom[0]
@@ -55,6 +55,8 @@ def get_category(indicator, data=None):
             "high_school_or_equiv",
             "less_than_hs_or_equiv",
         ]
+    elif indicator == "race":
+        return census_races
     else:
         categories = list(data[indicator].unique())
         if None in categories:

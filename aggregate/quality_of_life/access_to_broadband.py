@@ -40,10 +40,8 @@ def access_broadband(geography: str, write_to_internal_review=False):
     clean_df = load_clean_source_data(geography)
 
     if geography == "puma":
-        #clean_df
-        #clean_df["puma"] = clean_PUMAs(clean_df.geog)
-
-        print(clean_df.puma)
+        final = clean_df.loc[clean_df.geog.str[0].isna()].copy()
+        final["puma"] = final.geog.apply(lambda x: "0" + str(x))
     elif geography == "borough":
         clean_df["borough"] = clean_df.geog.map(boro_mapper)
         final = clean_df.loc[~clean_df.borough.isna()].copy()

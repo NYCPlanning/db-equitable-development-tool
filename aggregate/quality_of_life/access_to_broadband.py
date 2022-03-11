@@ -12,8 +12,8 @@ race_suffix = {
 }
 
 ind_mapper = {
-    "hhlds": "access_broadband_households",
-    "comp": "access_broadband_computer",
+    "hhlds": "access_households",
+    "comp": "access_computer",
     "bbint": "access_broadband"
 }
 

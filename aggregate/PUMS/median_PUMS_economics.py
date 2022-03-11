@@ -103,7 +103,12 @@ class PUMSMedianEconomics(PUMSAggregator):
 
     def calculate_add_new_variable(self, ind_denom):
         """Overwrites from parent class. Specific to economic medians as this is the
-        median that is broken out by two crosstabs: race and industry/occupation"""
+        median that is broken out by two crosstabs: race and industry/occupation
+        Using linear interpolation with require a lot of for loops:
+        loop through economic crosstabs of occupation, industry
+        loop through categories within economic crosstab, add to aggregated
+        loop through races within that category, add to aggregated
+        """
         indicator = ind_denom[0]
         self.assign_indicator(indicator)
         subset = self.apply_denominator(ind_denom)

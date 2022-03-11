@@ -1,0 +1,82 @@
+from typing import final
+import pandas as pd
+#from aggregate.quality_of_life.self_reported_health import load_clean_source_data
+from utils.PUMA_helpers import community_district_to_PUMA, clean_PUMAs
+from internal_review.set_internal_review_file import set_internal_review_files
+
+boro_mapper = {
+    "Bronx": "BX",
+    "Brooklyn": "BK",
+    "Manhattan": "MN",
+    "Queens": "QN",
+    "Staten Island": "SI"
+}
+
+race_suffix = {
+    ## Rename the demographic race columns with wiki conventions
+    "_a": "_anh_",
+    "_b": "_bnh_",
+    "_h": "_hsp_",
+    "_w": "_wnh_",
+}
+
+ind_mapper = {
+    "hhlds": "access_broadband_households",
+    "comp": "access_broadband_computer",
+    "bbint": "access_broadband"
+}
+
+_mapper = {
+    "19e": "",
+    "19m": "_moe",
+    "19c": "_cv",
+    "19p": "_pct",
+    "19z": "_pct_moe"
+}
+
+
+def access_broadband(geography: str):
+    
+    clean_df = load_clean_source_data()
+
+
+
+
+    if geography == "puma":
+        #clean_df
+        clean_df["puma"] = clean_PUMAs(clean_df.Geog)
+        print(clean_df)
+    elif geography == "borough":
+        df["borough"] = df.Geog.map(boro_mapper)
+        final = df.loc[df]
+    else:
+        df.loc[df.Geog == "NYC", "Geog"] = "citywide"
+        df_geog = df.loc[df.geo == 'citywide']
+
+    return final 
+
+def load_clean_source_data(geography: str):
+    assert geography in ["citywide", "borough", "puma"]
+
+    read_excel_arg = {
+        'io': "resources/quality_of_life/EDDT_ACS2015-2019.xlsx",  
+        'sheet_name': "ACS15-19",
+        'usecols': "A, NM:QI",
+        "header": 0,
+        "nrows": 63
+    }
+
+    df = pd.read_excel(**read_excel_arg)
+
+    cols = [col.lower() for col in df.columns]
+    for code, race in race_suffix.items():
+        cols = [col.replace(code, race) for col in cols]
+    for code, name in ind_mapper.items():
+        cols = [col.replace(code, name) for col in cols]
+    for code, suffix in :
+
+    df.columns = cols  
+
+    #df_geog.set_index(geography, inplace=True)
+    
+    return df

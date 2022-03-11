@@ -1,15 +1,15 @@
 from typing import final
 import pandas as pd
-from utils.PUMA_helpers import community_district_to_PUMA, clean_PUMAs
+from utils.PUMA_helpers import community_district_to_PUMA, clean_PUMAs,borough_name_mapper
 from internal_review.set_internal_review_file import set_internal_review_files
 
-boro_mapper = {
-    "Bronx": "BX",
-    "Brooklyn": "BK",
-    "Manhattan": "MN",
-    "Queens": "QN",
-    "Staten Island": "SI"
-}
+# boro_mapper = {
+#     "Bronx": "BX",
+#     "Brooklyn": "BK",
+#     "Manhattan": "MN",
+#     "Queens": "QN",
+#     "Staten Island": "SI"
+# }
 
 race_suffix = {
     ## Rename the demographic race columns with wiki conventions
@@ -40,9 +40,9 @@ def access_broadband(geography: str, write_to_internal_review=False):
 
     if geography == "puma":
         final = clean_df.loc[clean_df.geog.str[0].isna()].copy()
-        final["puma"] = final.geog.apply(lambda x: "0" + str(x))
+        final["puma"] = final.geog.apply(func=clean_PUMAs)
     elif geography == "borough":
-        clean_df["borough"] = clean_df.geog.map(boro_mapper)
+        clean_df["borough"] = clean_df.geog.map(borough_name_mapper)
         final = clean_df.loc[~clean_df.borough.isna()].copy()
     else:
         clean_df.loc[clean_df.geog == "NYC", "citywide"] = "citywide"

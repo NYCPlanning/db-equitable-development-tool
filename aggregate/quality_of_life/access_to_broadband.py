@@ -27,31 +27,38 @@ ind_mapper = {
 }
 
 suffix_mapper = {
-    "19e": "",
-    "19m": "_moe",
-    "19c": "_cv",
-    "19p": "_pct",
-    "19z": "_pct_moe"
+    "_19e": "",
+    "_19m": "_moe",
+    "_19c": "_cv",
+    "_19p": "_pct",
+    "_19z": "_pct_moe"
 }
 
 
-def access_broadband(geography: str):
+def access_broadband(geography: str, write_to_internal_review=False):
     
-    clean_df = load_clean_source_data()
-
-
-
+    clean_df = load_clean_source_data(geography)
 
     if geography == "puma":
         #clean_df
-        clean_df["puma"] = clean_PUMAs(clean_df.Geog)
-        print(clean_df)
+        #clean_df["puma"] = clean_PUMAs(clean_df.geog)
+
+        print(clean_df.puma)
     elif geography == "borough":
-        df["borough"] = df.Geog.map(boro_mapper)
-        final = df.loc[df]
+        clean_df["borough"] = clean_df.geog.map(boro_mapper)
+        final = clean_df.loc[~clean_df.borough.isna()].copy()
     else:
-        df.loc[df.Geog == "NYC", "Geog"] = "citywide"
-        df_geog = df.loc[df.geo == 'citywide']
+        clean_df.loc[clean_df.geog == "NYC", "citywide"] = "citywide"
+        final = clean_df.loc[~clean_df.citywide.isna()].copy()
+
+    final.drop(columns=['geog'], inplace=True)
+    final.set_index(geography, inplace=True)
+
+    if write_to_internal_review:
+        set_internal_review_files(
+            [(final, "access_broadway.csv", geography)],
+            "quality_of_life",
+        )
 
     return final 
 
@@ -76,5 +83,5 @@ def load_clean_source_data(geography: str):
     for code, suffix in suffix_mapper.items():
         cols = [col.replace(code, suffix) for col in cols]
     df.columns = cols      
-    
+
     return df

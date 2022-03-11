@@ -1,6 +1,5 @@
 from typing import final
 import pandas as pd
-#from aggregate.quality_of_life.self_reported_health import load_clean_source_data
 from utils.PUMA_helpers import community_district_to_PUMA, clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
 

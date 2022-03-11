@@ -27,6 +27,8 @@ borough_name_mapper = {
     "Staten Island": "SI",
 }
 
+census_races = ["anh", "wnh", "bnh", "onh", "hsp"]
+
 
 def puma_to_borough(record):
 

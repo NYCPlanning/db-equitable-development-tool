@@ -3,14 +3,6 @@ import pandas as pd
 from utils.PUMA_helpers import community_district_to_PUMA, clean_PUMAs,borough_name_mapper
 from internal_review.set_internal_review_file import set_internal_review_files
 
-# boro_mapper = {
-#     "Bronx": "BX",
-#     "Brooklyn": "BK",
-#     "Manhattan": "MN",
-#     "Queens": "QN",
-#     "Staten Island": "SI"
-# }
-
 race_suffix = {
     ## Rename the demographic race columns with wiki conventions
     "_a": "_anh_",

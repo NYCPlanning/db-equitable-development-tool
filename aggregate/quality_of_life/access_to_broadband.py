@@ -26,7 +26,7 @@ ind_mapper = {
     "bbint": "access_broadband"
 }
 
-_mapper = {
+suffix_mapper = {
     "19e": "",
     "19m": "_moe",
     "19c": "_cv",
@@ -73,10 +73,8 @@ def load_clean_source_data(geography: str):
         cols = [col.replace(code, race) for col in cols]
     for code, name in ind_mapper.items():
         cols = [col.replace(code, name) for col in cols]
-    for code, suffix in :
-
-    df.columns = cols  
-
-    #df_geog.set_index(geography, inplace=True)
+    for code, suffix in suffix_mapper.items():
+        cols = [col.replace(code, suffix) for col in cols]
+    df.columns = cols      
     
     return df

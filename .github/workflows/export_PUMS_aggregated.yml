@@ -25,8 +25,8 @@ jobs:
           # - economics
         year:
           - "2000"
-          # - "0812"
-          # - "1519"
+          - "0812"
+          - "1519"
  
     steps:
       - uses: actions/checkout@v2

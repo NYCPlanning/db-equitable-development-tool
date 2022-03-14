@@ -2,6 +2,7 @@ from aggregate.quality_of_life.access_to_broadband import access_broadband
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
 from aggregate.quality_of_life.access_to_open_space import park_access
 from aggregate.quality_of_life.access_transit import access_subway_and_access_ADA
+from aggregate.quality_of_life.access_transit_car import access_to_car
 from aggregate.quality_of_life.covid_death import covid_death
 from aggregate.quality_of_life.diabetes_self_report import (
     health_diabetes,
@@ -34,4 +35,5 @@ accessors = [
     access_broadband,
     health_diabetes,
     health_self_reported,
+    access_to_car,
 ]

@@ -18,6 +18,7 @@ from aggregate.quality_of_life.access_to_broadband import access_broadband
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
 from aggregate.quality_of_life.access_to_open_space import park_access
 from aggregate.quality_of_life.access_transit import access_subway_and_access_ADA
+from aggregate.quality_of_life.access_transit_car import access_to_car
 from aggregate.quality_of_life.covid_death import covid_death
 from aggregate.quality_of_life.diabetes_self_report import (
     health_diabetes,
@@ -52,6 +53,7 @@ accessors = {
         # Category of access to open space
         ("access to open space", park_access),
         # Category of access to transit
+        ("car commute", access_to_car),
         ("access to transit", access_subway_and_access_ADA),
         # Rate of using car to commute is coming from DCP population
         # Category  of educational outcomes

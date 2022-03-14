@@ -44,6 +44,7 @@ def save_PUMS(
     if not path.exists(folder_path):
         makedirs(folder_path)
     final.to_csv(f".staging/{eddt_category}_{str(year)}_{geography}.csv")
+    return final
 
 
 def save_demographics(

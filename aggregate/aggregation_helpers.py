@@ -33,7 +33,20 @@ def order_aggregated_columns(
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
                     if census_PUMS and ind == "LEP":
                         col_order.append(f"age_p5pl_{race_crosstab}")
+
+    if census_PUMS:
+        col_order.extend(median_age_col_order())
     return df.reindex(columns=col_order)
+
+
+def median_age_col_order():
+    """Order median age columns. The calculate_median_LI.py code does this ordering
+    automatically but data coming from others sources needs to be ordered this way"""
+    col_order = []
+    for crosstab in [""] + [f"_{r}" for r in census_races]:
+        for measure in ["", "_moe", "_cv"]:
+            col_order.append(f"age{crosstab}_median{measure}")
+    return col_order
 
 
 def get_category(indicator, data=None):

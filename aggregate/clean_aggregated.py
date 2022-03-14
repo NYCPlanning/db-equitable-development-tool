@@ -23,3 +23,17 @@ def order_PUMS_QOL(categories, measures) -> List:
                 rv.append(f"{c}_{r}{m}")
 
     return rv
+
+
+def order_PUMS_QOL_multiple_years(categories, measures, years):
+    rv = []
+    for y in years:
+        for c in categories:
+            for m in measures:
+                rv.append(f"{c}{y}{m}")
+        for c in categories:
+            for r in races:
+                for m in measures:
+                    rv.append(f"{c}_{r}{y}{m}")
+
+    return rv

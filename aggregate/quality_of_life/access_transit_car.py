@@ -1,5 +1,6 @@
-from ntpath import join
 import pandas as pd
+from sqlalchemy import column
+from aggregate.clean_aggregated import order_PUMS_QOL, order_PUMS_QOL_multiple_years
 from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper
 from internal_review.set_internal_review_file import set_internal_review_files
 
@@ -122,7 +123,12 @@ def access_to_car(geography: str, write_to_internal_review=False):
         final["puma"] = final["puma"].apply(func=clean_PUMAs)
 
     final.set_index(geography, inplace=True)
-
+    col_order = order_PUMS_QOL_multiple_years(
+        categories=["access_carcommute", "access_workers16pl"],
+        measures=["", "_moe", "_cv", "_pct", "_pct_moe"],
+        years=["_0812", "_1519"],
+    )
+    final = final.reindex(columns=col_order)
     if write_to_internal_review:
         set_internal_review_files(
             [

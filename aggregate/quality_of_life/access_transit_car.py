@@ -91,7 +91,7 @@ def rename_cols(df):
 
     # Rename data points
     cols = [col.replace("cwcar_", "access_carcommute_") for col in cols]
-    cols = [col.replace("wk16p_", "access_carcommute_workers_") for col in cols]
+    cols = [col.replace("wk16p_", "access_workers16pl_") for col in cols]
 
     # Reorder the columns to follow wiki conventions - TODO: this could be redone
     for code, reorder in reorder_mapper.items():

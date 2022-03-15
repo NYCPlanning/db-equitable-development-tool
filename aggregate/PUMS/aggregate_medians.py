@@ -48,7 +48,7 @@ class PUMSMedians(PUMSAggregator):
 
         for race in self.categories["race"]:
             records_in_race = subset[subset["race"] == race]
-            new_col_label = f"{indicator}-{race}"
+            new_col_label = f"{indicator}_{race}"
             if not records_in_race.empty:
                 median_aggregated_crosstab = calculate_median_LI(
                     data=records_in_race.copy(),

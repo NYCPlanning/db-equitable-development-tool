@@ -3,7 +3,6 @@ from pandas.core.reshape.pivot import crosstab
 from ingest.load_data import load_HVS
 from aggregate.race_assign import HVS_race_assign
 from statistical.calculate_counts import calculate_counts
-from aggregate.clean_aggregated import sort_columns
 from ingest.clean_replicate_weights import rw_cols_clean
 from internal_review.set_internal_review_file import set_internal_review_files
 

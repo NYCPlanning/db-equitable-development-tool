@@ -68,11 +68,11 @@ class PUMSCountDemographics(PUMSCount):
 
     def age_bucket_assign(self, person):
         if person["AGEP"] < 16:
-            return "PopU16"
+            return "age_popu16"
         if person["AGEP"] >= 16 and person["AGEP"] < 65:
-            return "P16t64"
+            return "age_p16t64"
         if person["AGEP"] >= 65:
-            return "P65pl"
+            return "age_p65pl"
 
     def over_five_filter(self, PUMS: pd.DataFrame):
         subset = PUMS[PUMS["AGEP"] >= 5]

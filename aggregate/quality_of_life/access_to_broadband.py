@@ -1,8 +1,6 @@
-from typing import final
 import pandas as pd
 from aggregate.clean_aggregated import order_PUMS_QOL
 from utils.PUMA_helpers import (
-    community_district_to_PUMA,
     clean_PUMAs,
     borough_name_mapper,
 )

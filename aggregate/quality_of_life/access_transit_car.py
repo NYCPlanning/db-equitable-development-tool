@@ -1,5 +1,4 @@
 import pandas as pd
-from sqlalchemy import column
 from aggregate.clean_aggregated import order_PUMS_QOL, order_PUMS_QOL_multiple_years
 from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper
 from internal_review.set_internal_review_file import set_internal_review_files

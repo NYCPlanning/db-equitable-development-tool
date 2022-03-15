@@ -1,4 +1,3 @@
-from distutils.log import error
 import numpy as np
 import pandas as pd
 from utils.CD_helpers import add_CD_code

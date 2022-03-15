@@ -98,7 +98,8 @@ def get_all_boroughs():
 
 
 def clean_PUMAs(puma) -> pd.DataFrame:
-    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead"""
+    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead
+    Possible refactor: apply to dataframe and ensure that re-named column is label \"puma\" """
     puma = str(puma)
     if puma[:2] == "36":
         puma = puma[2:]

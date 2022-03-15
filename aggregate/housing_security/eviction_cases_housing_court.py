@@ -3,7 +3,7 @@ import pandas as pd
 
 def load_filings():
     filings = pd.read_excel(
-        "resources/quality_of_life/eviction_filings.xlsx", skiprows=4, nrows=59
+        "resources/housing_security/eviction_filings.xlsx", skiprows=4, nrows=59
     )
     filings["citywide"] = "citywide"
 

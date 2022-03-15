@@ -2,7 +2,7 @@
 import pandas as pd
 import re
 
-from utils.PUMA_helpers import borough_name_mapper
+from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs
 
 
 def add_CD_code(df):
@@ -29,10 +29,12 @@ def get_CD_puma_crosswalk():
     )
     puma_cross.rename(
         columns={
-            "Community District(PUMAs approximate NYC Community  Districts and are not coterminous)": "CD"
+            "Community District(PUMAs approximate NYC Community  Districts and are not coterminous)": "CD",
+            "PUMACode": "puma",
         },
         inplace=True,
     )
+    puma_cross["puma"] = puma_cross["puma"].apply(clean_PUMAs)
 
     return puma_cross
 
@@ -55,7 +57,7 @@ def community_district_to_PUMA(df, CD_col):
     return df
 
 
-def three_digit_CD_to_puma():
+def three_digit_CD_to_puma(df: pd.DataFrame, CD_col: str) -> pd.DataFrame:
     puma_cross = get_CD_puma_crosswalk()
     puma_cross["borough_abbr"] = puma_cross["borough"].map(borough_name_mapper)
     puma_cross["CD_code"] = puma_cross["CD"].str.extract(r"(\d+)").astype(str)
@@ -63,3 +65,12 @@ def three_digit_CD_to_puma():
         lambda x: "0" + x if len(x) == 1 else x
     )
     puma_cross["CD_code"] = puma_cross["borough_abbr"] + puma_cross["CD_code"]
+
+    df_with_puma = df.merge(
+        puma_cross[["CD_code", "puma"]],
+        left_on=CD_col,
+        right_on="CD_code",
+        how="left",
+    )
+
+    return df_with_puma

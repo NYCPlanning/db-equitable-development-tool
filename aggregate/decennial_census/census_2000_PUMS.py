@@ -54,8 +54,7 @@ def filter_to_demo_indicators(df):
 
 
 def remove_duplicate_cols(df):
-    """Excel spreadsheet has some duplicate columns that Erica used for calculations
-    - keep columns ending with Z for now"""
+    """Excel spreadsheet has some duplicate columns that Erica used for calculations"""
     df = df.drop(df.filter(regex="E.1$|M.1$|C.1$|P.1$|Z.1$").columns, axis=1)
     return df
 

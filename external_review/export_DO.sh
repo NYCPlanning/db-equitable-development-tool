@@ -8,7 +8,7 @@ function export_DO {
     filename="${category}_${geography_level}.csv"
     SPACES="spaces/edm-publishing/db-eddt/${category}"
     mc cp .staging/$category/$filename $SPACES/$filename
-
+}
 function export_DO_PUMS {
     EDDT_category=$1
     geography=$2

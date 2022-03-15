@@ -7,7 +7,7 @@ def load_filings():
     filings = pd.read_excel(
         "resources/housing_security/eviction_filings.xlsx", skiprows=4, nrows=59
     )
-    filings["Community District"] = filings["Comm"]
+    filings["Community District"] = filings["Community District"].astype(str)
     filings["citywide"] = "citywide"
     # filings["puma"] = filings["puma"].apply(clean_PUMAs)
     return filings

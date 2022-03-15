@@ -9,8 +9,12 @@ from os import path, makedirs
 import typer
 
 from aggregate.load_aggregated import load_aggregated_PUMS
+from aggregate.decennial_census.decennial_census_001020 import decennial_census_data
+from aggregate.decennial_census.census_2000_PUMS import census_2000_pums
 
 app = typer.Typer()
+
+dec_census_year_mapper = {"1519": 2020, "0812": 2010, "2000": 2000}
 
 
 def save_PUMS(
@@ -19,18 +23,28 @@ def save_PUMS(
     year,
     test_data: bool = False,
 ):
-    """--test-data will aggregate on only first puma in each borough"""
+    """--test_data will aggregate on only first puma in each borough
+    This needs to be updated to handle economics correctly"""
+    if eddt_category == "demographics":
+        if year == "2000":
+            census_PUMS = census_2000_pums(geography)
+            dec_census = decennial_census_data(geography, dec_census_year_mapper[year])
+            final = dec_census.merge(census_PUMS, left_index=True, right_index=True)
+        else:
+            ACS_PUMS = load_aggregated_PUMS(
+                EDDT_category=eddt_category,
+                geography=geography,
+                year=year,
+                test_data=test_data,
+            )
+            dec_census = decennial_census_data(geography, dec_census_year_mapper[year])
+            final = pd.concat([dec_census, ACS_PUMS], axis=1)
 
-    data = load_aggregated_PUMS(
-        EDDT_category=eddt_category,
-        geography=geography,
-        year=year,
-        test_data=test_data,
-    )
     folder_path = f".staging/{eddt_category}"
     if not path.exists(folder_path):
         makedirs(folder_path)
-    data.to_csv(f".staging/{eddt_category}/{str(year)}_by_{geography}.csv")
+    final.to_csv(f".staging/{eddt_category}_{str(year)}_{geography}.csv")
+    return final
 
 
 if __name__ == "__main__":

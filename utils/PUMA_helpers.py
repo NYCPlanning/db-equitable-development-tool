@@ -7,7 +7,7 @@ import requests
 from geosupport import Geosupport, GeosupportError
 from ingest.ingestion_helpers import add_leading_zero_PUMA
 from utils.geocode import from_eviction_address
-import re
+
 
 geocode_functions = {"from_eviction_address": from_eviction_address}
 
@@ -76,36 +76,6 @@ def PUMA_from_coord(record):
     if matched_PUMA.empty:
         return None
     return matched_PUMA.puma.values[0]
-
-
-def community_district_to_PUMA(df, CD_col):
-    """First two operations to read excel and clean columns are from Te's education pull request.
-    Can be DRY'd out"""
-    puma_cross = pd.read_excel(
-        "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx",
-        sheet_name="NTA in PUMA_",
-        header=6,
-        dtype=str,
-    )
-    puma_cross.columns = puma_cross.columns.str.replace(" \n", "")
-
-    mapper = {}
-
-    puma_cross.rename(
-        columns={
-            "Community District(PUMAs approximate NYC Community  Districts and are not coterminous)": "CD"
-        },
-        inplace=True,
-    )
-    puma_cross.PUMACode = "0" + puma_cross.PUMACode
-
-    for _, row in puma_cross.iterrows():
-        for cd_num in re.findall(r"\d+", row["CD"]):
-            cd_code = row["CD"][:2] + cd_num
-            mapper[cd_code] = row["PUMACode"]
-
-    df["puma"] = df[CD_col].replace(mapper)
-    return df
 
 
 def get_all_NYC_PUMAs():

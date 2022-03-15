@@ -68,7 +68,7 @@ def get_education_outcome(geo: str, internal_review=False) -> pd.DataFrame:
 
     # Read in source and do some cleanning and merging with puma cross walk
     raw_edu_outcome = pd.read_excel(
-        "resources/QOL/NTA_data_prepared_for_ArcMap_wCodebook.xlsx",
+        "resources/quality_of_life/NTA_data_prepared_for_ArcMap_wCodebook.xlsx",
         sheet_name="5_StudentPerformance",
         usecols="A:M,AL:AW,CN:CY",
         header=1,

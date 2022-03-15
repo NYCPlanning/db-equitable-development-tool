@@ -2,8 +2,12 @@ from typing import final
 import pandas as pd
 from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
-from aggregate.aggregation_helpers import order_aggregated_columns, get_category
-
+from aggregate.clean_aggregated import order_PUMS_QOL
+from utils.PUMA_helpers import (
+    community_district_to_PUMA,
+    clean_PUMAs,
+    borough_name_mapper,
+)
 
 = {
     "Af": "units_affordable_",
@@ -30,6 +34,20 @@ def units_affordable_income(
         clean_df.loc[clean_df.geog == "NYC", "citywide"] = "citywide"
         final = clean_df.loc[~clean_df.citywide.isna()].copy()
 
+    final.drop(columns=["geog"], inplace=True)
+    final.set_index(geography, inplace=True)
+
+    col_order = order_PUMS_QOL(
+        categories=[i for _, i in ind_mapper.items()],
+        measures=[i for _, i in suffix_mapper.items()],
+    )
+    final = final.reindex(columns=col_order)
+
+    if write_to_internal_review:
+        set_internal_review_files(
+            [(final, "access_broadband.csv", geography)],
+            "quality_of_life",
+        )
     return final
 
 def load_source_clean_data(

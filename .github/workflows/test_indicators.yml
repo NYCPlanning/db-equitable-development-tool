@@ -1,4 +1,4 @@
-name: Test Indicators 
+name: Test Indicators
 
 on:
   # workflow_dispatch:

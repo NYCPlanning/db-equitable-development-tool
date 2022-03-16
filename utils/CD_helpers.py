@@ -39,38 +39,44 @@ def get_CD_puma_crosswalk():
     return puma_cross
 
 
-def community_district_to_PUMA(df, CD_col):
-    """First two operations to read excel and clean columns are from Te's education pull request.
-    Can be DRY'd out"""
+def community_district_to_PUMA(df, CD_col, CD_abbr_type):
+    """CD_abbr_type refers to how CD is referred to in source data.
+    alpha_borough refers to two letter borough abbreviation plus the
+    community district number(BX01, QN11)
+    numeric_borough refers to borough code (found in crosswalk df) plus the community
+    district number
+    """
+    assert CD_abbr_type in ["alpha_borough", "numeric_borough"]
+
     puma_cross = get_CD_puma_crosswalk()
 
     mapper = {}
 
-    puma_cross.PUMACode = "0" + puma_cross.PUMACode
-
     for _, row in puma_cross.iterrows():
         for cd_num in re.findall(r"\d+", row["CD"]):
-            cd_code = row["CD"][:2] + cd_num
-            mapper[cd_code] = row["PUMACode"]
-
+            if CD_abbr_type == "alpha_borough":
+                cd_code = row["CD"][:2] + cd_num
+            else:
+                cd_code = construct_three_digit_CD_code(row["borough_code"], cd_num)
+            mapper[cd_code] = row.puma
     df["puma"] = df[CD_col].replace(mapper)
     return df
 
 
-def three_digit_CD_to_puma(df: pd.DataFrame, CD_col: str) -> pd.DataFrame:
+def construct_three_digit_CD_code(borough_code: str, cd_num: str) -> str:
+
+    if len(cd_num) == 1:
+        cd_num = f"0{cd_num}"
+    return f"{borough_code}{cd_num}"
+
+
+def get_borough_num_mapper():
     puma_cross = get_CD_puma_crosswalk()
-    puma_cross["borough_abbr"] = puma_cross["borough"].map(borough_name_mapper)
-    puma_cross["CD_code"] = puma_cross["CD"].str.extract(r"(\d+)").astype(str)
-    puma_cross["CD_code"] = puma_cross["CD_code"].apply(
-        lambda x: "0" + x if len(x) == 1 else x
-    )
-    puma_cross["CD_code"] = puma_cross["borough_abbr"] + puma_cross["CD_code"]
 
-    df_with_puma = df.merge(
-        puma_cross[["CD_code", "puma"]],
-        left_on=CD_col,
-        right_on="CD_code",
-        how="left",
+    boroughs = (
+        puma_cross[["borough_code", "borough"]]
+        .drop_duplicates()
+        .set_index("borough_code")
     )
-
-    return df_with_puma
+    borough_num_mapper = boroughs.to_dict()["borough"]
+    return borough_num_mapper

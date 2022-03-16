@@ -7,7 +7,7 @@ import typer
 # from .aggregate import housing_production
 
 from aggregate.housing_production.area_within_historic_district import (
-    find_fraction_PUMA_historic,
+    fraction_historic,
 )
 from aggregate.housing_production.change_in_units import change_in_units
 
@@ -36,7 +36,7 @@ accessors = {
     "housing_production": [
         (
             "area within historic district",
-            find_fraction_PUMA_historic,
+            fraction_historic,
         ),
         ("affordable housing construction/preservation", affordable_housing),
         ("change in units", change_in_units),

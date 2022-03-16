@@ -9,9 +9,6 @@ from aggregate.quality_of_life.health_mortality import (
     premature_mortality,
 )
 from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnerability
-from aggregate.quality_of_life.safety_ped_aslt_hospitalizations import (
-    assault_hospitalizations,
-)
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
 
 accessors = [
@@ -22,7 +19,6 @@ accessors = [
     covid_death,
     load_clean_heat_vulnerability,
     access_subway_and_access_ADA,
-    assault_hospitalizations,
     infant_mortality,
     overdose_mortality,
     premature_mortality,

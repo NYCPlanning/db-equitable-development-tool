@@ -1,8 +1,8 @@
 from typing import final
 import pandas as pd
-from utils.CD_helpers import community_district_to_PUMA
 
 from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper
+from aggregate.clean_aggregated import order_PUMS_QOL
 from internal_review.set_internal_review_file import set_internal_review_files
 
 race_suffix = {
@@ -45,6 +45,12 @@ def access_broadband(geography: str, write_to_internal_review=False):
     final.drop(columns=["geog"], inplace=True)
     final.set_index(geography, inplace=True)
 
+    col_order = order_PUMS_QOL(
+        categories=[i for _, i in ind_mapper.items()],
+        measures=[i for _, i in suffix_mapper.items()],
+    )
+    final = final.reindex(columns=col_order)
+
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "access_broadband.csv", geography)],
@@ -54,7 +60,7 @@ def access_broadband(geography: str, write_to_internal_review=False):
     return final
 
 
-def load_clean_source_data(geography: str):
+def load_clean_source_data(geography: str) -> pd.DataFrame:
     assert geography in ["citywide", "borough", "puma"]
 
     read_excel_arg = {

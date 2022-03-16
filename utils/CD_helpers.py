@@ -39,7 +39,7 @@ def get_CD_puma_crosswalk():
     return puma_cross
 
 
-def community_district_to_PUMA(df, CD_col, CD_abbr_type):
+def community_district_to_PUMA(df, CD_col, CD_abbr_type="alpha_borough"):
     """CD_abbr_type refers to how CD is referred to in source data.
     alpha_borough refers to two letter borough abbreviation plus the
     community district number(BX01, QN11)

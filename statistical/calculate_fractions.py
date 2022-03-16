@@ -37,7 +37,7 @@ def calculate_fractions(
     Parent category is only used in crosstabs, this is the original variable being crosstabbed on."""
     all_fractions = pd.DataFrame(index=data[geo_col].unique())
     for category in categories:
-        category_col = f"{variable_col}-{category}"
+        category_col = f"{variable_col}_{category}"
         data.loc[:, category_col] = (data[variable_col] == category).astype(int)
         survey_design = survey_package.svrepdesign(
             variables=data[[category_col]],
@@ -59,19 +59,19 @@ def calculate_fractions(
         single_fraction.drop(columns=[geo_col], inplace=True)
         if race_crosstab is None:
             columns = [
-                f"{category}-pct",
-                f"{category}-pct-se",
-                f"{category}-pct-cv",
-                f"{category}-pct-moe",
-                f"{category}-pct-denom",
+                f"{category}_pct",
+                f"{category}_pct_se",
+                # f"{category}_pct_cv",
+                f"{category}_pct_moe",
+                f"{category}_pct_denom",
             ]
         else:
             columns = [
-                f"{category}-{race_crosstab}-pct",
-                f"{category}-{race_crosstab}-pct-se",
-                f"{category}-{race_crosstab}-pct-cv",
-                f"{category}-{race_crosstab}-pct-moe",
-                f"{category}-{race_crosstab}-pct-denom",
+                f"{category}_{race_crosstab}_pct",
+                f"{category}_{race_crosstab}_pct_se",
+                # f"{category}_{race_crosstab}_pct_cv",
+                f"{category}_{race_crosstab}_pct_moe",
+                f"{category}_{race_crosstab}_pct_denom",
             ]
 
         denom = data.groupby(geo_col).sum()[weight_col]
@@ -80,9 +80,9 @@ def calculate_fractions(
             columns={
                 "V1": columns[0],
                 "se": columns[1],
-                "cv": columns[2],
-                "moe": columns[3],
-                "denominator": columns[4],
+                # "cv": columns[2],
+                "moe": columns[2],
+                "denominator": columns[3],
             },
             inplace=True,
         )
@@ -109,5 +109,5 @@ def SE_to_zero_no_respondents(geography):
 
 
 def remove_SE(df: pd.DataFrame):
-    df.drop(columns=[c for c in df.columns if c[-3:] == "-se"], inplace=True)
+    df.drop(columns=[c for c in df.columns if c[-3:] == "_se"], inplace=True)
     return df

@@ -1,14 +1,9 @@
 """indicators_denom attr is defined first as constant outside of class so that it 
 can be imported on it's own"""
 
-from aggregate.PUMS.aggregate_PUMS import PUMSCount
 import pandas as pd
-
-demographic_indicators_denom = [
-    ("LEP", "over_five_filter"),
-    ("foreign_born",),
-    ("age_bucket",),
-]
+from aggregate.PUMS.aggregate_PUMS import PUMSCount
+from aggregate.aggregation_helpers import demographic_indicators_denom
 
 
 class PUMSCountDemographics(PUMSCount):

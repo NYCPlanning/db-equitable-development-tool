@@ -2,6 +2,13 @@ import pandas as pd
 from utils.PUMA_helpers import census_races
 
 
+demographic_indicators_denom = [
+    ("LEP", "over_five_filter"),
+    ("foreign_born",),
+    ("age_bucket",),
+]
+
+
 def order_aggregated_columns(
     df: pd.DataFrame, indicators_denom, categories, household, census_PUMS=False
 ) -> pd.DataFrame:

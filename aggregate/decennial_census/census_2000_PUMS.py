@@ -6,7 +6,7 @@ breakdowns]).
 """
 
 import pandas as pd
-from aggregate.PUMS.count_PUMS_demographics import demographic_indicators_denom
+from aggregate.aggregation_helpers import demographic_indicators_denom
 from utils.PUMA_helpers import clean_PUMAs, census_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category

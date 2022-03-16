@@ -3,7 +3,9 @@ returning series"""
 import pytest
 import pandas as pd
 
-from tests.quality_of_life.QOL_testing_helpers import accessors
+from tests.quality_of_life.QOL_testing_helpers import accessors as QOL_accessors
+
+accessors = QOL_accessors
 
 
 @pytest.mark.parametrize("accessor", accessors)

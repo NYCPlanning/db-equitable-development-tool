@@ -1,0 +1,36 @@
+name: Test Indicators
+
+on:
+  # workflow_dispatch:
+  push:
+    paths:
+      - "aggregate/PUMS/**.py"
+      - "tests/PUMS/**.py"
+      - ".github/workflows/test_PUMS_aggregation.yml"
+      - "poetry.lock"
+      - "pyproject.toml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9.7'
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip python3-distutils
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+
+      - name: Poetry Install
+        run: |
+          . $HOME/.poetry/env
+          pip install poetry
+          poetry install
+
+      - name: Pytest
+        run: |
+          . $HOME/.poetry/env
+          poetry run pytest tests/general_indicator_tests

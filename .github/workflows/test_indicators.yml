@@ -6,7 +6,7 @@ on:
     paths:
       - "aggregate/PUMS/**.py"
       - "tests/PUMS/**.py"
-      - ".github/workflows/test_PUMS_aggregation.yml"
+      - ".github/workflows/test_indicators.yml"
       - "poetry.lock"
       - "pyproject.toml"
 

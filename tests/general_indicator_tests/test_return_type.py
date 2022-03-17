@@ -2,23 +2,7 @@
 returning series"""
 import pytest
 import pandas as pd
-
-from tests.quality_of_life.QOL_testing_helpers import accessors as QOL_accessors
-from tests.housing_security.housing_security_testing_helpers import (
-    accessors as housing_security_accessors,
-)
-
-from tests.housing_production.housing_production_testing_helpers import (
-    accessors as housing_prod_accessors,
-)
-from tests.census_testing_helpers import accessors as census_accessors
-
-accessors = (
-    housing_security_accessors
-    + QOL_accessors
-    + housing_prod_accessors
-    + census_accessors
-)
+from aggregate.all_accessors import accessors
 
 
 @pytest.mark.parametrize("accessor", accessors)

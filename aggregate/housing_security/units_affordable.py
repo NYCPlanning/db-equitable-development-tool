@@ -4,15 +4,11 @@ from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.clean_aggregated import order_affordable
 from utils.PUMA_helpers import (
-    community_district_to_PUMA,
     clean_PUMAs,
     borough_name_mapper,
 )
 
-ind_mapper = {
-    "Af": "units_affordable_",
-    "ROcc2": "units_renteroccu"
-}
+ind_mapper = {"Af": "units_affordable_", "ROcc2": "units_renteroccu"}
 
 income_mapper = {
     "ELI": "eli",
@@ -31,9 +27,8 @@ suffix_mapper = {
     "_19Z": "_pct_moe",
 }
 
-def units_affordable(
-    geography: str, write_to_internal_review=False
-    ) -> pd.DataFrame:
+
+def units_affordable(geography: str, write_to_internal_review=False) -> pd.DataFrame:
     assert geography in ["citywide", "borough", "puma"]
 
     clean_df = load_source_clean_data()
@@ -62,14 +57,15 @@ def units_affordable(
         )
     return final
 
+
 def load_source_clean_data() -> pd.DataFrame:
 
     read_excel_arg = {
-        'io': "resources/housing_security/EDDT_UnitsAffordablebyAMI_2015-2019.xlsx",  
-        'sheet_name': "AffordableAMI",
-        'usecols': "A:AJ",
+        "io": "resources/housing_security/EDDT_UnitsAffordablebyAMI_2015-2019.xlsx",
+        "sheet_name": "AffordableAMI",
+        "usecols": "A:AJ",
         "header": 0,
-        "nrows": 63
+        "nrows": 63,
     }
 
     df = pd.read_excel(**read_excel_arg)
@@ -81,6 +77,6 @@ def load_source_clean_data() -> pd.DataFrame:
         cols = [col.replace(code, name) for col in cols]
     for code, suffix in suffix_mapper.items():
         cols = [col.replace(code, suffix) for col in cols]
-    df.columns = cols      
+    df.columns = cols
 
     return df

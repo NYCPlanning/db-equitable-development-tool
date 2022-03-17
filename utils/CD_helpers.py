@@ -59,7 +59,7 @@ def community_district_to_PUMA(df, CD_col, CD_abbr_type="alpha_borough"):
             else:
                 cd_code = construct_three_digit_CD_code(row["borough_code"], cd_num)
             mapper[cd_code] = row.puma
-    df["puma"] = df[CD_col].replace(mapper)
+    df["puma"] = df[CD_col].map(mapper)
     return df
 
 

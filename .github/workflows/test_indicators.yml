@@ -4,8 +4,8 @@ on:
   # workflow_dispatch:
   push:
     paths:
-      - "aggregate/PUMS/**.py"
-      - "tests/PUMS/**.py"
+      - "aggregate/**.py"
+      - "tests/**.py"
       - ".github/workflows/test_indicators.yml"
       - "poetry.lock"
       - "pyproject.toml"

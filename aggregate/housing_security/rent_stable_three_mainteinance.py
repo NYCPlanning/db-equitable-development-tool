@@ -1,5 +1,5 @@
+from ast import Index
 from typing import final
-from bleach import clean
 import pandas as pd
 from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
@@ -21,7 +21,9 @@ def rent_stablized_units(
     
     if geography == "puma":
         clean_data["puma"] = clean_data["PUMA"].apply(func=clean_PUMAs)
-        final = clean_data.loc[~clean_data.puma.isna()]
+        final = clean_data.loc[~clean_data.puma.isna()].copy()
+        remv_label = ["03708 / 3707", "03710 / 3705"]
+        final.drop(final.loc[final.puma.isin(remv_label)].index,axis=0, inplace=True)
     elif geography == "borough":
         clean_data["borough"] = clean_data["CD Name"].map(borough_name_mapper)
         final = clean_data.loc[~clean_data.borough.isna()].copy()
@@ -46,9 +48,12 @@ def three_mainteinance_units(
     geography: str, write_to_internal_review=False
     ) -> pd.DataFrame:
     clean_data = load_source_clean_data("units_threemainteinance")
-
+    print(clean_data)
     if geography == "puma":
-        final["puma"] = clean_data.PUMA.apply(func=clean_PUMAs)
+        clean_data["puma"] = clean_data["PUMA"].apply(func=clean_PUMAs)
+        final = clean_data.loc[~clean_data.puma.isna()].copy()
+        remv_label = ["03708 / 3707", "03710 / 3705"]
+        final.drop(final.loc[final.puma.isin(remv_label)].index,axis=0, inplace=True)
     elif geography == "borough":
         clean_data["borough"] = clean_data["CD Name"].map(borough_name_mapper)
         final = clean_data.loc[~clean_data.borough.isna()].copy()
@@ -73,7 +78,7 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
     if indicator == "units_rentstable":
         usecols = [x for x in range(10)]
     else:
-        usecols = [x for x in range(2)] + [x for x in range(11, 15)]
+        usecols = [x for x in range(3)] + [x for x in range(11, 18)]
     read_csv_arg = {
         #'io': "resources/housing_security/EDDT_UnitsAffordablebyAMI_2015-2019.xlsx",  
         #'sheet_name': "AffordableAMI",

@@ -105,6 +105,8 @@ def clean_PUMAs(puma) -> pd.DataFrame:
     puma = str(puma)
     if puma[:2] == "36":
         puma = puma[2:]
+    elif (puma == "nan") or (puma == nan):
+        return nan
     elif puma[0] != "0":
         puma = "0" + puma
     return puma

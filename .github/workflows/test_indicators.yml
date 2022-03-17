@@ -6,6 +6,7 @@ on:
     paths:
       - "aggregate/**.py"
       - "tests/**.py"
+      - "external_review/**.py"
       - ".github/workflows/test_indicators.yml"
       - "poetry.lock"
       - "pyproject.toml"

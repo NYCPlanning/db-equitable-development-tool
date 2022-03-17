@@ -7,7 +7,7 @@ breakdowns]).
 
 import pandas as pd
 from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
-from utils.PUMA_helpers import clean_PUMAs, census_races
+from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
 
@@ -86,25 +86,34 @@ def rename_columns(df):
 
 
 def census_2000_pums_demographics(geography: str, write_to_internal_review=False):
+    """Main accessor"""
 
-    df = load_dec_2000_demographic_pop_demo()
+    source_data = load_dec_2000_demographic_pop_demo()
 
-    df = filter_to_demo_indicators(df)
+    source_data = filter_to_demo_indicators(source_data)
 
-    df = remove_duplicate_cols(df)
+    source_data = remove_duplicate_cols(source_data)
 
-    df = rename_columns(df)
+    source_data = rename_columns(source_data)
 
     if geography == "citywide":
-        final = df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})
+        final = (
+            source_data.loc[["citywide"]]
+            .reset_index()
+            .rename(columns={"GeoID": "citywide"})
+        )
     elif geography == "borough":
         final = (
-            df.loc[["BX", "BK", "MN", "QN", "SI"]]
+            source_data.loc[["BX", "BK", "MN", "QN", "SI"]]
             .reset_index()
             .rename(columns={"GeoID": "borough"})
         )
     else:
-        final = df.loc["3701":"4114"].reset_index().rename(columns={"GeoID": "puma"})
+        final = (
+            source_data.loc["3701":"4114"]
+            .reset_index()
+            .rename(columns={"GeoID": "puma"})
+        )
         final["puma"] = final["puma"].apply(func=clean_PUMAs)
 
     final.set_index(geography, inplace=True)
@@ -130,7 +139,7 @@ def order_pums_2000_demographics(final: pd.DataFrame):
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
-        "race": census_races,
+        "race": dcp_pop_races,
     }
     final = order_aggregated_columns(
         df=final,

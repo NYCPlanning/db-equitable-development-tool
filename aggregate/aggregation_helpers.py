@@ -3,7 +3,12 @@ from utils.PUMA_helpers import census_races
 
 
 def order_aggregated_columns(
-    df: pd.DataFrame, indicators_denom, categories, household, census_PUMS=False
+    df: pd.DataFrame,
+    indicators_denom,
+    categories,
+    household,
+    census_PUMS=False,
+    demographics_category=False,
 ) -> pd.DataFrame:
     """This can be DRY'd out, written quickly to meet deadline"""
 
@@ -34,7 +39,7 @@ def order_aggregated_columns(
                     if census_PUMS and ind == "LEP":
                         col_order.append(f"age_p5pl_{race_crosstab}")
 
-    if census_PUMS:
+    if census_PUMS and demographics_category == True:
         col_order.extend(median_age_col_order())
     return df.reindex(columns=col_order)
 

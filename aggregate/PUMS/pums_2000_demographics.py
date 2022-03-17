@@ -23,7 +23,7 @@ demo_suffix = {
 
 def load_dec_2000_demographic_pop_demo():
     df = pd.read_excel(
-        "./resources/decennial_census_data/EDDT_Census2000PUMS.xlsx",
+        "./resources/ACS_PUMS/EDDT_Census2000PUMS.xlsx",
         skiprows=1,
         dtype={"GeoID": str},
     )
@@ -85,7 +85,7 @@ def rename_columns(df):
     return df
 
 
-def census_2000_pums(geography: str, write_to_internal_review=False):
+def census_2000_pums_demographics(geography: str, write_to_internal_review=False):
 
     df = load_dec_2000_demographic_pop_demo()
 
@@ -119,11 +119,11 @@ def census_2000_pums(geography: str, write_to_internal_review=False):
             "demographics",
         )
 
-    final = order_decennial(final)
+    final = order_pums_2000_demographics(final)
     return final
 
 
-def order_decennial(final: pd.DataFrame):
+def order_pums_2000_demographics(final: pd.DataFrame):
     """Quick function written up against deadline, can definitely be refactored"""
     indicators_denom = PUMSCountDemographics.indicators_denom
     categories = {
@@ -138,5 +138,6 @@ def order_decennial(final: pd.DataFrame):
         categories=categories,
         household=False,
         census_PUMS=True,
+        demographics_category=True,
     )
     return final

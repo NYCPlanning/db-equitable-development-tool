@@ -48,7 +48,6 @@ def three_mainteinance_units(
     geography: str, write_to_internal_review=False
     ) -> pd.DataFrame:
     clean_data = load_source_clean_data("units_threemainteinance")
-    print(clean_data)
     if geography == "puma":
         clean_data["puma"] = clean_data["PUMA"].apply(func=clean_PUMAs)
         final = clean_data.loc[~clean_data.puma.isna()].copy()
@@ -80,8 +79,6 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
     else:
         usecols = [x for x in range(3)] + [x for x in range(11, 18)]
     read_csv_arg = {
-        #'io': "resources/housing_security/EDDT_UnitsAffordablebyAMI_2015-2019.xlsx",  
-        #'sheet_name': "AffordableAMI",
         "filepath_or_buffer": "resources/housing_security/2017_HVS_EDDT.csv",
         'usecols': usecols,
         "header": 1,

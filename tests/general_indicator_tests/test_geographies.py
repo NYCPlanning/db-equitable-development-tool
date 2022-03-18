@@ -1,6 +1,5 @@
 """Test that QOL indicators have correct geographies"""
 
-
 import pytest
 from utils.PUMA_helpers import get_all_NYC_PUMAs, get_all_boroughs
 from aggregate.all_accessors import accessors

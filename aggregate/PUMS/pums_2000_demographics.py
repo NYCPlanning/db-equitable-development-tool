@@ -7,7 +7,7 @@ breakdowns]).
 
 import pandas as pd
 from aggregate.aggregation_helpers import demographic_indicators_denom
-from utils.PUMA_helpers import clean_PUMAs, census_races
+from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
 
@@ -23,7 +23,7 @@ demo_suffix = {
 
 def load_dec_2000_demographic_pop_demo():
     df = pd.read_excel(
-        "./resources/decennial_census_data/EDDT_Census2000PUMS.xlsx",
+        "./resources/ACS_PUMS/EDDT_Census2000PUMS.xlsx",
         skiprows=1,
         dtype={"GeoID": str},
     )
@@ -85,26 +85,35 @@ def rename_columns(df):
     return df
 
 
-def census_2000_pums(geography: str, write_to_internal_review=False):
+def census_2000_pums_demographics(geography: str, write_to_internal_review=False):
+    """Main accessor"""
 
-    df = load_dec_2000_demographic_pop_demo()
+    source_data = load_dec_2000_demographic_pop_demo()
 
-    df = filter_to_demo_indicators(df)
+    source_data = filter_to_demo_indicators(source_data)
 
-    df = remove_duplicate_cols(df)
+    source_data = remove_duplicate_cols(source_data)
 
-    df = rename_columns(df)
+    source_data = rename_columns(source_data)
 
     if geography == "citywide":
-        final = df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})
+        final = (
+            source_data.loc[["citywide"]]
+            .reset_index()
+            .rename(columns={"GeoID": "citywide"})
+        )
     elif geography == "borough":
         final = (
-            df.loc[["BX", "BK", "MN", "QN", "SI"]]
+            source_data.loc[["BX", "BK", "MN", "QN", "SI"]]
             .reset_index()
             .rename(columns={"GeoID": "borough"})
         )
     else:
-        final = df.loc["3701":"4114"].reset_index().rename(columns={"GeoID": "puma"})
+        final = (
+            source_data.loc["3701":"4114"]
+            .reset_index()
+            .rename(columns={"GeoID": "puma"})
+        )
         final["puma"] = final["puma"].apply(func=clean_PUMAs)
 
     final.set_index(geography, inplace=True)
@@ -119,18 +128,18 @@ def census_2000_pums(geography: str, write_to_internal_review=False):
             "demographics",
         )
 
-    final = order_decennial(final)
+    final = order_pums_2000_demographics(final)
     return final
 
 
-def order_decennial(final: pd.DataFrame):
+def order_pums_2000_demographics(final: pd.DataFrame):
     """Quick function written up against deadline, can definitely be refactored"""
     indicators_denom = demographic_indicators_denom
     categories = {
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
-        "race": census_races,
+        "race": dcp_pop_races,
     }
     final = order_aggregated_columns(
         df=final,
@@ -138,5 +147,6 @@ def order_decennial(final: pd.DataFrame):
         categories=categories,
         household=False,
         census_PUMS=True,
+        demographics_category=True,
     )
     return final

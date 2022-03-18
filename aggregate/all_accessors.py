@@ -37,7 +37,8 @@ from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnera
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
 
 # Census imports
-from aggregate.decennial_census.census_2000_PUMS import census_2000_pums
+from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics
+from aggregate.PUMS.pums_2000_economics import edu_attain_economic
 from aggregate.decennial_census.decennial_census_001020 import decennial_census_data
 
 housing_production_accessors = [fraction_historic, change_in_units, affordable_housing]
@@ -60,7 +61,11 @@ housing_security_accessors = [DHS_shelter, eviction_cases, units_affordable]
 """This file is here as the accessor functions it assigns come from multiple sources"""
 
 
-census_accessors = [census_2000_pums, decennial_census_data]
+census_accessors = [
+    census_2000_pums_demographics,
+    decennial_census_data,
+    edu_attain_economic,
+]
 
 
 accessors = (

@@ -29,6 +29,8 @@ borough_name_mapper = {
 
 census_races = ["anh", "bnh", "hsp", "onh", "wnh"]
 
+dcp_pop_races = ["anh", "bnh", "hsp", "wnh"]
+
 
 def puma_to_borough(record):
 

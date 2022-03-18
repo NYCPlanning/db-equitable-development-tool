@@ -8,21 +8,22 @@ from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs
 
 suffix_mapper = {
     "_N": "",
-    "Percent MOE\n(95% CI)": "pct_moe", # don't love this. But the order does matter here. As the MOE is a partial string match
+    "Percent MOE\n(95% CI)": "pct_moe",  # don't love this. But the order does matter here. As the MOE is a partial string match
     "MOE\n(95% CI)": "moe",
     "CV": "cv",
     "Percent": "pct",
 }
 
+
 def rent_stablized_units(
     geography: str, write_to_internal_review=False
-    ) -> pd.DataFrame:
-
+) -> pd.DataFrame:
+    """Main accessor"""
     clean_data, denom = load_source_clean_data("units_rentstable")
 
     indi_final = extract_geography_dataframe(clean_data, geography)
     denom_final = extract_geography_dataframe(denom, geography, denom=True)
-    indi_final.columns = ["units_rentstable_"+ c for c in indi_final.columns]
+    indi_final.columns = ["units_rentstable_" + c for c in indi_final.columns]
     denom_final.columns = ["units_occurental_" + c for c in denom_final.columns]
     final = pd.concat([indi_final, denom_final], axis=1)
     for code, suffix in suffix_mapper.items():
@@ -32,17 +33,19 @@ def rent_stablized_units(
         set_internal_review_files(
             [(final, "units_rentstable.csv", geography)],
             "housing_security",
-        )  
+        )
     return final
+
 
 def three_mainteinance_units(
     geography: str, write_to_internal_review=False
-    ) -> pd.DataFrame:
+) -> pd.DataFrame:
+    """Main accessor"""
     clean_data, denom = load_source_clean_data("units_threemainteinance")
 
     indi_final = extract_geography_dataframe(clean_data, geography)
     denom_final = extract_geography_dataframe(denom, geography, denom=True)
-    indi_final.columns = ["units_threemainteinance_"+ c for c in indi_final.columns]
+    indi_final.columns = ["units_threemainteinance_" + c for c in indi_final.columns]
     denom_final.columns = ["units_occu_" + c for c in denom_final.columns]
     final = pd.concat([indi_final, denom_final], axis=1)
     for code, suffix in suffix_mapper.items():
@@ -52,8 +55,9 @@ def three_mainteinance_units(
         set_internal_review_files(
             [(final, "units_threemainteinance.csv", geography)],
             "housing_security",
-        )  
-    return final 
+        )
+    return final
+
 
 def load_source_clean_data(indicator: str) -> pd.DataFrame:
     if indicator == "units_rentstable":
@@ -65,35 +69,56 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
 
     read_csv_arg = {
         "filepath_or_buffer": "resources/housing_security/2017_HVS_EDDT.csv",
-        'usecols': usecols,
+        "usecols": usecols,
         "header": 1,
-        "nrows": 63
+        "nrows": 63,
     }
-    read_excel_arg ={
+    read_excel_arg = {
         "io": "resources/housing_security/2017 HVS Denominator.xlsx",
         "sheet_name": sheetname,
         "header": 1,
         "nrows": 63,
-        "usecols": "A:G"
+        "usecols": "A:G",
     }
     data = pd.read_csv(**read_csv_arg)
     data.columns = [c.replace(".1", "") for c in data.columns]
-    data.columns = ['SBA', 'PUMA', 'CD Name', 'N', 'SE', 'MOE\n(95% CI)', 'CV', 'Percent',
-       'Percent SE', 'Percent MOE\n(95% CI)']
+    data.columns = [
+        "SBA",
+        "PUMA",
+        "CD Name",
+        "N",
+        "SE",
+        "MOE\n(95% CI)",
+        "CV",
+        "Percent",
+        "Percent SE",
+        "Percent MOE\n(95% CI)",
+    ]
 
     denom = pd.read_excel(**read_excel_arg)
     denom["PUMA"] = denom["PUMA"].astype(str)
-    denom.columns = ['SBA', 'CD Name', 'PUMA', 'N', 'SE', 'MOE\n(95% CI)', 'CV',]
+    denom.columns = [
+        "SBA",
+        "CD Name",
+        "PUMA",
+        "N",
+        "SE",
+        "MOE\n(95% CI)",
+        "CV",
+    ]
 
     return data, denom
 
-def extract_geography_dataframe(clean_data: pd.DataFrame, geography: str, denom=False) -> pd.DataFrame:
+
+def extract_geography_dataframe(
+    clean_data: pd.DataFrame, geography: str, denom=False
+) -> pd.DataFrame:
 
     if geography == "puma":
         clean_data["puma"] = clean_data["PUMA"].apply(func=clean_PUMAs)
         final = clean_data.loc[~clean_data.puma.isna()].copy()
         remv_label = ["03708 / 3707", "03710 / 3705"]
-        final.drop(final.loc[final.puma.isin(remv_label)].index,axis=0, inplace=True)
+        final.drop(final.loc[final.puma.isin(remv_label)].index, axis=0, inplace=True)
     elif geography == "borough":
         clean_data["borough"] = clean_data["CD Name"].map(borough_name_mapper)
         final = clean_data.loc[~clean_data.borough.isna()].copy()
@@ -102,7 +127,12 @@ def extract_geography_dataframe(clean_data: pd.DataFrame, geography: str, denom=
         final = clean_data.loc[~clean_data.citywide.isna()].copy()
 
     if denom:
-        drop_cols = ["SBA", "PUMA", "CD Name", "SE",]
+        drop_cols = [
+            "SBA",
+            "PUMA",
+            "CD Name",
+            "SE",
+        ]
     else:
         drop_cols = ["SBA", "PUMA", "CD Name", "SE", "Percent SE"]
 

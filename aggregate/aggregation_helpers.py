@@ -1,5 +1,5 @@
 import pandas as pd
-from utils.PUMA_helpers import census_races
+from utils.PUMA_helpers import census_races, get_all_NYC_PUMAs, get_all_boroughs
 
 
 def order_aggregated_columns(
@@ -76,3 +76,17 @@ def get_category(indicator, data=None):
             categories.remove(None)
         categories.sort()
         return categories
+
+
+def initialize_dataframe_geo_index(geography):
+    """This should be moved to PUMA helpers and referenced in other code that merges
+    to a final dataframe"""
+    indicies = {
+        "puma": get_all_NYC_PUMAs(),
+        "borough": get_all_boroughs(),
+        "citywide": ["citywide"],
+    }
+
+    rv = pd.DataFrame(index=indicies[geography])
+    rv.index.rename(geography, inplace=True)
+    return rv

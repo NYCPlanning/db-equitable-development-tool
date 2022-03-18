@@ -5,7 +5,7 @@ from aggregate.PUMS.count_PUMS_economics import PUMSCountEconomics
 from aggregate.PUMS.count_PUMS_households import PUMSCountHouseholds
 from aggregate.PUMS.median_PUMS_economics import PUMSMedianEconomics
 from aggregate.aggregated_cache_fn import PUMS_cache_fn
-from utils.PUMA_helpers import get_all_NYC_PUMAs, get_all_boroughs
+from aggregate.aggregation_helpers import initialize_dataframe_geo_index
 from utils.setup_directory import setup_directory
 from os import path
 import pandas as pd
@@ -54,18 +54,4 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
             data = aggregator.aggregated
             del aggregator
         rv = rv.merge(data, left_index=True, right_index=True, how="inner")
-    return rv
-
-
-def initialize_dataframe_geo_index(geography):
-    """This should be moved to PUMA helpers and referenced in other code that merges
-    to a final dataframe"""
-    indicies = {
-        "puma": get_all_NYC_PUMAs(),
-        "borough": get_all_boroughs(),
-        "citywide": ["citywide"],
-    }
-
-    rv = pd.DataFrame(index=indicies[geography])
-    rv.index.rename(geography, inplace=True)
     return rv

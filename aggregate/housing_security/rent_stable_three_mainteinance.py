@@ -17,38 +17,16 @@ suffix_mapper = {
 def rent_stablized_units(
     geography: str, write_to_internal_review=False
     ) -> pd.DataFrame:
-    clean_data, denom = load_source_clean_data("units_rentstable")
 
+    clean_data, denom = load_source_clean_data("units_rentstable")
 
     indi_final = transform(clean_data, geography)
     denom_final = transform(denom, geography, denom=True)
     indi_final.columns = ["units_rentstable_"+ c for c in indi_final.columns]
-    denom_final.columns = ["units_occu_" + c for c in denom_final.columns]
+    denom_final.columns = ["units_occurental_" + c for c in denom_final.columns]
     final = pd.concat([indi_final, denom_final], axis=1)
     for code, suffix in suffix_mapper.items():
         final.columns = [c.replace(code, suffix) for c in final.columns]
-    # if geography == "puma":
-    #     clean_data["puma"] = clean_data["PUMA"].apply(func=clean_PUMAs)
-    #     puma = clean_data.loc[~clean_data.puma.isna()].copy()
-
-    #     denom["puma"] = denom["PUMA"].apply(func=clean_PUMAs)
-    #     puma = clean_data.loc[~clean_data.puma.isna()].copy()
-    
-    #     remv_label = ["03708 / 3707", "03710 / 3705"]
-    #     puma.drop(puma.loc[puma["puma"].isin(remv_label)].index,axis=0, inplace=True)
-
-    # elif geography == "borough":
-    #     clean_data["borough"] = clean_data["CD Name"].map(borough_name_mapper)
-    #     final = clean_data.loc[~clean_data.borough.isna()].copy()
-    # else:
-    #     clean_data.loc[clean_data["CD Name"] == "NYC", "citywide"] = "citywide"
-    #     final = clean_data.loc[~clean_data.citywide.isna()].copy()
-
-    # final.drop(columns=["SBA", "PUMA", "CD Name", "SE", "Percent SE"], inplace=True)
-    # final.set_index(geography, inplace=True)
-    # final.columns = ["units_rentstable_"+ c for c in final.columns]
-    # for code, suffix in suffix_mapper.items():
-    #     final.columns = [c.replace(code, suffix) for c in final.columns]
 
     if write_to_internal_review:
         set_internal_review_files(
@@ -81,11 +59,10 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
     if indicator == "units_rentstable":
         usecols = [x for x in range(10)]
         sheetname = "2017 HVS Occupied Rental Units"
-        denom_name = "units_occurental_"
     else:
         usecols = [x for x in range(3)] + [x for x in range(11, 18)]
         sheetname = "2017 HVS Occupied Units"
-        denom_name = "units_occu_"
+        
     read_csv_arg = {
         "filepath_or_buffer": "resources/housing_security/2017_HVS_EDDT.csv",
         'usecols': usecols,

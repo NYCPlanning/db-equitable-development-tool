@@ -1,4 +1,4 @@
-puma,units_rentstable,units_rentstable_cv,units_rentstable_moe,units_rentstable_pct,units_rentstable_pct_moe,units_occurental,units_occurental_cv,units_occurental_moe
+puma,units_rentstable,units_rentstable_moe,units_rentstable_cv,units_rentstable_pct,units_rentstable_pct_moe,units_occurental,units_occurental_moe,units_occurental_cv
 03710,"21,910",15,"6,429",44.7%,11.7%,44875.84375,4.0215738783985255,3592.19580078125
 03705,"22,301",14,"6,168",40.9%,10.4%,48658.765625,5.137175189400933,4975.50048828125
 03708,"37,623",6,"4,529",79.3%,7.7%,42981.3515625,4.79124713061424,4099.01904296875

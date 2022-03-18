@@ -20,8 +20,8 @@ def rent_stablized_units(
 
     clean_data, denom = load_source_clean_data("units_rentstable")
 
-    indi_final = transform(clean_data, geography)
-    denom_final = transform(denom, geography, denom=True)
+    indi_final = extract_geography_dataframe(clean_data, geography)
+    denom_final = extract_geography_dataframe(denom, geography, denom=True)
     indi_final.columns = ["units_rentstable_"+ c for c in indi_final.columns]
     denom_final.columns = ["units_occurental_" + c for c in denom_final.columns]
     final = pd.concat([indi_final, denom_final], axis=1)
@@ -40,8 +40,8 @@ def three_mainteinance_units(
     ) -> pd.DataFrame:
     clean_data, denom = load_source_clean_data("units_threemainteinance")
 
-    indi_final = transform(clean_data, geography)
-    denom_final = transform(denom, geography, denom=True)
+    indi_final = extract_geography_dataframe(clean_data, geography)
+    denom_final = extract_geography_dataframe(denom, geography, denom=True)
     indi_final.columns = ["units_threemainteinance_"+ c for c in indi_final.columns]
     denom_final.columns = ["units_occu_" + c for c in denom_final.columns]
     final = pd.concat([indi_final, denom_final], axis=1)
@@ -62,7 +62,7 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
     else:
         usecols = [x for x in range(3)] + [x for x in range(11, 18)]
         sheetname = "2017 HVS Occupied Units"
-        
+
     read_csv_arg = {
         "filepath_or_buffer": "resources/housing_security/2017_HVS_EDDT.csv",
         'usecols': usecols,
@@ -78,13 +78,16 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
     }
     data = pd.read_csv(**read_csv_arg)
     data.columns = [c.replace(".1", "") for c in data.columns]
+    data.columns = ['SBA', 'PUMA', 'CD Name', 'N', 'SE', 'MOE\n(95% CI)', 'CV', 'Percent',
+       'Percent SE', 'Percent MOE\n(95% CI)']
 
     denom = pd.read_excel(**read_excel_arg)
     denom["PUMA"] = denom["PUMA"].astype(str)
+    denom.columns = ['SBA', 'CD Name', 'PUMA', 'N', 'SE', 'MOE\n(95% CI)', 'CV',]
 
     return data, denom
 
-def transform(clean_data: pd.DataFrame, geography: str, denom=False) -> pd.DataFrame:
+def extract_geography_dataframe(clean_data: pd.DataFrame, geography: str, denom=False) -> pd.DataFrame:
 
     if geography == "puma":
         clean_data["puma"] = clean_data["PUMA"].apply(func=clean_PUMAs)

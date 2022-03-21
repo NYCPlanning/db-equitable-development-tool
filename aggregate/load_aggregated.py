@@ -57,7 +57,7 @@ def load_aggregated_PUMS(EDDT_category, geography, year, test_data):
     return rv
 
 
-def initialize_dataframe_geo_index(geography):
+def initialize_dataframe_geo_index(geography, columns=[]):
     """This should be moved to PUMA helpers and referenced in other code that merges
     to a final dataframe"""
     indicies = {
@@ -66,6 +66,6 @@ def initialize_dataframe_geo_index(geography):
         "citywide": ["citywide"],
     }
 
-    rv = pd.DataFrame(index=indicies[geography])
+    rv = pd.DataFrame(index=indicies[geography], columns=columns)
     rv.index.rename(geography, inplace=True)
     return rv

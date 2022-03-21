@@ -5,7 +5,6 @@ from numpy import add, nan
 import usaddress
 import requests
 from geosupport import Geosupport, GeosupportError
-from ingest.ingestion_helpers import add_leading_zero_PUMA
 from utils.geocode import from_eviction_address
 
 
@@ -32,6 +31,17 @@ census_races = ["anh", "bnh", "hsp", "onh", "wnh"]
 dcp_pop_races = ["anh", "bnh", "hsp", "wnh"]
 
 
+def clean_PUMAs(puma) -> pd.DataFrame:
+    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead
+    Possible refactor: apply to dataframe and ensure that re-named column is label \"puma\" """
+    puma = str(puma)
+    if puma[:2] == "36":
+        puma = puma[2:]
+    elif puma[0] != "0":
+        puma = "0" + puma
+    return puma
+
+
 def puma_to_borough(record):
 
     borough_code = record.puma[:3]
@@ -50,7 +60,7 @@ def NYC_PUMA_geographies() -> gp.GeoDataFrame:
     gdf = gp.GeoDataFrame.from_features(res.json()["features"])
     gdf = gdf.set_crs(res.json()["crs"]["properties"]["name"])
     gdf.rename(columns={"PUMA": "puma"}, inplace=True)
-    gdf = add_leading_zero_PUMA(gdf)
+    gdf["puma"] = gdf["puma"].apply(clean_PUMAs)
     return gdf
 
 
@@ -99,14 +109,3 @@ def get_all_NYC_PUMAs():
 
 def get_all_boroughs():
     return ["BK", "BX", "MN", "QN", "SI"]
-
-
-def clean_PUMAs(puma) -> pd.DataFrame:
-    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead
-    Possible refactor: apply to dataframe and ensure that re-named column is label \"puma\" """
-    puma = str(puma)
-    if puma[:2] == "36":
-        puma = puma[2:]
-    elif puma[0] != "0":
-        puma = "0" + puma
-    return puma

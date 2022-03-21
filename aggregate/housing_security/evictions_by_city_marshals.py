@@ -1,5 +1,5 @@
 import pandas as pd
-from utils.PUMA_helpers import assign_PUMA_col
+from utils.PUMA_helpers import assign_PUMA_col, clean_PUMAs
 from utils.geocode import geocode_address
 
 
@@ -19,6 +19,7 @@ def load_residential_evictions(debug) -> pd.DataFrame:
     residential_evictions = evictions[
         evictions["residential/commercial"] == "Residential"
     ]
+    residential_evictions["puma"] = residential_evictions["puma"].apply(clean_PUMAs)
     return residential_evictions
 
 
@@ -34,4 +35,3 @@ def aggregate_by_geography(evictions, geography_level):
             evictions, "latitude", "longitude", geocode_process="from_eviction_address"
         )
         return evictions.groupby(geography_level).size()
-    raise Exception(f"{geography_level} not one of accepted geography levels")

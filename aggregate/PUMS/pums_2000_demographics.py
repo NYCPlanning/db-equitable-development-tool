@@ -6,7 +6,7 @@ breakdowns]).
 """
 
 import pandas as pd
-from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
+from aggregate.aggregation_helpers import demographic_indicators_denom
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
@@ -134,7 +134,7 @@ def census_2000_pums_demographics(geography: str, write_to_internal_review=False
 
 def order_pums_2000_demographics(final: pd.DataFrame):
     """Quick function written up against deadline, can definitely be refactored"""
-    indicators_denom = PUMSCountDemographics.indicators_denom
+    indicators_denom = demographic_indicators_denom
     categories = {
         "LEP": ["lep"],
         "foreign_born": ["fb"],

@@ -1,17 +1,16 @@
-import pandas as pd
-from pandas.core.reshape.pivot import crosstab
 from ingest.load_data import load_HVS
 from aggregate.race_assign import HVS_race_assign
 from statistical.calculate_counts import calculate_counts
 from ingest.clean_replicate_weights import rw_cols_clean
 from internal_review.set_internal_review_file import set_internal_review_files
+from aggregate.load_aggregated import initialize_dataframe_geo_index
 
 implemeted_years = [2017]
-implemented_geographies = ["Borough"]
+implemented_geographies = ["borough", "puma", "citywide"]
 
 
 def count_units_three_or_more_deficiencies(
-    geography_level, year, crosstab_by_race=False, requery=False
+    geography_level, year=2017, crosstab_by_race=False, requery=False
 ):
     """Main accessor"""
     if year not in implemeted_years:
@@ -22,6 +21,10 @@ def count_units_three_or_more_deficiencies(
     if geography_level not in implemented_geographies:
         raise Exception(
             f"Aggregation on {geography_level} not allowed. Geographies to aggregate on: {implemented_geographies}"
+        )
+    if geography_level in ["puma", "citywide"]:
+        return initialize_dataframe_geo_index(
+            geography=geography_level, columns=["three_plus_maintence_deficencies"]
         )
     HVS = load_HVS(requery=requery, year=year, human_readable=True)
     HVS["three_plus_deficiencies"] = (
@@ -41,8 +44,10 @@ def count_units_three_or_more_deficiencies(
         weight_col="Household weight",
         geo_col=geography_level,
         crosstab=crosstab,
+        keep_SE=False,
+        add_MOE=True,
     )
-    aggregated = sort_columns(aggregated)
+    # aggregated = sort_columns(aggregated)
     aggregated.name = (
         f"HVS_{year}_{geography_level}_crosstab_by_race_{crosstab_by_race}"
     )

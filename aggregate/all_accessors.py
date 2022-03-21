@@ -21,6 +21,7 @@ from aggregate.housing_production.hpd_housing_ny_affordable_housing import (
 from aggregate.housing_security.DHS_shelter import DHS_shelter
 from aggregate.housing_security.eviction_cases_housing_court import eviction_cases
 from aggregate.housing_security.units_affordable import units_affordable
+from aggregate.housing_security.income_restricted_units import income_restricted_units
 
 # Quality of life imports
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
@@ -57,7 +58,12 @@ QOL_accessors = [
     premature_mortality,
 ]
 
-housing_security_accessors = [DHS_shelter, eviction_cases, units_affordable]
+housing_security_accessors = [
+    DHS_shelter,
+    eviction_cases,
+    units_affordable,
+    income_restricted_units,
+]
 """This file is here as the accessor functions it assigns come from multiple sources"""
 
 

@@ -10,8 +10,8 @@ from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs
 suffix_mapper = {
     "_N": "_count",
     "Percent MOE\n(95% CI)": "pct_moe",  # don't love this. But the order does matter here. As the MOE is a partial string match
-    "MOE\n(95% CI)": "moe",
-    "CV": "cv",
+    "MOE\n(95% CI)": "count_moe",
+    "CV": "count_cv",
     "Percent": "pct",
 }
 
@@ -88,10 +88,7 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
 
     denom = pd.read_excel(**read_excel_arg)
     denom["PUMA"] = denom["PUMA"].astype(str)
-    if 'Percent' in denom.columns:
-        denom.drop(columns=['SE', 'Percent', 'Percent SE', 'Percent MOE\n(95% CI)'], inplace=True)
-    else:
-        denom.drop(columns=["SE"], inplace=True)
+    denom.drop(columns=['SE', 'Percent', 'Percent SE', 'Percent MOE\n(95% CI)'], errors="ignore", inplace=True)
 
     return data, denom
 

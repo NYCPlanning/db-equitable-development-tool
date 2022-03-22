@@ -1,4 +1,4 @@
-borough,units_rentstable_count,units_rentstable_cv,units_rentstable_moe,units_rentstable_pct,units_rentstable_pct_moe,units_occurental_count,units_occurental_cv,units_occurental_moe
+borough,units_rentstable_count,units_rentstable_count_cv,units_rentstable_count_moe,units_rentstable_pct,units_rentstable_pct_moe,units_occurental_count,units_occurental_count_cv,units_occurental_count_moe
 BX,229429,3,14006,47.2,2.7,378751.94,1.06,8019.07
 BK,281556,3,18713,30.0,2.0,664969.62,0.94,12438.29
 MN,244776,3,16793,33.0,2.3,559220.0,1.09,12093.55

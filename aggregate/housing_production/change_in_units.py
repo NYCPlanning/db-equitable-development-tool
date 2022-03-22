@@ -69,7 +69,7 @@ def load_housing_data():
 
     census10_.rename(
         columns={
-            "Total Housing Units": "total_units_2010_count",
+            "Total Housing Units": "total_units_2010",
             "2010 DCP Borough Code": "borough",
             "PUMA": "puma",
         },
@@ -94,11 +94,7 @@ def pivot_and_flatten_index(df, geography):
 
     df_pivot.rename(
         columns={
-            "classa_net_": "classa_net_count",
-            "classa_net_alt_decrease": "classa_net_alt_decrease_count",
-            "classa_net_alt_increase": "classa_net_alt_increase_count",
-            "classa_net_demo": "classa_net_demo_count",
-            "classa_net_new": "classa_net_new_count",
+            "classa_net_": "classa_net",
             "pct_": "classa_net_pct",
             "pct_alt_decrease": "classa_net_alt_decrease_pct",
             "pct_alt_increase": "classa_net_alt_increase_pct",
@@ -173,14 +169,12 @@ def change_in_units(geography: str, write_to_internal_review=False):
     results = pd.concat([results, all_job_type], axis=0)
 
     # join with 2010 units from census
-    census_units = (
-        census10.groupby(geography)["total_units_2010_count"].sum().reset_index()
-    )
+    census_units = census10.groupby(geography)["total_units_2010"].sum().reset_index()
     results = results.merge(census_units, on=geography, how="left")
 
     results.job_type = results.job_type.map(job_type_mapper)
 
-    results["pct"] = results["classa_net"] / results["total_units_2010_count"] * 100.0
+    results["pct"] = results["classa_net"] / results["total_units_2010"] * 100.0
     results["pct"] = results["pct"].round(2)
     results = pivot_and_flatten_index(results, geography=geography)
 

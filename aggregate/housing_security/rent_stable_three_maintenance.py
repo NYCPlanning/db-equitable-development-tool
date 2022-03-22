@@ -9,7 +9,7 @@ from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs
 
 suffix_mapper = {
     "_N": "",
-    "Percent MOE\n(95% CI)": "pct_moe", # don't love this. But the order does matter here. As the MOE is a partial string match
+    "Percent MOE\n(95% CI)": "pct_moe",  # don't love this. But the order does matter here. As the MOE is a partial string match
     "MOE\n(95% CI)": "moe",
     "CV": "cv",
     "Percent": "pct",
@@ -17,8 +17,8 @@ suffix_mapper = {
 
 def rent_stabilized_units(
     geography: str, write_to_internal_review=False
-    ) -> pd.DataFrame:
-
+) -> pd.DataFrame:
+    """Main accessor"""
     clean_data, denom = load_source_clean_data("units_rentstable")
 
     indi_final = extract_geography_dataframe(clean_data, geography)
@@ -33,7 +33,7 @@ def rent_stabilized_units(
         set_internal_review_files(
             [(final, "units_rentstable.csv", geography)],
             "housing_security",
-        )  
+        )
     return final
 
 def three_maintenance_units(
@@ -53,8 +53,9 @@ def three_maintenance_units(
         set_internal_review_files(
             [(final, "units_threemaintenance.csv", geography)],
             "housing_security",
-        )  
-    return final 
+        )
+    return final
+
 
 def load_source_clean_data(indicator: str) -> pd.DataFrame:
     if indicator == "units_rentstable":
@@ -66,16 +67,16 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
 
     read_csv_arg = {
         "filepath_or_buffer": "resources/housing_security/2017_HVS_EDDT.csv",
-        'usecols': usecols,
+        "usecols": usecols,
         "header": 1,
-        "nrows": 63
+        "nrows": 63,
     }
-    read_excel_arg ={
+    read_excel_arg = {
         "io": "resources/housing_security/2017 HVS Denominator.xlsx",
         "sheet_name": sheetname,
         "header": 1,
         "nrows": 63,
-        "usecols": "A:G"
+        "usecols": "A:G",
     }
     data = pd.read_csv(**read_csv_arg)
     data.columns = [c.replace(".1", "") for c in data.columns]
@@ -100,7 +101,7 @@ def extract_geography_dataframe(clean_data: pd.DataFrame, geography: str) -> pd.
         clean_data["puma"] = clean_data["PUMA"].apply(func=clean_PUMAs)
         final = clean_data.loc[~clean_data.puma.isna()].copy()
         remv_label = ["03708 / 3707", "03710 / 3705"]
-        final.drop(final.loc[final.puma.isin(remv_label)].index,axis=0, inplace=True)
+        final.drop(final.loc[final.puma.isin(remv_label)].index, axis=0, inplace=True)
     elif geography == "borough":
         clean_data["borough"] = clean_data["CD Name"].map(borough_name_mapper)
         final = clean_data.loc[~clean_data.borough.isna()].copy()

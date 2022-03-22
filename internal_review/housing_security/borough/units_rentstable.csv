@@ -1,6 +1,6 @@
-borough,units_rentstable,units_rentstable_moe,units_rentstable_cv,units_rentstable_pct,units_rentstable_pct_moe,units_occurental,units_occurental_moe,units_occurental_cv
-BX,"229,429",3,"14,006",47.2%,2.7%,378751.9375,1.0636969874824072,8019.07177734375
-BK,"281,556",3,"18,713",30.0%,2.0%,664969.625,0.9397393086986868,12438.28515625
-MN,"244,776",3,"16,793",33.0%,2.3%,559220.0,1.086475026739253,12093.548828125
-QN,"180,453",4,"15,582",23.1%,1.9%,439257.03125,1.233600904581422,10785.6103515625
-SI,"10,300",27,"5,499",6.4%,3.4%,61675.34375,3.9248738574876207,4818.24169921875
+borough,units_rentstable,units_rentstable_cv,units_rentstable_moe,units_rentstable_pct,units_rentstable_pct_moe,units_occurental,units_occurental_cv,units_occurental_moe
+BX,229429,3,14006,47.2,2.7,378751.94,1.06,8019.07
+BK,281556,3,18713,30.0,2.0,664969.62,0.94,12438.29
+MN,244776,3,16793,33.0,2.3,559220.0,1.09,12093.55
+QN,180453,4,15582,23.1,1.9,439257.03,1.23,10785.61
+SI,10300,27,5499,6.4,3.4,61675.34,3.92,4818.24

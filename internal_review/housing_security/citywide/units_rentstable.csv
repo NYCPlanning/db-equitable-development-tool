@@ -1,2 +1,2 @@
-citywide,units_rentstable,units_rentstable_moe,units_rentstable_cv,units_rentstable_pct,units_rentstable_pct_moe,units_occurental,units_occurental_moe,units_occurental_cv
-citywide,"946,514",2,"32,749",30.4%,1.1%,2103874.0,0.5129302074856906,21479.75390625
+citywide,units_rentstable,units_rentstable_cv,units_rentstable_moe,units_rentstable_pct,units_rentstable_pct_moe,units_occurental,units_occurental_cv,units_occurental_moe
+citywide,946514,2,32749,30.4,1.1,2103874.0,0.51,21479.75

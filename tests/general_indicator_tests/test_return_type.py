@@ -2,8 +2,7 @@
 returning series"""
 import pytest
 import pandas as pd
-
-from tests.quality_of_life.QOL_testing_helpers import accessors
+from aggregate.all_accessors import accessors
 
 
 @pytest.mark.parametrize("accessor", accessors)

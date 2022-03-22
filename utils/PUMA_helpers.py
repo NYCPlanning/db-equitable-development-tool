@@ -29,12 +29,14 @@ borough_name_mapper = {
 
 census_races = ["anh", "bnh", "hsp", "onh", "wnh"]
 
+dcp_pop_races = ["anh", "bnh", "hsp", "wnh"]
+
 
 def puma_to_borough(record):
 
     borough_code = record.puma[:3]
 
-    borough = borough_code_mapper[borough_code]
+    borough = borough_code_mapper.get(borough_code, None)
     return borough
 
 
@@ -111,3 +113,10 @@ def clean_PUMAs(puma) -> pd.DataFrame:
     elif puma[0] != "0":
         puma = "0" + puma
     return puma
+
+
+def filter_for_recognized_pumas(df):
+    """Written for income restricted indicator but can be used for many other
+    indicators that have rows by puma but include some non-PUMA rows. Sometimes
+    we set nrows in read csv/excel but this approach is more flexible"""
+    return df[df["puma"].isin(get_all_NYC_PUMAs())]

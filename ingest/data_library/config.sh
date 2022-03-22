@@ -36,5 +36,3 @@ function import_csv {
     mc cp spaces/edm-recipes/datasets/$dataset/$version/$dataset.csv $target_dir/$filename.csv
   fi
 }
-
-function import

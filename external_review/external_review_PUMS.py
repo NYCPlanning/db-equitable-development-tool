@@ -10,7 +10,7 @@ import typer
 
 from aggregate.load_aggregated import load_aggregated_PUMS
 from aggregate.decennial_census.decennial_census_001020 import decennial_census_data
-from aggregate.decennial_census.census_2000_PUMS import census_2000_pums
+from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics
 
 app = typer.Typer()
 
@@ -27,7 +27,7 @@ def save_PUMS(
     This needs to be updated to handle economics correctly"""
     if eddt_category == "demographics":
         if year == "2000":
-            census_PUMS = census_2000_pums(geography)
+            census_PUMS = census_2000_pums_demographics(geography)
             dec_census = decennial_census_data(geography, dec_census_year_mapper[year])
             final = dec_census.merge(census_PUMS, left_index=True, right_index=True)
         else:

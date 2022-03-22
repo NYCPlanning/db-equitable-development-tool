@@ -25,7 +25,7 @@ def load_filings():
 def eviction_cases(geography: str, write_to_internal_review=False):
     """Main Accessor"""
     filings = load_filings()
-    final = filings.groupby(geography).sum()["eviction_filings"]
+    final = filings.groupby(geography).sum()[["eviction_filings"]]
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "eviction_cases.csv", geography)],

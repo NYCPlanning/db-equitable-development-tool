@@ -10,9 +10,9 @@ supported_geographies = ["puma", "borough", "citywide"]
 
 
 def area_historic_internal_review():
-    citywide = find_fraction_PUMA_historic("citywide")
-    by_borough = find_fraction_PUMA_historic("borough")
-    by_puma = find_fraction_PUMA_historic("puma")
+    citywide = fraction_historic("citywide")
+    by_borough = fraction_historic("borough")
+    by_puma = fraction_historic("puma")
     set_internal_review_files(
         [
             (citywide, "area_historic_citywide.csv", "citywide"),
@@ -23,13 +23,13 @@ def area_historic_internal_review():
     )
 
 
-def find_fraction_PUMA_historic(geography_level):
+def fraction_historic(geography_level):
     """Main accessor of indicator"""
     gdf = generate_geographies(geography_level)
     gdf["total_sqmiles"] = gdf.geometry.area / (5280 ** 2)
     hd = load_historic_districts_gdf()
     gdf[["area_historic_pct", "area_historic_sqmiles"]] = gdf.apply(
-        fraction_area_historic, axis=1, args=(hd,), result_type="expand"
+        fraction_PUMA_historic, axis=1, args=(hd,), result_type="expand"
     )
     return gdf[["area_historic_pct", "area_historic_sqmiles", "total_sqmiles"]].round(2)
 
@@ -51,7 +51,7 @@ def generate_geographies(geography_level):
     raise Exception(f"Supported geographies are {supported_geographies}")
 
 
-def fraction_area_historic(PUMA, hd):
+def fraction_PUMA_historic(PUMA, hd):
     gdf = gp.GeoDataFrame(geometry=[PUMA.geometry], crs="EPSG:2263")
     overlay = gp.overlay(hd, gdf, "intersection")
     if overlay.empty:

@@ -1,2 +1,2 @@
-citywide,units_threemaintenance_count,units_threemaintenance_count_cv,units_threemaintenance_count_moe,units_threemaintenance_pct,units_threemaintenance_pct_moe,units_occu_count,units_occu_count_cv,units_occu_count_moe
-citywide,308129,3,19990,11.2,0.7,3109955,0,17171
+citywide,units_threemaintenance_count,units_threemaintenance_count_moe,units_threemaintenance_count_cv,units_threemaintenance_pct,units_threemaintenance_pct_moe,units_occu_count,units_occu_count_moe,units_occu_count_cv
+citywide,308129,19990,3,11.2,0.7,3109955,17171,0

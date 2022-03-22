@@ -1,18 +1,11 @@
 import pandas as pd
 import pytest
+from tests.general_indicator_tests.general_indicator_test_helpers import get_by_geo
 from utils.PUMA_helpers import get_all_NYC_PUMAs, get_all_boroughs
-from aggregate.all_accessors import accessors
 
 all_PUMAs = get_all_NYC_PUMAs()
 all_boroughs = get_all_boroughs()
-
-by_puma = []
-by_borough = []
-by_citywide = []
-for a in accessors:
-    by_puma.append((a("puma"), a.__name__))
-    by_borough.append((a("borough"), a.__name__))
-    by_citywide.append((a("citywide"), a.__name__))
+by_puma, by_borough, by_citywide = get_by_geo()
 
 
 @pytest.mark.parametrize("data, ind_name", by_puma)
@@ -39,11 +32,3 @@ def test_citywide_single_index(data, ind_name):
 @pytest.mark.parametrize("data, ind_name", by_puma + by_borough + by_citywide)
 def test_rv_dataframe(data, ind_name):
     assert isinstance(data, pd.DataFrame), f"{ind_name} returns incorrect type"
-
-
-@pytest.mark.parametrize("data, ind_name", by_puma + by_borough + by_citywide)
-def test_count_pct_tokens_present(data, ind_name):
-    for c in data.columns:
-        assert (
-            "count" in c or "pct" in c
-        ), f"{ind_name} returns column {c} with no count or pct token"

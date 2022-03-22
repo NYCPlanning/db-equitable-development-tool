@@ -122,7 +122,7 @@ def create_puma_level_df_by_year(df, year):
 
 
 def decennial_census_data(
-    geography: str, year: int, write_to_internal_review=False
+    geography: str, year: int = 2010, write_to_internal_review=False
 ) -> pd.DataFrame:
     assert geography in ["citywide", "borough", "puma"]
     assert year in [2000, 2010, 2020]

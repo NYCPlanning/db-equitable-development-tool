@@ -1,5 +1,9 @@
-from aggregate.PUMS.aggregate_PUMS import PUMSAggregator, PUMSCount
+"""indicators_denom attr is defined first as constant outside of class so that it 
+can be imported on it's own"""
+
 import pandas as pd
+from aggregate.PUMS.aggregate_PUMS import PUMSCount
+from aggregate.aggregation_helpers import demographic_indicators_denom
 
 
 class PUMSCountDemographics(PUMSCount):
@@ -9,12 +13,7 @@ class PUMSCountDemographics(PUMSCount):
     """
 
     cache_fn = "data/PUMS_demographic_counts_aggregator.pkl"  # Can make this dynamic based on position on inheritance tree
-
-    indicators_denom = [
-        ("LEP", "over_five_filter"),
-        ("foreign_born",),
-        ("age_bucket",),
-    ]
+    indicators_denom = demographic_indicators_denom
 
     def __init__(
         self,

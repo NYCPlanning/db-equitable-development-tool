@@ -85,10 +85,12 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
     data.replace(",", "", regex=True, inplace=True)
     num_cols = ['N', 'MOE\n(95% CI)', 'CV', 'Percent', 'Percent MOE\n(95% CI)']
     data[num_cols] = data[num_cols].apply(pd.to_numeric, errors="coerce")
+    data = data.reindex(columns=['SBA', 'PUMA', 'CD Name', 'N', 'MOE\n(95% CI)', 'CV','Percent', 'Percent MOE\n(95% CI)'])
 
     denom = pd.read_excel(**read_excel_arg)
     denom["PUMA"] = denom["PUMA"].astype(str)
     denom.drop(columns=['SE', 'Percent', 'Percent SE', 'Percent MOE\n(95% CI)'], errors="ignore", inplace=True)
+    denom = denom.reindex(columns=['SBA', 'CD Name', 'PUMA', 'N', 'MOE\n(95% CI)', 'CV', ])
 
     return data, denom
 

@@ -1,4 +1,4 @@
-puma,units_rentstable_count,units_rentstable_cv,units_rentstable_moe,units_rentstable_pct,units_rentstable_pct_moe,units_occurental_count,units_occurental_cv,units_occurental_moe
+puma,units_rentstable_count,units_rentstable_count_cv,units_rentstable_count_moe,units_rentstable_pct,units_rentstable_pct_moe,units_occurental_count,units_occurental_count_cv,units_occurental_count_moe
 03710,21910,15,6429,44.7,11.7,44875.84,4.02,3592.2
 03705,22301,14,6168,40.9,10.4,48658.77,5.14,4975.5
 03708,37623,6,4529,79.3,7.7,42981.35,4.79,4099.02

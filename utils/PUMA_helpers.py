@@ -46,7 +46,7 @@ def puma_to_borough(record):
 
     borough_code = record.puma[:3]
 
-    borough = borough_code_mapper[borough_code]
+    borough = borough_code_mapper.get(borough_code, None)
     return borough
 
 
@@ -109,3 +109,10 @@ def get_all_NYC_PUMAs():
 
 def get_all_boroughs():
     return ["BK", "BX", "MN", "QN", "SI"]
+
+
+def filter_for_recognized_pumas(df):
+    """Written for income restricted indicator but can be used for many other
+    indicators that have rows by puma but include some non-PUMA rows. Sometimes
+    we set nrows in read csv/excel but this approach is more flexible"""
+    return df[df["puma"].isin(get_all_NYC_PUMAs())]

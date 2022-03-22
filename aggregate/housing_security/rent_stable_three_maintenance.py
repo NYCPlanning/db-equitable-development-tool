@@ -8,7 +8,7 @@ from aggregate.clean_aggregated import order_affordable
 from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs
 
 suffix_mapper = {
-    "_N": "",
+    "_N": "_count",
     "Percent MOE\n(95% CI)": "pct_moe",  # don't love this. But the order does matter here. As the MOE is a partial string match
     "MOE\n(95% CI)": "moe",
     "CV": "cv",

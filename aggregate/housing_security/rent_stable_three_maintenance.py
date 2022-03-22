@@ -1,4 +1,5 @@
 from ast import Index
+from distutils import errors
 from typing import final
 import pandas as pd
 from utils.PUMA_helpers import clean_PUMAs
@@ -14,14 +15,14 @@ suffix_mapper = {
     "Percent": "pct",
 }
 
-def rent_stablized_units(
+def rent_stabilized_units(
     geography: str, write_to_internal_review=False
     ) -> pd.DataFrame:
 
     clean_data, denom = load_source_clean_data("units_rentstable")
 
     indi_final = extract_geography_dataframe(clean_data, geography)
-    denom_final = extract_geography_dataframe(denom, geography, denom=True)
+    denom_final = extract_geography_dataframe(denom, geography)
     indi_final.columns = ["units_rentstable_"+ c for c in indi_final.columns]
     denom_final.columns = ["units_occurental_" + c for c in denom_final.columns]
     final = pd.concat([indi_final, denom_final], axis=1)
@@ -35,14 +36,14 @@ def rent_stablized_units(
         )  
     return final
 
-def three_mainteinance_units(
+def three_maintenance_units(
     geography: str, write_to_internal_review=False
     ) -> pd.DataFrame:
-    clean_data, denom = load_source_clean_data("units_threemainteinance")
+    clean_data, denom = load_source_clean_data("units_threemaintenance")
 
     indi_final = extract_geography_dataframe(clean_data, geography)
-    denom_final = extract_geography_dataframe(denom, geography, denom=True)
-    indi_final.columns = ["units_threemainteinance_"+ c for c in indi_final.columns]
+    denom_final = extract_geography_dataframe(denom, geography)
+    indi_final.columns = ["units_threemaintenance_"+ c for c in indi_final.columns]
     denom_final.columns = ["units_occu_" + c for c in denom_final.columns]
     final = pd.concat([indi_final, denom_final], axis=1)
     for code, suffix in suffix_mapper.items():
@@ -50,7 +51,7 @@ def three_mainteinance_units(
 
     if write_to_internal_review:
         set_internal_review_files(
-            [(final, "units_threemainteinance.csv", geography)],
+            [(final, "units_threemaintenance.csv", geography)],
             "housing_security",
         )  
     return final 
@@ -59,7 +60,7 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
     if indicator == "units_rentstable":
         usecols = [x for x in range(10)]
         sheetname = "2017 HVS Occupied Rental Units"
-    else:
+    elif indicator == "units_threemaintenance":
         usecols = [x for x in range(3)] + [x for x in range(11, 18)]
         sheetname = "2017 HVS Occupied Units"
 
@@ -78,16 +79,22 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
     }
     data = pd.read_csv(**read_csv_arg)
     data.columns = [c.replace(".1", "") for c in data.columns]
-    data.columns = ['SBA', 'PUMA', 'CD Name', 'N', 'SE', 'MOE\n(95% CI)', 'CV', 'Percent',
-       'Percent SE', 'Percent MOE\n(95% CI)']
+    data.drop(columns=['SE', 'Percent SE'], inplace=True)
+    data.replace("%", "", regex=True, inplace=True)
+    data.replace(",", "", regex=True, inplace=True)
+    num_cols = ['N', 'MOE\n(95% CI)', 'CV', 'Percent', 'Percent MOE\n(95% CI)']
+    data[num_cols] = data[num_cols].apply(pd.to_numeric, errors="coerce")
 
     denom = pd.read_excel(**read_excel_arg)
     denom["PUMA"] = denom["PUMA"].astype(str)
-    denom.columns = ['SBA', 'CD Name', 'PUMA', 'N', 'SE', 'MOE\n(95% CI)', 'CV',]
+    if 'Percent' in denom.columns:
+        denom.drop(columns=['SE', 'Percent', 'Percent SE', 'Percent MOE\n(95% CI)'], inplace=True)
+    else:
+        denom.drop(columns=["SE"], inplace=True)
 
     return data, denom
 
-def extract_geography_dataframe(clean_data: pd.DataFrame, geography: str, denom=False) -> pd.DataFrame:
+def extract_geography_dataframe(clean_data: pd.DataFrame, geography: str) -> pd.DataFrame:
 
     if geography == "puma":
         clean_data["puma"] = clean_data["PUMA"].apply(func=clean_PUMAs)
@@ -101,12 +108,10 @@ def extract_geography_dataframe(clean_data: pd.DataFrame, geography: str, denom=
         clean_data.loc[clean_data["CD Name"] == "NYC", "citywide"] = "citywide"
         final = clean_data.loc[~clean_data.citywide.isna()].copy()
 
-    if denom:
-        drop_cols = ["SBA", "PUMA", "CD Name", "SE",]
-    else:
-        drop_cols = ["SBA", "PUMA", "CD Name", "SE", "Percent SE"]
+    drop_cols = ["SBA", "PUMA", "CD Name",]
 
     final.drop(columns=drop_cols, inplace=True)
     final.set_index(geography, inplace=True)
+    final = final.round(2)
 
     return final

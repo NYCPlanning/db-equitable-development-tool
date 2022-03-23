@@ -25,9 +25,9 @@ def order_aggregated_columns(
         for ind_category in categories[ind]:
             for measure in ["_count", "_pct"]:
                 col_order.append(f"{ind_category}{measure}")
+                col_order.append(f"{ind_category}{measure}_moe")
                 if measure == "_count":
                     col_order.append(f"{ind_category}{measure}_cv")
-                col_order.append(f"{ind_category}{measure}_moe")
             if not census_PUMS:
                 col_order.append(f"{ind_category}_pct_denom")
             if census_PUMS and ind == "LEP":
@@ -38,9 +38,9 @@ def order_aggregated_columns(
                     for measure in ["_count", "_pct"]:
                         column_label_base = f"{ind_category}_{race_crosstab}{measure}"
                         col_order.append(f"{column_label_base}")
+                        col_order.append(f"{column_label_base}_moe")
                         if measure == "_count":
                             col_order.append(f"{column_label_base}_cv")
-                        col_order.append(f"{column_label_base}_moe")
                     if not census_PUMS:
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
                     if census_PUMS and ind == "LEP":

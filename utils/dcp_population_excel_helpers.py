@@ -12,7 +12,7 @@ race_suffix_mapper = {
 stat_suffix_mapper = {
     "_00e": "_count",
     "_00m": "_count_moe",
-    "_00c": "_cv",
+    "_00c": "_count_cv",
     "_00p": "_pct",
     "_00z": "_pct_moe",
 }

@@ -23,9 +23,9 @@ def order_aggregated_columns(
     for ind_denom in indicators_denom:
         ind = ind_denom[0]
         for ind_category in categories[ind]:
-            for measure in ["", "_pct"]:
+            for measure in ["_count", "_pct"]:
                 col_order.append(f"{ind_category}{measure}")
-                if measure == "":
+                if measure == "_count":
                     col_order.append(f"{ind_category}{measure}_cv")
                 col_order.append(f"{ind_category}{measure}_moe")
             if not census_PUMS:
@@ -35,10 +35,10 @@ def order_aggregated_columns(
         if not household:
             for ind_category in categories[ind]:
                 for race_crosstab in categories["race"]:
-                    for measure in ["", "_pct"]:
+                    for measure in ["_count", "_pct"]:
                         column_label_base = f"{ind_category}_{race_crosstab}{measure}"
                         col_order.append(f"{column_label_base}")
-                        if measure == "":
+                        if measure == "_count":
                             col_order.append(f"{column_label_base}_cv")
                         col_order.append(f"{column_label_base}_moe")
                     if not census_PUMS:

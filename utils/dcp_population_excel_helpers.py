@@ -18,7 +18,7 @@ stat_suffix_mapper = {
 }
 
 
-### Create base load function that reads in the march 4th, dcp population xlsx
+### Create base load function that reads dcp population xlsx for 2000 census pums
 def load_2000_census_pums_all_data() -> pd.DataFrame:
     df = pd.read_excel(
         "./resources/ACS_PUMS/EDDT_Census2000PUMS.xlsx",

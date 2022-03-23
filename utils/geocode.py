@@ -51,7 +51,7 @@ def eviction_record_to_address(record) -> dict:
 def geocode_address(address: dict) -> str:
     """Requires docker"""
     try:
-        geocoded = gw.geosupport["1"](
+        geocoded = gw.geosupport["1E"](
             street_name=address["street_name"],
             house_number=address["address_num"],
             borough=address["borough"],

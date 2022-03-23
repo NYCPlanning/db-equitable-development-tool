@@ -97,11 +97,11 @@ class Accessors:
 
     @property
     def housing_security(self):
-        try:
-            Geosupport()
-            return [count_residential_evictions] + housing_security_accessors
-        except GeosupportError:
-            return housing_security_accessors
+        # try:
+        # Geosupport()
+        return [count_residential_evictions] + housing_security_accessors
+        # except GeosupportError:
+        # return housing_security_accessors
 
     @property
     def all(self):

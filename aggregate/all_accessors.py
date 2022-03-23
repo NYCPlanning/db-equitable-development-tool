@@ -87,6 +87,6 @@ accessors = (
 def get_accessors():
     try:
         Geosupport()
-        return accessors + [count_residential_evictions]
+        return [count_residential_evictions]  # + accessors
     except GeosupportError:
         return accessors

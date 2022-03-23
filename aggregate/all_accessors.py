@@ -8,15 +8,15 @@ from aggregate.housing_production.hpd_housing_ny_affordable_housing import (
 )
 
 # Housing Security imports
-# Currently count residential evictions is left out as it requires geocoding, can address this later if need be.
+# Three or more maintenance deficiences also left out as I'm not sure where we are getting data moving forward
 # from aggregate.housing_security.three_or_more_maintenance_deficiencies import (
 #     count_units_three_or_more_deficiencies,
 # )
 
-# Three or more maintenance deficiences also left out as I'm not sure where we are getting data moving forward
-# from aggregate.housing_security.evictions_by_city_marshals import (
-#     count_residential_evictions,
-# )
+# Currently count residential evictions is left out as it requires geocoding, can address this later if need be.
+from aggregate.housing_security.evictions_by_city_marshals import (
+    count_residential_evictions,
+)
 
 from aggregate.housing_security.DHS_shelter import DHS_shelter
 from aggregate.housing_security.eviction_cases_housing_court import eviction_cases
@@ -80,3 +80,10 @@ accessors = (
     + housing_production_accessors
     + census_accessors
 )
+
+
+def get_accessors(geocode=False):
+    if geocode:
+        return accessors + [count_residential_evictions]
+    else:
+        return accessors

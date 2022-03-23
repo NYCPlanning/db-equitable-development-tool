@@ -1,0 +1,6 @@
+borough,rent_median_0812,rent_median_0812_moe,rent_median_0812_cv,rent_median_wnh_0812,rent_median_wnh_0812_moe,rent_median_wnh_0812_cv,rent_median_bnh_0812,rent_median_bnh_0812_moe,rent_median_bnh_0812_cv,rent_median_hsp_0812,rent_median_hsp_0812_moe,rent_median_hsp_0812_cv,rent_median_anh_0812,rent_median_anh_0812_moe,rent_median_anh_0812_cv,rent_median_1519,rent_median_1519_moe,rent_median_1519_cv,rent_median_wnh_1519,rent_median_wnh_1519_moe,rent_median_wnh_1519_cv,rent_median_bnh_1519,rent_median_bnh_1519_moe,rent_median_bnh_1519_cv,rent_median_hsp_1519,rent_median_hsp_1519_moe,rent_median_hsp_1519_cv,rent_median_anh_1519,rent_median_anh_1519_moe,rent_median_anh_1519_cv
+BX,1127,11.0,0.6,1223,34.0,1.7,1109,19.0,1.0,1111,15,0.8,1224,44.0,2.2,1219,12,0.6,1342,39,1.8,1183,19,1.0,1219,17,0.9,1329,64,2.9
+BK,1249,9.0,0.5,1415,21.0,0.9,1157,14.0,0.7,1169,21,1.1,1286,32.0,1.5,1444,12,0.5,1758,25,0.9,1256,18,0.9,1318,25,1.1,1494,41,1.7
+MN,1552,24.0,1.0,2145,29.0,0.8,923,27.0,1.8,991,24,1.5,1649,84.0,3.1,1755,28,1.0,2379,32,0.8,997,33,2.0,1120,27,1.5,1888,92,3.0
+QN,1441,11.0,0.5,1433,22.0,1.0,1285,31.0,1.5,1454,18,0.8,1530,22.0,0.9,1587,13,0.5,1663,26,1.0,1383,36,1.6,1559,23,0.9,1656,25,0.9
+SI,1285,37.0,1.7,1327,45.0,2.1,942,117.0,7.5,1406,72,3.1,1321,172.0,7.9,1336,40,1.8,1394,53,2.3,1147,125,6.6,1309,84,3.9,1412,140,6.0

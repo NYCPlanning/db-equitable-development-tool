@@ -53,7 +53,7 @@ def eli_rent_burden_households(geography: str) -> pd.DataFrame:
 
     return final
 
-def rent_median(geography: str) -> pd.DataFrame:
+def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
     name_mapper = {
         "MdGR": "rent_median"
@@ -85,6 +85,12 @@ def rent_median(geography: str) -> pd.DataFrame:
     final = rename_col(final, name_mapper)
 
     final.dropna(axis=1, how="all", inplace=True)
+
+    if write_to_internal_review:
+        set_internal_review_files(
+            [(final, "rent_median.csv", geography)],
+            "housing_security",
+        )
 
     return final 
 
@@ -143,5 +149,7 @@ def load_clean_pop_data(ind_name_str: str) -> pd.DataFrame:
     df = pd.merge(df_0812, df_1519, on="Geog", how="left")
 
     df = df.filter(regex=ind_name_str + "|Geog")
+
+    df.loc[df["Geog"] == "NYC", "Geog"] = "citywide"
 
     return df

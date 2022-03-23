@@ -8,7 +8,7 @@ from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
 
-
+## Mapper specific to this script
 housing_tenure_name_mapper = {
     "occhu": "units_occupied",
     "oocc": "units_occupied_owner",

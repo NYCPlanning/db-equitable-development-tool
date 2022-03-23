@@ -39,19 +39,3 @@ def load_2000_census_pums_all_data() -> pd.DataFrame:
     )
     df.set_index("GeoID", inplace=True)
     return df
-
-
-# def create_df_by_geo(df):
-#    if geography == "citywide":
-#        final = df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})
-#    elif geography == "borough":
-#        final = (
-#            df.loc[["BX", "BK", "MN", "QN", "SI"]]
-#            .reset_index()
-#            .rename(columns={"GeoID": "borough"})
-#        )
-#    else:
-#        final = df.loc["3701":"4114"].reset_index().rename(columns={"GeoID": "puma"})
-#        final["puma"] = final["puma"].apply(func=clean_PUMAs)
-
-#    final.set_index(geography, inplace=True)

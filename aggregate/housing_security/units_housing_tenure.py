@@ -72,7 +72,7 @@ def units_housing_tenure(geography: str, write_to_internal_review=False) -> pd.D
 
     final = rename_col(final, name_mapper)
 
-    final.dropna(axis=1, how="all", inplace=True)
+    #final.dropna(axis=1, how="all", inplace=True)
 
     if write_to_internal_review:
         set_internal_review_files(

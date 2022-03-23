@@ -1,3 +1,5 @@
+from geosupport import Geosupport, GeosupportError
+
 # Housing production imports
 from aggregate.housing_production.area_within_historic_district import (
     fraction_historic,
@@ -82,8 +84,9 @@ accessors = (
 )
 
 
-def get_accessors(geocode=False):
-    if geocode:
+def get_accessors():
+    try:
+        Geosupport()
         return accessors + [count_residential_evictions]
-    else:
+    except GeosupportError:
         return accessors

@@ -100,4 +100,6 @@ def load_clean_pop_data(ind_name_str: str) -> pd.DataFrame:
 
     df = df.filter(regex=ind_name_str + "|Geog")
 
+    df.loc[df["Geog"] == "NYC", "Geog"] = "citywide"
+    
     return df

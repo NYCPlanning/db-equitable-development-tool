@@ -13,6 +13,9 @@ def count_units_three_or_more_deficiencies(
     geography_level, year=2017, crosstab_by_race=False, requery=False
 ):
     """Main accessor"""
+    raise Exception(
+        "outdated, this indicator comes from rent_stable_three_maintenance.py"
+    )
     if year not in implemeted_years:
         raise Exception(
             f"HVS ingestion for {year} survey not implemented yet. \

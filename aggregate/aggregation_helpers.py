@@ -23,11 +23,11 @@ def order_aggregated_columns(
     for ind_denom in indicators_denom:
         ind = ind_denom[0]
         for ind_category in categories[ind]:
-            for measure in ["", "_pct"]:
+            for measure in ["_count", "_pct"]:
                 col_order.append(f"{ind_category}{measure}")
-                if measure == "":
-                    col_order.append(f"{ind_category}{measure}_cv")
                 col_order.append(f"{ind_category}{measure}_moe")
+                if measure == "_count":
+                    col_order.append(f"{ind_category}{measure}_cv")
             if not census_PUMS:
                 col_order.append(f"{ind_category}_pct_denom")
             if census_PUMS and ind == "LEP":
@@ -35,12 +35,12 @@ def order_aggregated_columns(
         if not household:
             for ind_category in categories[ind]:
                 for race_crosstab in categories["race"]:
-                    for measure in ["", "_pct"]:
+                    for measure in ["_count", "_pct"]:
                         column_label_base = f"{ind_category}_{race_crosstab}{measure}"
                         col_order.append(f"{column_label_base}")
-                        if measure == "":
-                            col_order.append(f"{column_label_base}_cv")
                         col_order.append(f"{column_label_base}_moe")
+                        if measure == "_count":
+                            col_order.append(f"{column_label_base}_cv")
                     if not census_PUMS:
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
                     if census_PUMS and ind == "LEP":

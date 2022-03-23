@@ -3,18 +3,15 @@ from os import makedirs, path
 import pandas as pd
 import typer
 
-from aggregate import all_accessors
+from aggregate.all_accessors import Accessors
 
+accessors = Accessors()
 app = typer.Typer()
-accessors = {
-    "housing_production": all_accessors.housing_production_accessors,
-    "quality_of_life": all_accessors.QOL_accessors,
-}
 
 
 def collate(geography_level, category):
     """Collate indicators together"""
-    accessor_functions = accessors[category]
+    accessor_functions = accessors.__getattribute__(category)
     final_df = pd.DataFrame()
     for ind_accessor in accessor_functions:
         try:

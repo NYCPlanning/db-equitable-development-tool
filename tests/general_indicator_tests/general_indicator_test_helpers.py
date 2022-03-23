@@ -1,8 +1,12 @@
-from aggregate.all_accessors import get_accessors
+from aggregate.all_accessors import get_accessors, get_housing_security_indicators
 
 
-def get_by_geo():
-    accessors = get_accessors()
+def get_by_geo(housing_security=False):
+    """housing security parameter is temporary"""
+    if housing_security:
+        accessors = get_housing_security_indicators()
+    else:
+        accessors = get_accessors()
     by_puma = []
     by_borough = []
     by_citywide = []

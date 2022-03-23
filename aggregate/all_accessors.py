@@ -84,6 +84,14 @@ accessors = (
 )
 
 
+def get_housing_security_indicators():
+    try:
+        Geosupport()
+        return [count_residential_evictions] + housing_security_accessors
+    except GeosupportError:
+        return housing_security_accessors
+
+
 def get_accessors():
     try:
         Geosupport()

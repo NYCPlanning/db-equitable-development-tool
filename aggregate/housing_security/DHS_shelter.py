@@ -21,7 +21,7 @@ def DHS_shelter(geography, year=2020, write_to_internal_review=False):
     )
     source_data["individuals"] = source_data["individuals"].astype(float)
     final = source_data.groupby(geography).sum()[["individuals"]]
-    final.rename(columns={"individuals": f"DHS_shelter_{year}"}, inplace=True)
+    final.rename(columns={"individuals": f"DHS_shelter_{year}_count"}, inplace=True)
     if write_to_internal_review:
         set_internal_review_files(
             [(final, f"DHS_shelter_{year}.csv", geography)],

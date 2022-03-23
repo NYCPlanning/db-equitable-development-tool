@@ -30,6 +30,19 @@ stat_suffix_mapper_ty = {
     "_1519z": "_1519_pct_moe",
 }
 
+stat_suffix_mapper_md = {
+    "_0812e": "_0812_median",
+    "_0812m": "_0812_median_moe",
+    "_0812c": "_0812_median_cv",
+    "_0812p": "_0812_pct",
+    "_0812z": "_0812_pct_moe",
+    "_1519e": "_1519_median",
+    "_1519m": "_1519_median_moe",
+    "_1519c": "_1519_median_cv",
+    "_1519p": "_1519_pct",
+    "_1519z": "_1519_pct_moe",
+}
+
 ### Create base load function that reads dcp population xlsx for 2000 census pums
 def load_2000_census_pums_all_data() -> pd.DataFrame:
     df = pd.read_excel(

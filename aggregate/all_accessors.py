@@ -22,6 +22,10 @@ from aggregate.housing_security.evictions_by_city_marshals import (
 
 from aggregate.housing_security.DHS_shelter import DHS_shelter
 from aggregate.housing_security.eviction_cases_housing_court import eviction_cases
+from aggregate.housing_security.rent_stable_three_maintenance import (
+    rent_stabilized_units,
+    three_maintenance_units,
+)
 from aggregate.housing_security.units_affordable import units_affordable
 from aggregate.housing_security.income_restricted_units import income_restricted_units
 
@@ -65,6 +69,8 @@ housing_security_accessors = [
     eviction_cases,
     units_affordable,
     income_restricted_units,
+    rent_stabilized_units,
+    three_maintenance_units,
 ]
 """This file is here as the accessor functions it assigns come from multiple sources"""
 

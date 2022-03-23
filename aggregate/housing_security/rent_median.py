@@ -2,7 +2,7 @@
 from typing import final
 import pandas as pd
 from aggregate.clean_aggregated import order_PUMS_QOL, order_PUMS_QOL_multiple_years
-from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper
+from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper, get_all_boroughs, get_all_NYC_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
 
 race_mapper = {
@@ -39,38 +39,58 @@ reorder_mapper = {
     "_1519_wnh": "_wnh_1519",
 }
 
-ind = {
-    "": "rent_median",
-    "": "",
-    "": "",
-    ""
-}
+def rent_burden_households(geography: str) -> pd.DataFrame:
+    name_mapper = {
 
-def rent_burden_households() -> pd.DataFrame:
-
-
-
-
+    }
 
     return final
 
-def eli_rent_burden_households() -> pd.DataFrame:
+def eli_rent_burden_households(geography: str) -> pd.DataFrame:
+    name_mapper = {
+
+    }
 
     return final
 
-def rent_median() -> pd.DataFrame:
+def rent_median(geography: str) -> pd.DataFrame:
 
-    clean_data = load_clean_pop_data("rent_median")
-
-    final = rename_col(clean_data, )
+    name_mapper = {
+        "MdGR": "rent_median"
+    }
 
     
+    ind_name_str = "|".join([k for k in name_mapper.keys()])
+    #print(ind_name_str)
+
+    clean_data = load_clean_pop_data(ind_name_str)
+
+    if geography == "citywide":
+        final = clean_data.loc[clean_data["Geog"] == "citywide"].rename(columns={"Geog": "citywide"}).copy()
+    elif geography == "borough":
+        boros = ["BX", "BK", "MN", "QN", "SI"]
+        clean_data["Geog"] = clean_data["Geog"].map(borough_name_mapper, na_action="ignore")
+        final = (
+            clean_data.loc[clean_data["Geog"].isin(boros)]
+            .rename(columns={"Geog": "borough"}).copy()
+        )
+    elif geography == "puma":
+        pumas = get_all_NYC_PUMAs()
+        clean_data["Geog"] = clean_data["Geog"].apply(func=clean_PUMAs)
+        print(clean_data.Geog)
+        final = clean_data.loc[clean_data["Geog"].isin(pumas)].rename(columns={"Geog": "puma"}).copy()
+
+    final.set_index(geography, inplace=True)
+
+    final = rename_col(final, name_mapper)
+
+    final.dropna(axis=1, how="all", inplace=True)
 
     return final 
 
 
 
-def rename_col(df: pd.DataFrame):
+def rename_col(df: pd.DataFrame, name_mapper: dict):
     """Rename the columns to follow conventions laid out in the wiki and issue #59"""
     cols = map(str.lower, df.columns)
     # Recode race id
@@ -84,15 +104,13 @@ def rename_col(df: pd.DataFrame):
     # Recode standard stat suffix for 2008 - 2012
     for code, suffix in suffix_mapper.items():
         cols = [col.replace(code, suffix) for col in cols]
-
     # Rename data points
-    for k, ind_name in :
-        cols = [col.replace("cwcar_", "access_carcommute_") for col in cols]
-    cols = [col.replace("wk16p_", "access_workers16pl_") for col in cols]
+    for k, ind_name in name_mapper.items():
+        cols = [col.replace(k.lower(), ind_name) for col in cols]
 
     # Reorder the columns to follow wiki conventions - TODO: this could be redone
-    for code, reorder in reorder_mapper.items():
-        cols = [col.replace(code, reorder) for col in cols]
+    #for code, reorder in reorder_mapper.items():
+    #    cols = [col.replace(code, reorder) for col in cols]
 
     df.columns = cols
 
@@ -105,14 +123,14 @@ def load_clean_pop_data(ind_name_str: str) -> pd.DataFrame:
     read_excel_arg = {
         "0812": {
             "io": "./resources/ACS_PUMS/EDDT_ACS2008-2012.xlsx",
-            "sheetname": "ACS08-12",
+            "sheet_name": "ACS08-12",
             "usecols": "A:LO",
             "dtype": {"Geog": str},
 
         },
         "1519": {
             "io": "./resources/ACS_PUMS/EDDT_ACS2015-2019.xlsx",
-            "sheetname": "ACS15-19",
+            "sheet_name": "ACS15-19",
             "usecols": "A:LO",
             "dtype": {"Geog": str},
         },
@@ -124,20 +142,6 @@ def load_clean_pop_data(ind_name_str: str) -> pd.DataFrame:
 
     df = pd.merge(df_0812, df_1519, on="Geog", how="left")
 
-    df = df.filter(regex=ind_name_str)
-
-    df = df.replace(
-        {
-            "Geog": {
-                "Bronx": "BX",
-                "Brooklyn": "BK",
-                "Manhattan": "MN",
-                "Queens": "QN",
-                "Staten Island": "SI",
-                "NYC": "citywide",
-            }
-        }
-    )
-    df.set_index("Geog", inplace=True)
+    df = df.filter(regex=ind_name_str + "|Geog")
 
     return df

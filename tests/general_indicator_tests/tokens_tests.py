@@ -7,6 +7,6 @@ by_puma, by_borough, by_citywide = get_by_geo()
 @pytest.mark.parametrize("data, ind_name", by_puma + by_borough + by_citywide)
 def test_count_pct_tokens_present(data, ind_name):
     for c in data.columns:
-        assert (
-            "count" in c or "pct" in c
+        assert any(
+            token in c for token in ["count", "pct", "rate", "index", "median"]
         ), f"{ind_name} returns column {c} with no count or pct token"

@@ -42,10 +42,10 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y python3-pip python3-distutils
-          if [[${{matrix.category}}=='housing_security']]; then
-            echo "installing gdal"
-            sudo apt install -y gdal-bin
-          fi
+          # if [[${{matrix.category}}=='housing_security']]; then
+          # fi
+          echo "installing gdal"
+          sudo apt install -y gdal-bin
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
           curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x mc

@@ -1,6 +1,6 @@
-borough,area_historic_pct,area_historic_sqmiles,total_sqmiles
-BK,3.11,2.16,69.38
-BX,0.95,0.41,42.58
-MN,12.37,2.82,22.84
-QN,0.95,1.04,109.08
-SI,1.05,0.61,58.22
+borough,area_historic_sqmiles_count,area_historic_pct,total_sqmiles_count
+BK,2.16,3.17,67.95
+BX,0.41,0.95,42.58
+MN,2.82,12.37,22.84
+QN,1.04,0.95,109.08
+SI,0.61,1.05,58.22

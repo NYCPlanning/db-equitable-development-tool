@@ -12,7 +12,6 @@ app = typer.Typer()
 def collate(geography_level, category):
     """Collate indicators together"""
     accessor_functions = accessors.__getattribute__(category)
-    print(accessor_functions)
     final_df = pd.DataFrame()
     for ind_accessor in accessor_functions:
         try:

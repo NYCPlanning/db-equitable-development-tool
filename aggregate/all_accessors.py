@@ -82,10 +82,10 @@ housing_security_accessors = [
     rent_stabilized_units,
     three_maintenance_units,
     pums_2000_hsq_housing_tenure,
+    units_housing_tenure,
     homevalue_median,
     households_rent_burden,
     rent_median,
-    units_housing_tenure,
     units_overcrowd,
 ]
 """This file is here as the accessor functions it assigns come from multiple sources"""

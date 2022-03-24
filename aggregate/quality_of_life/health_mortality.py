@@ -104,7 +104,6 @@ def rename_reorder_columns(df: pd.DataFrame, ind_name: str, geography: str):
     if geography == "puma":
         for year_range, end_year in year_mapper[geography].items():
             cols = [c.replace(year_range, end_year) for c in cols]
-    print("before:", cols)
     df.columns = ["health_" + col + "_rate" for col in cols]
     # reorder items to standard
     col_order = order_PUMS_QOL_multiple_years(
@@ -112,7 +111,6 @@ def rename_reorder_columns(df: pd.DataFrame, ind_name: str, geography: str):
         measures=["_rate"],
         years=years,
     )
-    print("after:", col_order)
 
     df = df.reindex(columns=col_order)
 

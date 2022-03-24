@@ -83,9 +83,9 @@ def pivot_and_flatten_index(df, geography):
     for full, abbr in level_mapper.items():
         cols = [c.replace(full, abbr) for c in cols]
 
-    cols = [c.replace("new_construction", "newconstruction") for c in cols]
+    cols = [c.replace("new_construction", "newconstruction") + "_count" for c in cols]
 
-    df.columns = [col + "_count" for col in cols]
+    df.columns = cols
 
     df.reset_index(inplace=True)
 

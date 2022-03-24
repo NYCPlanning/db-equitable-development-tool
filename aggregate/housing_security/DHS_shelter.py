@@ -35,7 +35,6 @@ def DHS_shelter_single_year(geography, year, write_to_internal_review=False):
     )
     source_data["individuals"] = source_data["individuals"].astype(float)
     single_year = source_data.groupby(geography).sum()[["individuals"]]
-    print(single_year)
     single_year.rename(
         columns={"individuals": f"dhs_shelter_{year}_count"}, inplace=True
     )

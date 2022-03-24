@@ -6,13 +6,13 @@ races = ["anh", "bnh", "hsp", "wnh"]
 
 reorder_mapper = {
     '_anh_0812': '_0812_anh',
- '_anh_1519': '_1519_anh',
- '_bnh_0812': '_0812_bnh',
- '_bnh_1519': '_1519_bnh',
- '_hsp_0812': '_0812_hsp',
- '_hsp_1519': '_1519_hsp',
- '_wnh_0812': '_0812_wnh',
- '_wnh_1519': '_1519_wnh'
+    '_anh_1519': '_1519_anh',
+    '_bnh_0812': '_0812_bnh',
+    '_bnh_1519': '_1519_bnh',
+    '_hsp_0812': '_0812_hsp',
+    '_hsp_1519': '_1519_hsp',
+    '_wnh_0812': '_0812_wnh',
+    '_wnh_1519': '_1519_wnh'
  }
 
 def sort_columns(df: pd.DataFrame):

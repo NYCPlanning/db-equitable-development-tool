@@ -1,4 +1,3 @@
-"""this chops up into six indicators they are """
 from typing import final
 import pandas as pd
 from aggregate.clean_aggregated import rename_col, order_PUMS_QOL_multiple_years

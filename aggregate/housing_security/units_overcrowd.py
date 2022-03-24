@@ -16,7 +16,6 @@ def units_overcrowd(geography: str, write_to_internal_review=False) -> pd.DataFr
     name_mapper = {
         "OcR1p": "units_overcrowded",
         "OcRU1": "units_notovercrowded",
-        "OcHU2": "units_occupied", 
     }
 
     clean_data = load_clean_housing_security_pop_data(name_mapper)
@@ -28,7 +27,7 @@ def units_overcrowd(geography: str, write_to_internal_review=False) -> pd.DataFr
     final = rename_col_housing_security(final, name_mapper, race_suffix_mapper, year_mapper, stat_suffix_mapper_ty)
 
     col_order = order_PUMS_QOL_multiple_years(
-        categories=["units_overcrowded", "units_notovercrowded", "units_occupied"],
+        categories=["units_overcrowded", "units_notovercrowded"],
         measures=["_count", "_count_moe", "_count_cv", "_pct", "_pct_moe"],
         years=["_0812", "_1519"],
     )

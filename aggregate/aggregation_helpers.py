@@ -1,5 +1,5 @@
 import pandas as pd
-from utils.PUMA_helpers import census_races
+from utils.PUMA_helpers import census_races, clean_PUMAs, borough_name_mapper, get_all_boroughs, get_all_NYC_PUMAs
 
 
 demographic_indicators_denom = [
@@ -89,3 +89,22 @@ def get_category(indicator, data=None):
             categories.remove(None)
         categories.sort()
         return categories
+
+def get_geography_housing_security_pop_data(clean_data: pd.DataFrame, geography:str):
+
+    if geography == "citywide":
+        final = clean_data.loc[clean_data["Geog"] == "citywide"].rename(columns={"Geog": "citywide"}).copy()
+    elif geography == "borough":
+        boros = get_all_boroughs()
+        clean_data["Geog"] = clean_data["Geog"].map(borough_name_mapper, na_action="ignore")
+        final = (
+            clean_data.loc[clean_data["Geog"].isin(boros)]
+            .rename(columns={"Geog": "borough"}).copy()
+        )
+    elif geography == "puma":
+        pumas = get_all_NYC_PUMAs()
+        clean_data["Geog"] = clean_data["Geog"].apply(func=clean_PUMAs)
+        print(clean_data.Geog)
+        final = clean_data.loc[clean_data["Geog"].isin(pumas)].rename(columns={"Geog": "puma"}).copy()
+
+    return final

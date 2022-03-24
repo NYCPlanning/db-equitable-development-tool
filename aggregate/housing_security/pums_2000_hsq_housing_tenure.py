@@ -10,9 +10,9 @@ from aggregate.aggregation_helpers import order_aggregated_columns, get_category
 
 ## Mapper specific to this script
 housing_tenure_name_mapper = {
-    "occhu": "units_occupied",
-    "oocc": "units_occupied_owner",
-    "rocc": "units_occupied_renter",
+    "occhu": "units_occupied_2000",
+    "oocc": "units_occupied_owner_2000",
+    "rocc": "units_occupied_renter_2000",
 }
 
 
@@ -87,7 +87,11 @@ def order_pums_2000_hsq(final: pd.DataFrame):
         )
     ]
     categories = {
-        "units": ["units_occupied_owner", "units_occupied_renter", "units_occupied"],
+        "units": [
+            "units_occupied_owner_2000",
+            "units_occupied_renter_2000",
+            "units_occupied_2000",
+        ],
         "race": dcp_pop_races,
     }
     final = order_aggregated_columns(

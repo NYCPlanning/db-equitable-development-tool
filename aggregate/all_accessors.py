@@ -1,5 +1,4 @@
 from geosupport import Geosupport, GeosupportError
-from aggregate.PUMS.pums_2000_hsq_housing_tenure import pums_2000_hsq_housing_tenure
 
 # Housing production imports
 from aggregate.housing_production.area_within_historic_district import (
@@ -23,12 +22,21 @@ from aggregate.housing_security.evictions_by_city_marshals import (
 
 from aggregate.housing_security.DHS_shelter import DHS_shelter
 from aggregate.housing_security.eviction_cases_housing_court import eviction_cases
+from aggregate.housing_security.homevalue_median import homevalue_median
+from aggregate.housing_security.households_rent_burden import households_rent_burden
+from aggregate.housing_security.rent_median import rent_median
 from aggregate.housing_security.rent_stable_three_maintenance import (
     rent_stabilized_units,
     three_maintenance_units,
 )
 from aggregate.housing_security.units_affordable import units_affordable
 from aggregate.housing_security.income_restricted_units import income_restricted_units
+from aggregate.housing_security.pums_2000_hsq_housing_tenure import (
+    pums_2000_hsq_housing_tenure,
+)
+from aggregate.housing_security.units_housing_tenure import units_housing_tenure
+from aggregate.housing_security.units_overcrowd import units_overcrowd
+
 
 # Quality of life imports
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
@@ -67,12 +75,18 @@ QOL_accessors = [
 
 housing_security_accessors = [
     DHS_shelter,
+    count_residential_evictions,
     eviction_cases,
     units_affordable,
     income_restricted_units,
     rent_stabilized_units,
     three_maintenance_units,
     pums_2000_hsq_housing_tenure,
+    homevalue_median,
+    households_rent_burden,
+    rent_median,
+    units_housing_tenure,
+    units_overcrowd,
 ]
 """This file is here as the accessor functions it assigns come from multiple sources"""
 
@@ -96,19 +110,5 @@ class Accessors:
     quality_of_life = QOL_accessors
     housing_production = housing_production_accessors
     census = census_accessors
-
-    @property
-    def housing_security(self):
-        # try:
-        # Geosupport()
-        return [count_residential_evictions] + housing_security_accessors
-        # except GeosupportError:
-        # return housing_security_accessors
-
-    @property
-    def all(self):
-        try:
-            Geosupport()
-            return [count_residential_evictions] + accessors
-        except GeosupportError:
-            return accessors
+    housing_security = housing_security_accessors
+    all = accessors

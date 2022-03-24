@@ -29,7 +29,7 @@ from aggregate.housing_security.pums_2000_hsq_housing_tenure import (
 
 # Quality of life imports
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
-from aggregate.quality_of_life.access_to_open_space import park_access
+from aggregate.quality_of_life.access_to_openspace import access_to_openspace
 from aggregate.quality_of_life.access_transit import access_subway_and_access_ADA
 from aggregate.quality_of_life.covid_death import covid_death
 from aggregate.quality_of_life.education_outcome import get_education_outcome
@@ -51,7 +51,7 @@ housing_production_accessors = [fraction_historic, change_in_units, affordable_h
 
 
 QOL_accessors = [
-    park_access,
+    access_to_openspace,
     get_education_outcome,
     traffic_fatalities_injuries,
     access_to_jobs,
@@ -61,6 +61,7 @@ QOL_accessors = [
     infant_mortality,
     overdose_mortality,
     premature_mortality,
+    access_to_broadband,
 ]
 
 housing_security_accessors = [

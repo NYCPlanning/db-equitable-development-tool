@@ -113,7 +113,7 @@ def get_year_range_df(year_range):
 
 
 def remove_total_from_column_labels(df):
-    df.columns = [c.replace("_total", "") for c in df.columns]
+    df.columns = [c.replace("_total", "") + "_count" for c in df.columns]
 
 
 def add_safety_column_label_prefix(df: pd.DataFrame):

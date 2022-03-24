@@ -41,6 +41,7 @@ from aggregate.quality_of_life.health_mortality import (
 from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnerability
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
 from aggregate.quality_of_life.access_to_broadband import access_to_broadband
+from aggregate.quality_of_life.access_transit_car import access_transit_car
 
 # Census imports
 from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics
@@ -62,6 +63,7 @@ QOL_accessors = [
     overdose_mortality,
     premature_mortality,
     access_to_broadband,
+    access_transit_car,
 ]
 
 housing_security_accessors = [

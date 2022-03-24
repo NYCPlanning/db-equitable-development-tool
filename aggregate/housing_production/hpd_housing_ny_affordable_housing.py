@@ -85,7 +85,7 @@ def pivot_and_flatten_index(df, geography):
 
     cols = [c.replace("new_construction", "newconstruction") for c in cols]
 
-    df.columns = cols
+    df.columns = [col + "_count" for col in cols]
 
     df.reset_index(inplace=True)
 

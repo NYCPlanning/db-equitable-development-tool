@@ -69,3 +69,39 @@ def initialize_dataframe_geo_index(geography, columns=[]):
     rv = pd.DataFrame(index=indicies[geography], columns=columns)
     rv.index.rename(geography, inplace=True)
     return rv
+
+
+"""this is specifically to use for housing security and quality March 4th POP data"""
+def load_clean_housing_security_pop_data(name_mapper: dict) -> pd.DataFrame:
+    """Function to merge the two files for the QOL outputs and do some standard renaming. Because
+    these are QOL indicators they remain in the same csv output with columns indicating year"""
+
+    ind_name_regex = "|".join([k for k in name_mapper.keys()])
+
+    read_excel_arg = {
+        "0812": {
+            "io": "./resources/ACS_PUMS/EDDT_ACS2008-2012.xlsx",
+            "sheet_name": "ACS08-12",
+            "usecols": "A:LO",
+            "dtype": {"Geog": str},
+
+        },
+        "1519": {
+            "io": "./resources/ACS_PUMS/EDDT_ACS2015-2019.xlsx",
+            "sheet_name": "ACS15-19",
+            "usecols": "A:LO",
+            "dtype": {"Geog": str},
+        },
+    }
+
+    df_0812 = pd.read_excel(**read_excel_arg["0812"])
+
+    df_1519 = pd.read_excel(**read_excel_arg["1519"])
+
+    df = pd.merge(df_0812, df_1519, on="Geog", how="left")
+
+    df = df.filter(regex=ind_name_regex + "|Geog")
+
+    df.loc[df["Geog"] == "NYC", "Geog"] = "citywide"
+    
+    return df

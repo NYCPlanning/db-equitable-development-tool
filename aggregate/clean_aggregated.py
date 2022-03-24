@@ -44,7 +44,7 @@ def order_PUMS_QOL_multiple_years(categories, measures, years):
         for c in categories:
             for r in races:
                 for m in measures:
-                    rv.append(f"{c}_{r}{y}{m}")
+                    rv.append(f"{c}{y}_{r}{m}")
 
     return rv
 

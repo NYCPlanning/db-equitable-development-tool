@@ -1,7 +1,7 @@
 """this chops up into six indicators they are """
 from typing import final
 import pandas as pd
-from aggregate.clean_aggregated import rename_col
+from aggregate.clean_aggregated import rename_col, order_PUMS_QOL_multiple_years
 from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper, get_all_boroughs, get_all_NYC_PUMAs
 from utils.dcp_population_excel_helpers import race_suffix_mapper, stat_suffix_mapper_md
 from internal_review.set_internal_review_file import set_internal_review_files
@@ -39,6 +39,14 @@ def homevalue_median(geography: str, write_to_internal_review=False) -> pd.DataF
     final = rename_col(final, name_mapper, race_suffix_mapper, year_mapper, stat_suffix_mapper_md)
 
     final.dropna(axis=1, how="all", inplace=True)
+
+    col_order = order_PUMS_QOL_multiple_years(
+        categories=["homevalue_median"],
+        measures=["_median", "_median_moe", "_median_cv"],
+        years=["_0812", "_1519"],
+    )
+
+    final = final.reindex(columns=col_order)
     
     if write_to_internal_review:
         set_internal_review_files(

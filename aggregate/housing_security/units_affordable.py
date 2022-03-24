@@ -20,9 +20,9 @@ income_mapper = {
 }
 
 suffix_mapper = {
-    "_19E": "",
-    "_19M": "_moe",
-    "_19C": "_cv",
+    "_19E": "_count",
+    "_19M": "_count_moe",
+    "_19C": "_count_cv",
     "_19P": "_pct",
     "_19Z": "_pct_moe",
 }

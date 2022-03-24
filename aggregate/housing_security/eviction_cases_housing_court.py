@@ -8,7 +8,9 @@ def load_filings():
     filings = pd.read_excel(
         "resources/housing_security/eviction_filings.xlsx", skiprows=4, nrows=59
     )
-    filings.rename(columns={"Eviction Fillings*": "eviction_filings"}, inplace=True)
+    filings.rename(
+        columns={"Eviction Fillings*": "eviction_filings_count"}, inplace=True
+    )
     filings["citywide"] = "citywide"
 
     filings["Community District"] = filings["Community District"].astype(str)
@@ -25,7 +27,7 @@ def load_filings():
 def eviction_cases(geography: str, write_to_internal_review=False):
     """Main Accessor"""
     filings = load_filings()
-    final = filings.groupby(geography).sum()[["eviction_filings"]]
+    final = filings.groupby(geography).sum()[["eviction_filings_count"]]
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "eviction_cases.csv", geography)],

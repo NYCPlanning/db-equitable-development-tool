@@ -1,11 +1,8 @@
 import geopandas as gp
 from shapely.geometry import Point
 import pandas as pd
-from numpy import add, nan
-import usaddress
+from numpy import nan
 import requests
-from geosupport import Geosupport, GeosupportError
-from ingest.ingestion_helpers import add_leading_zero_PUMA
 from utils.geocode import from_eviction_address
 
 
@@ -43,6 +40,20 @@ def puma_to_borough(record):
 NYC_PUMAS_url = "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
 
 
+def clean_PUMAs(puma) -> pd.DataFrame:
+    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead
+    Possible refactor: apply to dataframe and ensure that re-named column is label \"puma\" """
+    puma = str(puma)
+    puma = puma.split(".")[0]
+    if puma == "nan" or puma == nan:
+        return nan
+    elif puma[:2] == "36":
+        puma = puma[2:]
+    elif puma[0] != "0":
+        puma = "0" + puma
+    return puma
+
+
 def NYC_PUMA_geographies() -> gp.GeoDataFrame:
     res = requests.get(
         "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
@@ -50,7 +61,7 @@ def NYC_PUMA_geographies() -> gp.GeoDataFrame:
     gdf = gp.GeoDataFrame.from_features(res.json()["features"])
     gdf = gdf.set_crs(res.json()["crs"]["properties"]["name"])
     gdf.rename(columns={"PUMA": "puma"}, inplace=True)
-    gdf = add_leading_zero_PUMA(gdf)
+    gdf["puma"] = gdf["puma"].apply(clean_PUMAs)
     return gdf
 
 
@@ -69,7 +80,7 @@ def assign_PUMA(record: gp.GeoDataFrame, geocode_process):
     if pd.notnull(record.latitude) and pd.notnull(record.longitude):
         return PUMA_from_coord(record)
     if geocode_process:
-        return geocode_functions[geocode_process]
+        return geocode_functions[geocode_process](record)
 
 
 def PUMA_from_coord(record):
@@ -99,20 +110,6 @@ def get_all_NYC_PUMAs():
 
 def get_all_boroughs():
     return ["BK", "BX", "MN", "QN", "SI"]
-
-
-def clean_PUMAs(puma) -> pd.DataFrame:
-    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead
-    Possible refactor: apply to dataframe and ensure that re-named column is label \"puma\" """
-    puma = str(puma)
-    puma = puma.split(".")[0]
-    if puma == "nan" or puma == nan:
-        return nan
-    elif puma[:2] == "36":
-        puma = puma[2:]
-    elif puma[0] != "0":
-        puma = "0" + puma
-    return puma
 
 
 def filter_for_recognized_pumas(df):

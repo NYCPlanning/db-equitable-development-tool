@@ -10,7 +10,7 @@ def income_restricted_units(
     assert geography in ["puma", "borough", "citywide"]
 
     source_data = load_clean_income_restricted()
-    final = source_data.groupby(geography).sum()[["NYCHA_units", "RAD_units"]]
+    final = source_data.groupby(geography).sum()[["units_nycha", "units_rad"]]
 
     if write_to_internal_review:
         set_internal_review_files(
@@ -31,7 +31,7 @@ def load_clean_income_restricted():
     source_data["citywide"] = "citywide"
 
     source_data.rename(
-        columns={"Public Housing Units": "NYCHA_units", "RAD Units": "RAD_units"},
+        columns={"Public Housing Units": "units_nycha", "RAD Units": "units_rad"},
         inplace=True,
     )
     return source_data

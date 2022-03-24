@@ -1,4 +1,5 @@
 from geosupport import Geosupport, GeosupportError
+from aggregate.PUMS.pums_2000_hsq_housing_tenure import pums_2000_hsq_housing_tenure
 
 # Housing production imports
 from aggregate.housing_production.area_within_historic_district import (
@@ -71,6 +72,7 @@ housing_security_accessors = [
     income_restricted_units,
     rent_stabilized_units,
     three_maintenance_units,
+    pums_2000_hsq_housing_tenure,
 ]
 """This file is here as the accessor functions it assigns come from multiple sources"""
 

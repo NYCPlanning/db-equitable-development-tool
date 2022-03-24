@@ -1,10 +1,8 @@
 import geopandas as gp
 from shapely.geometry import Point
 import pandas as pd
-from numpy import add, nan
-import usaddress
+from numpy import nan
 import requests
-from ingest.ingestion_helpers import add_leading_zero_PUMA
 from utils.geocode import from_eviction_address
 
 

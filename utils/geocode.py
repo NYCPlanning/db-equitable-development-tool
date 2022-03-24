@@ -21,8 +21,6 @@ gw = GW()
 
 def from_eviction_address(record) -> str:
     """Return latitude, longitude in degrees"""
-    if pd.notnull(record.latitude) and pd.notnull(record.longitude):
-        return record.latitude, record.longitude
     address = eviction_record_to_address(record)
     return geocode_address(address)
 

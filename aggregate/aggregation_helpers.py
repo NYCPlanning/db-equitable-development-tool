@@ -1,5 +1,11 @@
 import pandas as pd
-from utils.PUMA_helpers import census_races, get_all_NYC_PUMAs, get_all_boroughs
+from utils.PUMA_helpers import (
+    census_races,
+    clean_PUMAs,
+    borough_name_mapper,
+    get_all_boroughs,
+    get_all_NYC_PUMAs,
+)
 
 
 demographic_indicators_denom = [
@@ -23,11 +29,11 @@ def order_aggregated_columns(
     for ind_denom in indicators_denom:
         ind = ind_denom[0]
         for ind_category in categories[ind]:
-            for measure in ["", "_pct"]:
+            for measure in ["_count", "_pct"]:
                 col_order.append(f"{ind_category}{measure}")
-                if measure == "":
-                    col_order.append(f"{ind_category}{measure}_cv")
                 col_order.append(f"{ind_category}{measure}_moe")
+                if measure == "_count":
+                    col_order.append(f"{ind_category}{measure}_cv")
             if not census_PUMS:
                 col_order.append(f"{ind_category}_pct_denom")
             if census_PUMS and ind == "LEP":
@@ -35,12 +41,12 @@ def order_aggregated_columns(
         if not household:
             for ind_category in categories[ind]:
                 for race_crosstab in categories["race"]:
-                    for measure in ["", "_pct"]:
+                    for measure in ["_count", "_pct"]:
                         column_label_base = f"{ind_category}_{race_crosstab}{measure}"
                         col_order.append(f"{column_label_base}")
-                        if measure == "":
-                            col_order.append(f"{column_label_base}_cv")
                         col_order.append(f"{column_label_base}_moe")
+                        if measure == "_count":
+                            col_order.append(f"{column_label_base}_cv")
                     if not census_PUMS:
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
                     if census_PUMS and ind == "LEP":
@@ -103,3 +109,34 @@ def initialize_dataframe_geo_index(geography):
     rv = pd.DataFrame(index=indicies[geography])
     rv.index.rename(geography, inplace=True)
     return rv
+
+
+def get_geography_housing_security_pop_data(clean_data: pd.DataFrame, geography: str):
+
+    if geography == "citywide":
+        final = (
+            clean_data.loc[clean_data["Geog"] == "citywide"]
+            .rename(columns={"Geog": "citywide"})
+            .copy()
+        )
+    elif geography == "borough":
+        boros = get_all_boroughs()
+        clean_data["Geog"] = clean_data["Geog"].map(
+            borough_name_mapper, na_action="ignore"
+        )
+        final = (
+            clean_data.loc[clean_data["Geog"].isin(boros)]
+            .rename(columns={"Geog": "borough"})
+            .copy()
+        )
+    elif geography == "puma":
+        pumas = get_all_NYC_PUMAs()
+        clean_data["Geog"] = clean_data["Geog"].apply(func=clean_PUMAs)
+        print(clean_data.Geog)
+        final = (
+            clean_data.loc[clean_data["Geog"].isin(pumas)]
+            .rename(columns={"Geog": "puma"})
+            .copy()
+        )
+
+    return final

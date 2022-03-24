@@ -60,7 +60,7 @@ def order_affordable(measures, income) -> List:
     return rv
 
 
-def rename_col(df: pd.DataFrame, name_mapper: dict, race_mapper: dict, year_mapper: dict, suffix_mapper: dict):
+def rename_col_housing_security(df: pd.DataFrame, name_mapper: dict, race_mapper: dict, year_mapper: dict, suffix_mapper: dict):
     """Rename the columns to follow conventions laid out in the wiki and issue #59"""
     cols = map(str.lower, df.columns)
     # Recode race id

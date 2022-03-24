@@ -30,7 +30,9 @@ from aggregate.housing_security.pums_2000_hsq_housing_tenure import (
 # Quality of life imports
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
 from aggregate.quality_of_life.access_to_openspace import access_to_openspace
-from aggregate.quality_of_life.access_transit import access_subway_and_access_ADA
+from aggregate.quality_of_life.access_subway_and_access_ADA import (
+    access_subway_and_access_ADA,
+)
 from aggregate.quality_of_life.covid_death import covid_death
 from aggregate.quality_of_life.education_outcome import get_education_outcome
 from aggregate.quality_of_life.health_mortality import (

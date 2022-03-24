@@ -15,7 +15,6 @@ from aggregate.housing_production.hpd_housing_ny_affordable_housing import (
 #     count_units_three_or_more_deficiencies,
 # )
 
-# Currently count residential evictions is left out as it requires geocoding, can address this later if need be.
 from aggregate.housing_security.evictions_by_city_marshals import (
     count_residential_evictions,
 )
@@ -88,7 +87,6 @@ housing_security_accessors = [
     rent_median,
     units_overcrowd,
 ]
-"""This file is here as the accessor functions it assigns come from multiple sources"""
 
 
 census_accessors = [

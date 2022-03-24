@@ -40,6 +40,7 @@ from aggregate.quality_of_life.health_mortality import (
 )
 from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnerability
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
+from aggregate.quality_of_life.access_to_broadband import access_to_broadband
 
 # Census imports
 from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics

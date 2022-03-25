@@ -39,8 +39,10 @@ from aggregate.housing_security.units_overcrowd import units_overcrowd
 
 # Quality of life imports
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
-from aggregate.quality_of_life.access_to_open_space import park_access
-from aggregate.quality_of_life.access_transit import access_subway_and_access_ADA
+from aggregate.quality_of_life.access_to_openspace import access_to_openspace
+from aggregate.quality_of_life.access_subway_and_access_ADA import (
+    access_subway_and_access_ADA,
+)
 from aggregate.quality_of_life.covid_death import covid_death
 from aggregate.quality_of_life.education_outcome import get_education_outcome
 from aggregate.quality_of_life.health_mortality import (
@@ -48,8 +50,10 @@ from aggregate.quality_of_life.health_mortality import (
     overdose_mortality,
     premature_mortality,
 )
-from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnerability
+from aggregate.quality_of_life.heat_vulnerability import heat_vulnerability
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
+from aggregate.quality_of_life.access_to_broadband import access_to_broadband
+from aggregate.quality_of_life.access_transit_car import access_transit_car
 
 # Census imports
 from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics
@@ -60,16 +64,18 @@ housing_production_accessors = [fraction_historic, change_in_units, affordable_h
 
 
 QOL_accessors = [
-    park_access,
+    access_to_openspace,
     get_education_outcome,
     traffic_fatalities_injuries,
     access_to_jobs,
     covid_death,
-    load_clean_heat_vulnerability,
+    heat_vulnerability,
     access_subway_and_access_ADA,
     infant_mortality,
     overdose_mortality,
     premature_mortality,
+    access_to_broadband,
+    access_transit_car,
 ]
 
 housing_security_accessors = [

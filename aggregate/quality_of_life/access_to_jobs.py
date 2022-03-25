@@ -4,7 +4,7 @@ from utils.PUMA_helpers import clean_PUMAs, puma_to_borough
 
 
 def access_to_jobs(geography, write_to_internal_review=False):
-    indicator_col_name = "access_employment"
+    indicator_col_name = "access_employment_count"
     clean_df = load_clean_source_data(indicator_col_name)
 
     final = clean_df.groupby(geography).sum()[[indicator_col_name]]

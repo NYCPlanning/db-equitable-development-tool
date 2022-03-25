@@ -14,7 +14,7 @@ def load_access_to_open_space():
     df.rename(
         columns={
             "PUMA": "puma",
-            "Pop_Served": "access_openspace",
+            "Pop_Served": "access_openspace_count",
             "Total_Pop20": "total_pop_2020",
         },
         inplace=True,
@@ -36,18 +36,20 @@ def assign_geo_cols(df):
 
 
 def calculate_open_space(df, geography):
-    aggregated = df.groupby(geography)[["access_openspace", "total_pop_2020"]].sum()
+    aggregated = df.groupby(geography)[
+        ["access_openspace_count", "total_pop_2020"]
+    ].sum()
     aggregated["access_openspace_pct"] = (
-        aggregated["access_openspace"] / aggregated["total_pop_2020"]
+        aggregated["access_openspace_count"] / aggregated["total_pop_2020"]
     ) * 100
     aggregated = aggregated.round(2)
 
     print(f"finished calculating {geography}")
 
-    return aggregated[["access_openspace", "access_openspace_pct"]]
+    return aggregated[["access_openspace_count", "access_openspace_pct"]]
 
 
-def park_access(geography: str) -> pd.DataFrame:
+def access_to_openspace(geography: str) -> pd.DataFrame:
     """Main accessor for this variable"""
     assert geography in ["citywide", "borough", "puma"]
     df = load_access_to_open_space()

@@ -16,7 +16,7 @@ def covid_death(geography: str, write_to_internal_review=False):
     """this is used to create the final dataframe and write final output to internal review files"""
 
     assert geography in ["citywide", "borough", "puma"]
-    indicator_col_label = "health_covid19deaths"
+    indicator_col_label = "health_covid19deaths_rate"
 
     clean_df = load_clean_source_data()
 
@@ -59,7 +59,7 @@ def covid_death(geography: str, write_to_internal_review=False):
 def calculate_rate_by_100k(new_col, aggregated):
     aggregated[new_col] = (
         aggregated["total_covid_death"] / aggregated["population"]
-    ) * 10 ** 5
+    ) * 10**5
 
 
 def load_clean_source_data():

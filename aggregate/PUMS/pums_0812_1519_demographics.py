@@ -11,7 +11,7 @@ import pandas as pd
 from aggregate.aggregation_helpers import demographic_indicators_denom
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
-from aggregate.aggregation_helpers import order_aggregated_columns, get_category, get_geography_housing_security_pop_data
+from aggregate.aggregation_helpers import order_aggregated_columns, get_category, get_geography_pop_data
 from aggregate.clean_aggregated import rename_columns_demo
 
 
@@ -33,10 +33,10 @@ def demographics(geography: str, write_to_internal_review=False) -> pd.DataFrame
 
     clean_data_1519 = load_clean_pop_demographics("19", endyear_mapper["19"])
 
-    final_0812 = get_geography_housing_security_pop_data(clean_data_0812, geography)
+    final_0812 = get_geography_pop_data(clean_data_0812, geography)
     #print("0812", final_0812)
     
-    final_1519 = get_geography_housing_security_pop_data(clean_data_1519, geography)
+    final_1519 = get_geography_pop_data(clean_data_1519, geography)
     #print("1519", final_1519)
 
     final = pd.concat([final_0812, final_1519], axis=1)

@@ -64,7 +64,7 @@ def median_age_col_order(race_crosstabs):
     col_order = []
     for crosstab in [""] + [f"_{r}" for r in race_crosstabs]:
         for measure in ["", "_moe", "_cv"]:
-            col_order.append(f"age{crosstab}_median{measure}")
+            col_order.append(f"age_median{crosstab}_median{measure}")
     return col_order
 
 
@@ -98,7 +98,7 @@ def get_category(indicator, data=None):
         return categories
 
 
-def get_geography_housing_security_pop_data(clean_data: pd.DataFrame, geography: str):
+def get_geography_pop_data(clean_data: pd.DataFrame, geography: str):
 
     if geography == "citywide":
         final = (

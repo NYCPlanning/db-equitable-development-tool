@@ -12,7 +12,7 @@ from utils.PUMA_helpers import (
 from utils.dcp_population_excel_helpers import race_suffix_mapper, stat_suffix_mapper_md
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_housing_security_pop_data
-from aggregate.aggregation_helpers import get_geography_housing_security_pop_data
+from aggregate.aggregation_helpers import get_geography_pop_data
 
 year_mapper = {"12": "0812", "19": "1519"}
 
@@ -23,7 +23,7 @@ def homevalue_median(geography: str, write_to_internal_review=False) -> pd.DataF
 
     clean_data = load_clean_housing_security_pop_data(name_mapper)
 
-    final = get_geography_housing_security_pop_data(
+    final = get_geography_pop_data(
         clean_data=clean_data, geography=geography
     )
 

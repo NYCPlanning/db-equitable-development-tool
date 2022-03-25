@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 from utils.PUMA_helpers import assign_PUMA_col
 from internal_review.set_internal_review_file import set_internal_review_files
 

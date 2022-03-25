@@ -85,19 +85,19 @@ QOL_accessors = [
 ]
 
 housing_security_accessors = [
-    DHS_shelter,
-    count_residential_evictions,
-    eviction_cases,
-    units_affordable,
-    income_restricted_units,
-    rent_stabilized_units,
-    three_maintenance_units,
     pums_2000_hsq_housing_tenure,
     units_housing_tenure,
     homevalue_median,
-    households_rent_burden,
     rent_median,
+    households_rent_burden,
+    rent_stabilized_units,
+    income_restricted_units,
+    units_affordable,
+    count_residential_evictions,
+    three_maintenance_units,
+    eviction_cases,
     units_overcrowd,
+    DHS_shelter,
 ]
 
 

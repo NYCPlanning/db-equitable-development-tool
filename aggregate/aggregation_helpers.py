@@ -54,6 +54,7 @@ def order_aggregated_columns(
 
     if census_PUMS and demographics_category == True:
         col_order.extend(median_age_col_order(categories["race"]))
+    print(col_order)
     return df.reindex(columns=col_order)
 
 

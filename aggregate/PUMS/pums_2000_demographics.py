@@ -59,33 +59,33 @@ def remove_duplicate_cols(df):
     return df
 
 
-def rename_columns(df):
+def rename_cols(df):
     cols = map(str.lower, df.columns)
     for code, race in demo_suffix.items():
         cols = [col.replace(code, race) for col in cols]
     # print(cols)
-    cols = [col.replace("_00e", "") for col in cols]
+    cols = [col.replace("_00e", "_count") for col in cols]
     # print(cols)
-    cols = [col.replace("_00m", "_moe") for col in cols]
-    cols = [col.replace("_00c", "_cv") for col in cols]
+    cols = [col.replace("_00m", "_count_moe") for col in cols]
+    cols = [col.replace("_00c", "_count_cv") for col in cols]
     cols = [col.replace("_00p", "_pct") for col in cols]
     cols = [col.replace("_00z", "_pct_moe") for col in cols]
 
-    cols = [col.replace("mdage", "age_median") for col in cols]
+    cols = [col.replace("mdage", "age_median_median") for col in cols]
     cols = [col.replace("pu16", "age_popu16") for col in cols]
     cols = [col.replace("p16t64", "age_p16t64") for col in cols]
     cols = [col.replace("p65pl", "age_p65pl") for col in cols]
     cols = [col.replace("p5pl", "age_p5pl") for col in cols]
-    cols = [col.replace("_median_anh", "_anh_median") for col in cols]
-    cols = [col.replace("_median_bnh", "_bnh_median") for col in cols]
-    cols = [col.replace("_median_hsp", "_hsp_median") for col in cols]
-    cols = [col.replace("_median_wnh", "_wnh_median") for col in cols]
+    cols = [col.replace("_median_median_anh", "_anh_median_median") for col in cols]
+    cols = [col.replace("_median_median_bnh", "_bnh_median_median") for col in cols]
+    cols = [col.replace("_median_median_hsp", "_median_hsp_median") for col in cols]
+    cols = [col.replace("_median_median_wnh", "_median_wnh_median") for col in cols]
 
     df.columns = cols
     return df
 
 
-def census_2000_pums_demographics(geography: str, write_to_internal_review=False):
+def pums_2000_demographics(geography: str, write_to_internal_review=False):
     """Main accessor"""
 
     source_data = load_dec_2000_demographic_pop_demo()
@@ -94,7 +94,7 @@ def census_2000_pums_demographics(geography: str, write_to_internal_review=False
 
     source_data = remove_duplicate_cols(source_data)
 
-    source_data = rename_columns(source_data)
+    source_data = rename_cols(source_data)
 
     if geography == "citywide":
         final = (

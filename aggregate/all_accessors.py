@@ -54,7 +54,7 @@ from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_inju
 # Census imports
 from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics
 from aggregate.PUMS.pums_2000_economics import edu_attain_economic
-from aggregate.decennial_census.decennial_census_001020 import decennial_census_data
+from aggregate.decennial_census.decennial_census_001020 import decennial_census_001020
 
 housing_production_accessors = [fraction_historic, change_in_units, affordable_housing]
 
@@ -91,7 +91,7 @@ housing_security_accessors = [
 
 census_accessors = [
     census_2000_pums_demographics,
-    decennial_census_data,
+    decennial_census_001020,
     edu_attain_economic,
 ]
 

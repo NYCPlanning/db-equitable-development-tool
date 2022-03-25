@@ -1,11 +1,12 @@
 import pandas as pd
+from internal_review.set_internal_review_file import set_internal_review_files
 
 races = ["ALL", "ASN", "BLK", "HIS", "OTH", "WHT"]
 
 
-def calculate_edu_outcome(df: pd.DataFrame, geo: str):
+def calculate_edu_outcome(df: pd.DataFrame, geography: str):
 
-    agg = df.groupby(geo).sum().reset_index()
+    agg = df.groupby(geography).sum().reset_index()
 
     for r in races:
         agg[f"E38PRFP{r}"] = agg[f"E38PRFN{r}"] / agg[f"E38TEST{r}"]  # ELA
@@ -13,20 +14,20 @@ def calculate_edu_outcome(df: pd.DataFrame, geo: str):
         agg[f"GRAD17P{r}"] = agg[f"GRAD17N{r}"] / agg[f"GRAD17C{r}"]  # graduation
 
     cols = (
-        [geo]
+        [geography]
         + [f"E38PRFP{r}" for r in races]
         + [f"M38PRFP{r}" for r in races]
         + [f"GRAD17P{r}" for r in races]
     )
 
-    result = agg[cols].set_index(geo).apply(lambda x: x * 100).round(2)
+    result = agg[cols].set_index(geography).apply(lambda x: x * 100).round(2)
 
-    rename_fields(result, geo)
+    rename_fields(result, geography)
 
     return result
 
 
-def rename_fields(df: pd.DataFrame, geo: str):
+def rename_fields(df: pd.DataFrame, geography: str):
 
     race_rename = {
         "ALL": "",
@@ -51,7 +52,7 @@ def rename_fields(df: pd.DataFrame, geo: str):
     return None
 
 
-def get_education_outcome(geo: str, internal_review=False) -> pd.DataFrame:
+def get_education_outcome(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
     puma_cross = pd.read_excel(
         "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx",
@@ -82,26 +83,12 @@ def get_education_outcome(geo: str, internal_review=False) -> pd.DataFrame:
     raw_edu_outcome_puma["borough"] = raw_edu_outcome_puma.NTACode.str[:2]
     raw_edu_outcome_puma["citywide"] = "citywide"
 
-    result = calculate_edu_outcome(raw_edu_outcome_puma, geo)
+    result = calculate_edu_outcome(raw_edu_outcome_puma, geography)
 
-    # comment out if not combining the result in this step
-    # final_result = pd.concat([nta_result, boro_result, city_result], axis=0, ignore_index=True)
-
-    if internal_review:
-        puma_result = calculate_edu_outcome(raw_edu_outcome_puma, "puma")
-        borough_result = calculate_edu_outcome(raw_edu_outcome_puma, "borough")
-        city_result = calculate_edu_outcome(raw_edu_outcome_puma, "citywide")
-
-        # print(puma_result)
-
-        puma_result.to_csv(
-            "internal_review/quality_of_life/puma/education_outcome.csv", index=True
-        )
-        borough_result.to_csv(
-            "internal_review/quality_of_life/borough/education_outcome.csv", index=True
-        )
-        city_result.to_csv(
-            "internal_review/quality_of_life/citywide/education_outcome.csv", index=True
+    if write_to_internal_review:
+        set_internal_review_files(
+            [(result, 'education_outcome.csv', geography)],
+            category="quality_of_life"
         )
 
     return result

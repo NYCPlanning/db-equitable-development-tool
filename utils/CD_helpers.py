@@ -72,11 +72,11 @@ def construct_three_digit_CD_code(borough_code: str, cd_num: str) -> str:
 
 def get_borough_num_mapper():
     puma_cross = get_CD_puma_crosswalk()
-
+    puma_cross["borough_abbr"] = puma_cross["NTACode"].str[:2]
     boroughs = (
-        puma_cross[["borough_code", "borough"]]
+        puma_cross[["borough_code", "borough_abbr"]]
         .drop_duplicates()
         .set_index("borough_code")
     )
-    borough_num_mapper = boroughs.to_dict()["borough"]
+    borough_num_mapper = boroughs.to_dict()["borough_abbr"]
     return borough_num_mapper

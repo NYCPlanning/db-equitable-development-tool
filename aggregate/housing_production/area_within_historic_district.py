@@ -1,4 +1,5 @@
 from gettext import find
+from typing import List
 from json import load
 import geopandas as gp
 import requests
@@ -22,6 +23,11 @@ def area_historic_internal_review():
         "housing_production",
     )
 
+def rename_col(cols) -> List:
+
+    new_cols = [col if "pct" in col else col + "_count" for col in cols]
+    
+    return new_cols
 
 def fraction_historic(geography_level):
     """Main accessor of indicator"""
@@ -31,7 +37,8 @@ def fraction_historic(geography_level):
     gdf[["area_historic_pct", "area_historic_sqmiles"]] = gdf.apply(
         fraction_PUMA_historic, axis=1, args=(hd,), result_type="expand"
     )
-    return gdf[["area_historic_pct", "area_historic_sqmiles", "total_sqmiles"]].round(2)
+    gdf.columns = rename_col(gdf.columns)
+    return gdf[[ "area_historic_sqmiles_count","area_historic_pct", "total_sqmiles_count"]].round(2)
 
 
 def generate_geographies(geography_level):

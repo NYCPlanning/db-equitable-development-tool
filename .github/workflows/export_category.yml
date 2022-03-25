@@ -1,4 +1,4 @@
-name: Export Category 
+name: Export Category
 
 on:
   push:
@@ -27,8 +27,9 @@ jobs:
           - borough
           - citywide
         category:
-          - housing_production
-          - quality_of_life
+          # - housing_production
+          # - quality_of_life
+          - housing_security
  
     steps:
       - uses: actions/checkout@v2
@@ -41,6 +42,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y python3-pip python3-distutils
+          sudo apt install -y gdal-bin
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
           curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x mc

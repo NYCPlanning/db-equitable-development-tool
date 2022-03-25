@@ -41,7 +41,7 @@ def traffic_fatalities_injuries(geography, save_for_internal_review=False):
                 numerator_df=numerator_df,
                 denominator_df=denom_df,
                 geography=geography,
-                col_name=f"{year_code}_traffic{data_point}",
+                col_name=f"traffic{data_point}_{year_code}",
             )
             final = final.merge(averages, left_index=True, right_index=True)
 
@@ -92,7 +92,7 @@ def get_year_range_df(year_range):
             fatalities_col_name,
         ]
         for d in data_cols:
-            raw_df.loc[:, f"{d}_count"] = (
+            raw_df.loc[:, f"{d}_rate"] = (
                 raw_df[d] * raw_df[street_miles_col_name]
             ) / 100
             raw_df.drop(columns=[d], inplace=True)
@@ -109,7 +109,7 @@ def get_year_range_df(year_range):
 
 
 def remove_total_from_column_labels(df):
-    df.columns = [c.replace("_total", "") for c in df.columns]
+    df.columns = [c.replace("_total", "") + "_rate" for c in df.columns]
 
 
 def add_safety_column_label_prefix(df: pd.DataFrame):

@@ -1,6 +1,6 @@
-borough,eviction_filings
-Bronx,339026
-Brooklyn,258668
-Manhattan,184987
-Queens,135267
-Staten Island,20400
+borough,eviction_filings_count
+BK,258668
+BX,339026
+MN,184987
+QN,135267
+SI,20400

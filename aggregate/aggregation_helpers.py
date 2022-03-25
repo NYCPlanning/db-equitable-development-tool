@@ -132,7 +132,6 @@ def get_geography_housing_security_pop_data(clean_data: pd.DataFrame, geography:
     elif geography == "puma":
         pumas = get_all_NYC_PUMAs()
         clean_data["Geog"] = clean_data["Geog"].apply(func=clean_PUMAs)
-        print(clean_data.Geog)
         final = (
             clean_data.loc[clean_data["Geog"].isin(pumas)]
             .rename(columns={"Geog": "puma"})

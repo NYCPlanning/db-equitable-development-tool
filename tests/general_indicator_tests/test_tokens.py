@@ -1,11 +1,11 @@
 import pytest
 from tests.general_indicator_tests.general_indicator_test_helpers import get_by_geo
 
-by_puma, by_borough, by_citywide = get_by_geo()
+by_puma, by_borough, by_citywide = get_by_geo(housing_security=True)
 
 
 @pytest.mark.parametrize("data, ind_name", by_puma + by_borough + by_citywide)
-def test_count_pct_tokens_present(data, ind_name):
+def test_measure_token_present(data, ind_name):
     for c in data.columns:
         assert any(
             token in c for token in ["count", "pct", "rate", "index", "median"]

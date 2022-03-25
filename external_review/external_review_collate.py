@@ -4,19 +4,21 @@ import pandas as pd
 import typer
 from aggregate.aggregation_helpers import initialize_dataframe_geo_index
 
-from aggregate import all_accessors
+from aggregate.all_accessors import Accessors
 
+accessors = Accessors()
 app = typer.Typer()
-accessors = {
-    "housing_production": all_accessors.housing_production_accessors,
-    "quality_of_life": all_accessors.QOL_accessors,
-}
 
 
 def collate(geography_level, category):
     """Collate indicators together"""
+<<<<<<< HEAD
     accessor_functions = accessors[category]
     final_df = initialize_dataframe_geo_index(geography_level)
+=======
+    accessor_functions = accessors.__getattribute__(category)
+    final_df = pd.DataFrame()
+>>>>>>> dev
     for ind_accessor in accessor_functions:
         try:
             ind = ind_accessor(geography_level)

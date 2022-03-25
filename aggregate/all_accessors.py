@@ -40,7 +40,7 @@ from aggregate.quality_of_life.health_mortality import (
     overdose_mortality,
     premature_mortality,
 )
-from aggregate.quality_of_life.heat_vulnerability import load_clean_heat_vulnerability
+from aggregate.quality_of_life.heat_vulnerability import heat_vulnerability
 from aggregate.quality_of_life.traffic_fatalities import traffic_fatalities_injuries
 from aggregate.quality_of_life.access_to_broadband import access_to_broadband
 from aggregate.quality_of_life.access_transit_car import access_transit_car
@@ -59,7 +59,7 @@ QOL_accessors = [
     traffic_fatalities_injuries,
     access_to_jobs,
     covid_death,
-    load_clean_heat_vulnerability,
+    heat_vulnerability,
     access_subway_and_access_ADA,
     infant_mortality,
     overdose_mortality,

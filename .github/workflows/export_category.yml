@@ -28,7 +28,7 @@ jobs:
           - citywide
         category:
           # - housing_production
-          # - quality_of_life
+          - quality_of_life
           - housing_security
  
     steps:

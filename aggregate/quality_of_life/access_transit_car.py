@@ -20,6 +20,17 @@ suffix_mapper = {
     "_1519z": "_1519_pct_moe",
 }
 
+reorder_mapper = {
+    "_anh_0812": "_0812_anh",
+    "_anh_1519": "_1519_anh",
+    "_bnh_0812": "_0812_bnh",
+    "_bnh_1519": "_1519_bnh",
+    "_hsp_0812": "_0812_hsp",
+    "_hsp_1519": "_1519_hsp",
+    "_wnh_0812": "_0812_wnh",
+    "_wnh_1519": "_1519_wnh",
+}
+
 
 def load_acs_access_to_car() -> pd.DataFrame:
     """Function to merge the two files for the QOL outputs and do some standard renaming. Because
@@ -75,6 +86,9 @@ def rename_cols(df):
     # Rename data points
     cols = [col.replace("cwcar_", "access_carcommute_") for col in cols]
     cols = [col.replace("wk16p_", "access_workers16pl_") for col in cols]
+
+    for code, reorder in reorder_mapper.items():
+        cols = [col.replace(code, reorder) for col in cols]
 
     df.columns = cols
     return df

@@ -7,9 +7,6 @@ def pytest_addoption(parser):
         action="store_true",
         help="Include all data. If false limited_PUMA arg is set to false in load_PUMS",
     )
-    parser.addoption(
-        "--category", action="store", default="all", help="test particular category"
-    )
 
 
 def pytest_generate_tests(metafunc):
@@ -18,7 +15,3 @@ def pytest_generate_tests(metafunc):
     option_value = metafunc.config.option.all_data
     if "all_data" in metafunc.fixturenames and option_value is not None:
         metafunc.parametrize("all_data", [option_value])
-
-    category_passed = metafunc.config.option.category
-    if "category" in metafunc.fixturenames and category_passed is not None:
-        metafunc.parametrize("category", [category_passed])

@@ -7,6 +7,7 @@ breakdowns]).
 
 import pandas as pd
 from aggregate.aggregation_helpers import demographic_indicators_denom
+from aggregate.clean_aggregated import order_PUMS_QOL
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
@@ -21,10 +22,19 @@ name_mapper = {
     "fb": "fb",
     "lep": "lep",
     "mdage": "age_median",
+    "p5pl": "age_p5pl",
     "pu16": "age_popu16",
     "p16t64": "age_p16t64",
     "p65pl": "age_p65pl",
-    "p5pl": "age_p5pl",
+    "pop": "pop",
+}
+
+median_mapper = {
+    "age_median_count": "age_median_median",
+    "age_median_anh_count": "age_median_anh_median",
+    "age_median_bnh_count": "age_median_bnh_median",
+    "age_median_hsp_count": "age_median_hsp_median",
+    "age_median_wnh_count": "age_median_wnh_median",
 }
 
 
@@ -52,11 +62,8 @@ def rename_cols(df):
         cols = [col.replace(code, stat) for col in cols]
     for code, name in name_mapper.items():
         cols = [col.replace(code, name) for col in cols]
-
-    cols = [col.replace("anh_median", "_median_anh_median") for col in cols]
-    cols = [col.replace("bnh_median", "_median_bnh_median") for col in cols]
-    cols = [col.replace("hsp_median", "_median_hsp_median") for col in cols]
-    cols = [col.replace("wnh_median", "_median_wnh_median") for col in cols]
+    for code, med in median_mapper.items():
+        cols = [col.replace(code, med) for col in cols]
 
     df.columns = cols
     return df
@@ -116,6 +123,7 @@ def order_pums_2000_demographics(final: pd.DataFrame):
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
+        "pop": ["pop"],
         "race": dcp_pop_races,
     }
     final = order_aggregated_columns(

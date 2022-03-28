@@ -21,6 +21,7 @@ def load_clean_source_data(year: str):
         sheet_name=f"EconSec_{sheetname_mapper[year]}",
     )
     source["Geog"].replace(borough_name_mapper, inplace=True)
+    source["Geog"].replace({"NYC": "citywide"}, inplace=True)
     source = source.set_index("Geog")
     source.columns = [convert_col_label(c) for c in source.columns]
     return source
@@ -39,7 +40,7 @@ def ACS_PUMS_economics(geography, year: str = "0812", write_to_internal_review=F
     if geography == "borough":
         final = source.loc[get_all_boroughs()]
     if geography == "citywide":
-        final = source.loc["citywide"]
+        final = source.loc[["citywide"]]
 
     final.index.name = geography
     if write_to_internal_review:

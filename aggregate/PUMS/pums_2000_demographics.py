@@ -141,7 +141,7 @@ def order_pums_2000_demographics(final: pd.DataFrame):
         indicators_denom=indicators_denom,
         categories=categories,
         household=False,
-        census_PUMS=True,
+        exclude_denom=True,
         demographics_category=True,
     )
     return final

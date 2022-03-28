@@ -19,12 +19,12 @@ def order_aggregated_columns(
     df: pd.DataFrame,
     indicators_denom,
     categories,
-    household,
-    census_PUMS=False,
+    household=False,
+    exclude_denom=False,
     demographics_category=False,
+    return_col_order=False,
 ) -> pd.DataFrame:
     """This can be DRY'd out, written quickly to meet deadline"""
-
     col_order = []
     for ind_denom in indicators_denom:
         ind = ind_denom[0]
@@ -34,9 +34,10 @@ def order_aggregated_columns(
                 col_order.append(f"{ind_category}{measure}_moe")
                 if measure == "_count":
                     col_order.append(f"{ind_category}{measure}_cv")
-            if not census_PUMS:
+            if not exclude_denom:
+                print("adding denom")
                 col_order.append(f"{ind_category}_pct_denom")
-            if census_PUMS and ind == "LEP":
+            if exclude_denom and ind == "LEP":
                 col_order.append("age_p5pl")
         if not household:
             for ind_category in categories[ind]:
@@ -47,13 +48,15 @@ def order_aggregated_columns(
                         col_order.append(f"{column_label_base}_moe")
                         if measure == "_count":
                             col_order.append(f"{column_label_base}_cv")
-                    if not census_PUMS:
+                    if not exclude_denom:
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
-                    if census_PUMS and ind == "LEP":
+                    if exclude_denom and ind == "LEP":
                         col_order.append(f"age_p5pl_{race_crosstab}")
 
-    if census_PUMS and demographics_category == True:
+    if exclude_denom and demographics_category == True:
         col_order.extend(median_age_col_order(categories["race"]))
+    if return_col_order:
+        return col_order
     return df.reindex(columns=col_order)
 
 

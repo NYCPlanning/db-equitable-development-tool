@@ -1,4 +1,5 @@
 import pandas as pd
+from aggregate.aggregation_helpers import order_aggregated_columns
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs, get_all_boroughs
 from utils.dcp_population_excel_helpers import (
@@ -26,6 +27,15 @@ industries = [
     "pbadm",
 ]
 ages = ["p25p", "p16t64"]
+income_bands = ["eli", "vli", "li", "mi", "midi", "hi"]
+
+age_categories = [f"age_{a}" for a in ages]
+education_categories = [f"edu_{e}" for e in education_levels]
+occupation_categories = [f"occupation_{o}" for o in occupations]
+industry_categories = [f"industry_{o}" for o in industries]
+dcp_pop_races = ["anh", "bnh", "hsp", "wnh"]
+income_band_categories = [f"households_{b}" for b in income_bands]
+
 suffix_mappers = {
     "count": count_suffix_mapper_global,
     "median": median_suffix_mapper_global,
@@ -53,11 +63,72 @@ def load_clean_source_data(year: str):
     source.columns = [convert_col_label(c) for c in source.columns]
 
     num_valid_columns = len([c for c in source.columns if "median_pct" not in c])
-    col_order = [c for c in source.columns if "median_pct" not in c]
+    col_order = order_economics(source)
     # Implement order_aggregated_columns next
     source = source.reindex(columns=col_order)
     assert len(col_order) == num_valid_columns
     return source
+
+
+def order_economics(source_data):
+
+    count_cols = order_aggregated_columns(
+        df=None,
+        indicators_denom=[
+            ("age",),
+            ("education",),
+            ("occupation",),
+            ("industry",),
+            ("income band",),
+            ("misc",),
+        ],
+        categories={
+            "age": age_categories,
+            "education": education_categories,
+            "occupation": occupation_categories,
+            "industry": industry_categories,
+            "income band": income_band_categories,
+            "misc": ["households", "cvem", "lf"],
+            "race": dcp_pop_races,
+        },
+        return_col_order=True,
+        exclude_denom=True,
+    )
+    [print(c) for c in count_cols if c not in source_data.columns]
+
+    assert len(count_cols) == 825
+    assert all(col in source_data.columns for col in count_cols)
+    median_cols = economics_median_cols_order()
+
+    assert len(median_cols) == 225
+    assert all(col in source_data.columns for col in median_cols)
+    return count_cols + median_cols
+
+
+def economics_median_cols_order():
+    """We should have generalized median column ordering code. This needs specific function
+    as not all categories are crosstabbed by race"""
+    rv = []
+    category_mapper = {
+        "household_income": (["household_income"], True),
+        "occupation": ([f"{o}_wages" for o in occupation_categories], False),
+        "industry": ([f"{i}_wages" for i in industry_categories], True),
+    }
+
+    for k, i in category_mapper.items():
+        categories = i[0]
+        race_crosstab = i[1]
+        for c in categories:
+            rv.append(f"{c}_median")
+            rv.append(f"{c}_median_moe")
+            rv.append(f"{c}_median_cv")
+            if race_crosstab:
+                for r in dcp_pop_races:
+                    rv.append(f"{c}_{r}_median")
+                    rv.append(f"{c}_{r}_median_moe")
+                    rv.append(f"{c}_{r}_median_cv")
+
+    return rv
 
 
 def ACS_PUMS_economics(geography, year: str = "0812", write_to_internal_review=False):
@@ -98,7 +169,7 @@ def convert_col_label(col_label: str):
         measure = "median"
     else:
         measure = "count"
-    indicator_label = process_ind_label(indicator_label.lower(), wages=True)
+    indicator_label = process_ind_label(indicator_label.lower(), wages=wages)
     if not tokens[0].isalpha():
         subgroup = ""
     else:
@@ -133,6 +204,9 @@ def process_ind_label(indicator_label, wages=False):
             rv = f"{rv}_wages"
         return rv
 
+    if indicator_label in income_bands:
+        return f"households_{indicator_label}"
+
     if indicator_label == "mdhinc":
         return "household_income"
     if indicator_label == "hhlds2":
@@ -146,4 +220,6 @@ def remove_duplicate_civilian_employed(df: pd.DataFrame):
     """Duplicates for this column are coded by integer after indicator label
     (CvEm1_19E, CvEm2_19E)"""
 
-    return df.drop(df.filter(regex="CvEm[2-4]").columns, axis=1)
+    df = df.drop(df.filter(regex="CvEm[2-4]").columns, axis=1)
+    df = df.drop(df.filter(regex="HHlds3").columns, axis=1)
+    return df

@@ -64,9 +64,9 @@ def load_clean_source_data(year: str):
 
     num_valid_columns = len([c for c in source.columns if "median_pct" not in c])
     col_order = order_economics(source)
-    # Implement order_aggregated_columns next
-    source = source.reindex(columns=col_order)
+
     assert len(col_order) == num_valid_columns
+    source = source.reindex(columns=col_order)
     return source
 
 
@@ -96,11 +96,9 @@ def order_economics(source_data):
     )
     [print(c) for c in count_cols if c not in source_data.columns]
 
-    assert len(count_cols) == 825
     assert all(col in source_data.columns for col in count_cols)
     median_cols = economics_median_cols_order()
 
-    assert len(median_cols) == 225
     assert all(col in source_data.columns for col in median_cols)
     return count_cols + median_cols
 

@@ -3,7 +3,7 @@ from aggregate.clean_aggregated import (
     rename_col_housing_security,
     order_PUMS_QOL_multiple_years,
 )
-from utils.dcp_population_excel_helpers import race_suffix_mapper, stat_suffix_mapper_md
+from utils.dcp_population_excel_helpers import race_suffix_mapper, stat_suffix_mapper_md, stat_suffix_mapper_ty
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_housing_security_pop_data
 from aggregate.aggregation_helpers import get_geography_housing_security_pop_data
@@ -28,6 +28,7 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
     final_md = get_geography_housing_security_pop_data(
         clean_data=clean_data_md, geography=geography
     )
+    rename_col_housing_security(final)
     final_md = final_md.reindex(
         columns=order_PUMS_QOL_multiple_years(
         categories=["rent_median"],

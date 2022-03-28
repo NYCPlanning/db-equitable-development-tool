@@ -3,12 +3,20 @@ import pandas as pd
 
 # Creat helpful global mappers for dcp
 
-stat_suffix_mapper_global = {
+count_suffix_mapper_global = {
     "e": "count",
     "m": "count_moe",
     "c": "count_cv",
     "p": "pct",
     "z": "pct_moe",
+}
+
+median_suffix_mapper_global = {
+    "e": "median",
+    "m": "median_moe",
+    "c": "median_cv",
+    "p": "median_pct",  # To be removed on further processing
+    "z": "median_pct_moe",  # To be removed on further processing
 }
 
 race_suffix_mapper_global = {"a": "anh", "b": "bnh", "h": "hsp", "w": "wnh"}
@@ -74,4 +82,10 @@ def load_2000_census_pums_all_data() -> pd.DataFrame:
         }
     )
     df.set_index("GeoID", inplace=True)
+    return df
+
+
+def remove_duplicate_cols(df):
+    """Excel spreadsheet has some duplicate columns that Erica used for calculations"""
+    df = df.drop(df.filter(regex="E.1$|M.1$|C.1$|P.1$|Z.1$").columns, axis=1)
     return df

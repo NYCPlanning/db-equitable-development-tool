@@ -10,6 +10,7 @@ from aggregate.aggregation_helpers import demographic_indicators_denom
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
+from utils.dcp_population_excel_helpers import remove_duplicate_cols
 
 demo_suffix = {
     ## Rename the demographic race columns with wiki conventions
@@ -50,12 +51,6 @@ def filter_to_demo_indicators(df):
     df = df.drop(
         df.filter(regex="P25pl|LTHS|HSGrd|SClgA|BchD|Occ|OOcc|ROcc").columns, axis=1
     )
-    return df
-
-
-def remove_duplicate_cols(df):
-    """Excel spreadsheet has some duplicate columns that Erica used for calculations"""
-    df = df.drop(df.filter(regex="E.1$|M.1$|C.1$|P.1$|Z.1$").columns, axis=1)
     return df
 
 

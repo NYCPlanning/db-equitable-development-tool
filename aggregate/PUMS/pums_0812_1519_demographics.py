@@ -17,7 +17,7 @@ endyear_mapper = {
     "19" : "1519"
 }
 
-def demographics(geography: str, write_to_internal_review=False) -> pd.DataFrame:
+def acs_pums_demographics(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
     indicators_denom = demographic_indicators_denom
     categories = {

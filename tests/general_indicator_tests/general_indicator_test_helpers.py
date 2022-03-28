@@ -5,7 +5,7 @@ accessors = Accessors()
 
 def get_by_geo():
     """housing security parameter is temporary"""
-    accessors_list = accessors.quality_of_life
+    accessors_list = accessors.all
     by_puma = []
     by_borough = []
     by_citywide = []

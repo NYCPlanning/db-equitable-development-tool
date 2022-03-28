@@ -1,4 +1,5 @@
 import pandas as pd
+from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import borough_name_mapper, get_all_boroughs
 from utils.dcp_population_excel_helpers import (
     race_suffix_mapper_global,
@@ -41,19 +42,26 @@ def ACS_PUMS_economics(geography, year: str = "0812", write_to_internal_review=F
         final = source.loc["citywide"]
 
     final.index.name = geography
+    if write_to_internal_review:
+        set_internal_review_files(
+            [
+                (final, f"ACS_PUMS_economics_{year}.csv", geography),
+            ],
+            "economics",
+        )
     return final
 
 
 def convert_col_label(col_label: str):
     indicator_label, tokens = col_label.split("_")
     indicator_label = ind_label_mapper.get(indicator_label, indicator_label)
-    print(tokens)
-    if tokens[0].isalpha():
-        subgroup = "_"
+    indicator_label = indicator_label.lower()
+    if not tokens[0].isalpha():
+        subgroup = ""
     else:
         subgroup = "_" + race_suffix_mapper_global[tokens[0].lower()]
         tokens = tokens[1:]
     year_token = year_mapper[tokens[:2]]
     tokens = tokens[2:]
-    measure_token = stat_suffix_mapper_global[tokens[0]]
+    measure_token = stat_suffix_mapper_global[tokens[0].lower()]
     return f"{indicator_label}_{year_token}{subgroup}_{measure_token}"

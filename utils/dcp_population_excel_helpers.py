@@ -2,6 +2,17 @@ import pandas as pd
 
 
 # Creat helpful global mappers for dcp
+
+stat_suffix_mapper_global = {
+    "e": "count",
+    "m": "count_moe",
+    "c": "count_cv",
+    "p": "pct",
+    "z": "pct_moe",
+}
+
+race_suffix_mapper_global = {"a": "anh", "b": "bnh", "h": "hsp", "w": "wnh"}
+
 race_suffix_mapper = {
     "_a": "_anh_",
     "_b": "_bnh_",

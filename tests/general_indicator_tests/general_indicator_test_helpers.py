@@ -3,11 +3,11 @@ from aggregate.all_accessors import Accessors
 accessors = Accessors()
 
 
-def get_by_geo(housing_security=False, demographics=False):
+def get_by_geo(housing_security=False, pums_demographics=False):
     """housing security parameter is temporary"""
     if housing_security:
         accessors_list = accessors.housing_security
-    elif demographics:
+    elif pums_demographics:
         accessors_list = accessors_list.pums_demographics
     else:
         accessors_list = accessors.all

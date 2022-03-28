@@ -1,10 +1,6 @@
-from ast import Index
-from distutils import errors
-from typing import final
 import pandas as pd
 from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
-from aggregate.clean_aggregated import order_affordable
 from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs
 
 suffix_mapper = {
@@ -15,6 +11,7 @@ suffix_mapper = {
     "Percent": "pct",
 }
 
+
 def rent_stabilized_units(
     geography: str, write_to_internal_review=False
 ) -> pd.DataFrame:
@@ -23,7 +20,7 @@ def rent_stabilized_units(
 
     indi_final = extract_geography_dataframe(clean_data, geography)
     denom_final = extract_geography_dataframe(denom, geography)
-    indi_final.columns = ["units_rentstable_"+ c for c in indi_final.columns]
+    indi_final.columns = ["units_rentstable_" + c for c in indi_final.columns]
     denom_final.columns = ["units_occurental_" + c for c in denom_final.columns]
     final = pd.concat([indi_final, denom_final], axis=1)
     for code, suffix in suffix_mapper.items():
@@ -36,14 +33,15 @@ def rent_stabilized_units(
         )
     return final
 
+
 def three_maintenance_units(
     geography: str, write_to_internal_review=False
-    ) -> pd.DataFrame:
+) -> pd.DataFrame:
     clean_data, denom = load_source_clean_data("units_threemaintenance")
 
     indi_final = extract_geography_dataframe(clean_data, geography)
     denom_final = extract_geography_dataframe(denom, geography)
-    indi_final.columns = ["units_threemaintenance_"+ c for c in indi_final.columns]
+    indi_final.columns = ["units_threemaintenance_" + c for c in indi_final.columns]
     denom_final.columns = ["units_occu_" + c for c in denom_final.columns]
     final = pd.concat([indi_final, denom_final], axis=1)
     for code, suffix in suffix_mapper.items():
@@ -80,21 +78,48 @@ def load_source_clean_data(indicator: str) -> pd.DataFrame:
     }
     data = pd.read_csv(**read_csv_arg)
     data.columns = [c.replace(".1", "") for c in data.columns]
-    data.drop(columns=['SE', 'Percent SE'], inplace=True)
+    data.drop(columns=["SE", "Percent SE"], inplace=True)
     data.replace("%", "", regex=True, inplace=True)
     data.replace(",", "", regex=True, inplace=True)
-    num_cols = ['N', 'MOE\n(95% CI)', 'CV', 'Percent', 'Percent MOE\n(95% CI)']
+    num_cols = ["N", "MOE\n(95% CI)", "CV", "Percent", "Percent MOE\n(95% CI)"]
     data[num_cols] = data[num_cols].apply(pd.to_numeric, errors="coerce")
-    data = data.reindex(columns=['SBA', 'PUMA', 'CD Name', 'N', 'MOE\n(95% CI)', 'CV','Percent', 'Percent MOE\n(95% CI)'])
+    data = data.reindex(
+        columns=[
+            "SBA",
+            "PUMA",
+            "CD Name",
+            "N",
+            "MOE\n(95% CI)",
+            "CV",
+            "Percent",
+            "Percent MOE\n(95% CI)",
+        ]
+    )
 
     denom = pd.read_excel(**read_excel_arg)
     denom["PUMA"] = denom["PUMA"].astype(str)
-    denom.drop(columns=['SE', 'Percent', 'Percent SE', 'Percent MOE\n(95% CI)'], errors="ignore", inplace=True)
-    denom = denom.reindex(columns=['SBA', 'CD Name', 'PUMA', 'N', 'MOE\n(95% CI)', 'CV', ])
+    denom.drop(
+        columns=["SE", "Percent", "Percent SE", "Percent MOE\n(95% CI)"],
+        errors="ignore",
+        inplace=True,
+    )
+    denom = denom.reindex(
+        columns=[
+            "SBA",
+            "CD Name",
+            "PUMA",
+            "N",
+            "MOE\n(95% CI)",
+            "CV",
+        ]
+    )
 
     return data, denom
 
-def extract_geography_dataframe(clean_data: pd.DataFrame, geography: str) -> pd.DataFrame:
+
+def extract_geography_dataframe(
+    clean_data: pd.DataFrame, geography: str
+) -> pd.DataFrame:
 
     if geography == "puma":
         clean_data["puma"] = clean_data["PUMA"].apply(func=clean_PUMAs)
@@ -108,7 +133,11 @@ def extract_geography_dataframe(clean_data: pd.DataFrame, geography: str) -> pd.
         clean_data.loc[clean_data["CD Name"] == "NYC", "citywide"] = "citywide"
         final = clean_data.loc[~clean_data.citywide.isna()].copy()
 
-    drop_cols = ["SBA", "PUMA", "CD Name",]
+    drop_cols = [
+        "SBA",
+        "PUMA",
+        "CD Name",
+    ]
 
     final.drop(columns=drop_cols, inplace=True)
     final.set_index(geography, inplace=True)

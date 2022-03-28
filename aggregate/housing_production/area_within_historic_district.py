@@ -2,7 +2,6 @@ from gettext import find
 from typing import List
 from json import load
 import geopandas as gp
-import requests
 from shapely import wkt
 from utils.PUMA_helpers import puma_to_borough, NYC_PUMA_geographies
 from internal_review.set_internal_review_file import set_internal_review_files
@@ -23,11 +22,13 @@ def area_historic_internal_review():
         "housing_production",
     )
 
+
 def rename_col(cols) -> List:
 
     new_cols = [col if "pct" in col else col + "_count" for col in cols]
-    
+
     return new_cols
+
 
 def fraction_historic(geography_level):
     """Main accessor of indicator"""
@@ -38,7 +39,9 @@ def fraction_historic(geography_level):
         fraction_PUMA_historic, axis=1, args=(hd,), result_type="expand"
     )
     gdf.columns = rename_col(gdf.columns)
-    return gdf[[ "area_historic_sqmiles_count","area_historic_pct", "total_sqmiles_count"]].round(2)
+    return gdf[
+        ["area_historic_sqmiles_count", "area_historic_pct", "total_sqmiles_count"]
+    ].round(2)
 
 
 def generate_geographies(geography_level):

@@ -1,4 +1,3 @@
-from typing import final
 import pandas as pd
 
 # from aggregate.quality_of_life.self_reported_health import load_clean_source_data

@@ -1,7 +1,8 @@
-from typing import final
 import pandas as pd
-from aggregate.clean_aggregated import rename_col_housing_security, order_PUMS_QOL_multiple_years
-from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper, get_all_boroughs, get_all_NYC_PUMAs
+from aggregate.clean_aggregated import (
+    rename_col_housing_security,
+    order_PUMS_QOL_multiple_years,
+)
 from utils.dcp_population_excel_helpers import race_suffix_mapper, stat_suffix_mapper_md
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_housing_security_pop_data
@@ -12,17 +13,19 @@ year_mapper = {"12": "0812", "19": "1519"}
 
 def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
-    name_mapper = {
-        "MdGR": "rent_median"
-    }
+    name_mapper = {"MdGR": "rent_median"}
 
     clean_data = load_clean_housing_security_pop_data(name_mapper)
 
-    final = get_geography_pop_data(clean_data=clean_data, geography=geography)
+    final = get_geography_pop_data(
+        clean_data=clean_data, geography=geography
+    )
 
     final.set_index(geography, inplace=True)
 
-    final = rename_col_housing_security(final, name_mapper, race_suffix_mapper, year_mapper, stat_suffix_mapper_md)
+    final = rename_col_housing_security(
+        final, name_mapper, race_suffix_mapper, year_mapper, stat_suffix_mapper_md
+    )
 
     final.dropna(axis=1, how="all", inplace=True)
 
@@ -34,11 +37,10 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
     final = final.reindex(columns=col_order)
 
-    
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "rent_median.csv", geography)],
             "housing_security",
         )
 
-    return final 
+    return final

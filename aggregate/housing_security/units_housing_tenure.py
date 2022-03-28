@@ -26,9 +26,6 @@ def units_housing_tenure(
     final = get_geography_pop_data(
         clean_data=clean_data, geography=geography
     )
-
-    final.set_index(geography, inplace=True)
-
     final = rename_col_housing_security(
         final, name_mapper, race_suffix_mapper, year_mapper, stat_suffix_mapper_ty
     )

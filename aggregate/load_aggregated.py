@@ -111,7 +111,7 @@ def load_clean_housing_security_pop_data(name_mapper: dict) -> pd.DataFrame:
 
     return df
 
-def load_clean_pop_demographics(end_year: int, year: str) -> pd.DataFrame:
+def load_clean_pop_demographics(end_year: str, year: str) -> pd.DataFrame:
     """Function to merge the two files for the QOL outputs and do some standard renaming. Because
     these are QOL indicators they remain in the same csv output with columns indicating year"""
 

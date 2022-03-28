@@ -8,7 +8,7 @@ def get_by_geo(housing_security=False, pums_demographics=False):
     if housing_security:
         accessors_list = accessors.housing_security
     elif pums_demographics:
-        accessors_list = accessors_list.pums_demographics
+        accessors_list = accessors.pums_demographics
     else:
         accessors_list = accessors.all
     by_puma = []

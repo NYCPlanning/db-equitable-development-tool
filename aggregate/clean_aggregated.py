@@ -106,11 +106,17 @@ def rename_columns_demo(df:pd.DataFrame, end_year: int, year: str):
     for code, race in demo_suffix.items():
         cols = [col.replace(code, race) for col in cols]
 
-    cols = [col.replace(f"_{end_year}e", f"_{year}_count") for col in cols]
-    cols = [col.replace(f"_{end_year}m", f"_{year}_count_moe") for col in cols]
-    cols = [col.replace(f"_{end_year}c", f"_{year}_count_cv") for col in cols]
-    cols = [col.replace(f"_{end_year}p", f"_{year}_pct") for col in cols]
-    cols = [col.replace(f"_{end_year}z", f"_{year}_pct_moe") for col in cols]
+    # cols = [col.replace(f"_{end_year}e", f"_{year}_count") for col in cols]
+    # cols = [col.replace(f"_{end_year}m", f"_{year}_count_moe") for col in cols]
+    # cols = [col.replace(f"_{end_year}c", f"_{year}_count_cv") for col in cols]
+    # cols = [col.replace(f"_{end_year}p", f"_{year}_pct") for col in cols]
+    # cols = [col.replace(f"_{end_year}z", f"_{year}_pct_moe") for col in cols]
+    
+    cols = [col.replace(f"_{end_year}e", f"_count") for col in cols]
+    cols = [col.replace(f"_{end_year}m", f"_count_moe") for col in cols]
+    cols = [col.replace(f"_{end_year}c", f"_count_cv") for col in cols]
+    cols = [col.replace(f"_{end_year}p", f"_pct") for col in cols]
+    cols = [col.replace(f"_{end_year}z", f"_pct_moe") for col in cols]
 
     cols = [col.replace("mdage", "age_median") for col in cols]
     cols = [col.replace("pu16", "age_popu16") for col in cols]

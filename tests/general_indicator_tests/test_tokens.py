@@ -1,7 +1,7 @@
 import pytest
 from tests.general_indicator_tests.general_indicator_test_helpers import get_by_geo
 
-by_puma, by_borough, by_citywide = get_by_geo(housing_security=True)
+#by_puma, by_borough, by_citywide = get_by_geo(housing_security=True)
 by_puma, by_borough, by_citywide = get_by_geo(pums_demographics=True)
 
 

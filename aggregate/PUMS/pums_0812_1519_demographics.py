@@ -7,17 +7,19 @@ breakdowns]).
 
 from webbrowser import get
 import pandas as pd
-from aggregate.aggregation_helpers import demographic_indicators_denom, order_multiyr_aggregated_columns, get_category, get_geography_pop_data
+from aggregate.aggregation_helpers import demographic_indicators_denom, order_aggregated_columns, get_category, get_geography_pop_data
 from utils.PUMA_helpers import dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_pop_demographics
 
 endyear_mapper = {
-    "12" : "0812",
-    "19" : "1519"
+    "0812": "12", 
+    "1519": "19" 
 }
 
-def acs_pums_demographics(geography: str, write_to_internal_review=False) -> pd.DataFrame:
+def acs_pums_demographics(geography: str, year: str, write_to_internal_review=False) -> pd.DataFrame:
+    assert geography in ["citywide", "borough", "puma"]
+    assert year in ["0812", "1519"]
 
     indicators_denom = demographic_indicators_denom
     categories = {
@@ -26,26 +28,23 @@ def acs_pums_demographics(geography: str, write_to_internal_review=False) -> pd.
         "age_bucket": get_category("age_bucket"),
         "race": dcp_pop_races,
     }
-    clean_data_0812 = load_clean_pop_demographics("12", endyear_mapper["12"])
-    clean_data_1519 = load_clean_pop_demographics("19", endyear_mapper["19"])
 
-    final_0812 = get_geography_pop_data(clean_data_0812, geography)    
-    final_1519 = get_geography_pop_data(clean_data_1519, geography)
-    final = pd.concat([final_0812, final_1519], axis=1)
+    clean_data = load_clean_pop_demographics(endyear_mapper[year], year)
+    final = get_geography_pop_data(clean_data, geography)
 
-    final = order_multiyr_aggregated_columns(
+    final = order_aggregated_columns(
         df=final,
         indicators_denom=indicators_denom,
         categories=categories,
         household=False,
         census_PUMS=True,
         demographics_category=True,
-        years=["0812", "1519"]
     )
+    final.dropna(axis=1, how="all", inplace=True)
 
     if write_to_internal_review:
         set_internal_review_files(
-            [(final, f"demographics.csv", geography)],
+            [(final, f"ACS_PUMS_demographics_{year}.csv", geography)],
             "demographics",
         )
     return final 

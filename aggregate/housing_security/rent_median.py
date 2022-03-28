@@ -13,7 +13,7 @@ year_mapper = {"12": "0812", "19": "1519"}
 
 def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
-    name_mapper = {"MdGR": "rent_median"}
+    name_mapper = {"MdGR": "rent_median", "HUPRt": "households_payingrent"}
 
     clean_data = load_clean_housing_security_pop_data(name_mapper)
 

@@ -1,8 +1,6 @@
-from distutils.log import error
 import numpy as np
 import pandas as pd
 from utils.CD_helpers import add_CD_code, community_district_to_PUMA
-from utils.PUMA_helpers import borough_name_mapper
 from internal_review.set_internal_review_file import set_internal_review_files
 
 

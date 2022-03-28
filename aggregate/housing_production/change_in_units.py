@@ -1,6 +1,5 @@
 # from unittest import result
 from typing import List
-from unittest import result
 import pandas as pd
 import geopandas as gpd
 import requests
@@ -150,11 +149,13 @@ def clean_jobs(df):
 
     return df
 
+
 def rename_col(cols) -> List:
 
     new_cols = [col if "pct" in col else col + "_count" for col in cols]
-    
+
     return new_cols
+
 
 def change_in_units(geography: str, write_to_internal_review=False):
     """Main accessor for this function"""

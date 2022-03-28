@@ -122,6 +122,7 @@ def economics_median_cols_order():
             rv.append(f"{c}_median")
             rv.append(f"{c}_median_moe")
             rv.append(f"{c}_median_cv")
+        for c in categories:
             if race_crosstab:
                 for r in dcp_pop_races:
                     rv.append(f"{c}_{r}_median")

@@ -63,34 +63,38 @@ def load_clean_source_data(year: str):
     source.columns = [convert_col_label(c) for c in source.columns]
 
     num_valid_columns = len([c for c in source.columns if "median_pct" not in c])
-    col_order = order_economics(source)
+    col_order = order_economics(source, year)
 
     assert len(col_order) == num_valid_columns
     source = source.reindex(columns=col_order)
     return source
 
 
-def order_economics(source_data):
-
+def order_economics(source_data, year):
+    reorder_categories = {
+        "age": age_categories,
+        "education": education_categories,
+        "occupation": occupation_categories,
+        "industry": industry_categories,
+        "misc": ["households", "cvem", "lf"],
+        "race": dcp_pop_races,
+    }
+    indicators_denom = [
+        ("age",),
+        ("education",),
+        ("occupation",),
+        ("industry",),
+        ("income band",),
+        ("misc",),
+    ]
+    if year == "1519":
+        reorder_categories["income band"] = (income_band_categories,)
+    else:
+        reorder_categories["income band"] = []
     count_cols = order_aggregated_columns(
         df=None,
-        indicators_denom=[
-            ("age",),
-            ("education",),
-            ("occupation",),
-            ("industry",),
-            ("income band",),
-            ("misc",),
-        ],
-        categories={
-            "age": age_categories,
-            "education": education_categories,
-            "occupation": occupation_categories,
-            "industry": industry_categories,
-            "income band": income_band_categories,
-            "misc": ["households", "cvem", "lf"],
-            "race": dcp_pop_races,
-        },
+        indicators_denom=indicators_denom,
+        categories=reorder_categories,
         return_col_order=True,
         exclude_denom=True,
     )

@@ -123,5 +123,7 @@ def get_geography_housing_security_pop_data(clean_data: pd.DataFrame, geography:
             .rename(columns={"Geog": "puma"})
             .copy()
         )
+        
+    final.set_index(geography, inplace=True)
 
     return final

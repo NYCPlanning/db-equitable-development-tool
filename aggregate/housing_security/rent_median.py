@@ -13,29 +13,42 @@ year_mapper = {"12": "0812", "19": "1519"}
 
 def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
-    name_mapper = {"MdGR": "rent_median", "HUPRt": "households_payingrent"}
+    name_mapper_md = {
+        "MdGR": "rent_median", 
+    }
 
-    clean_data = load_clean_housing_security_pop_data(name_mapper)
+    name_mapper_hh = {
+        "HUPRt": "households_payingrent"
+    }
 
-    final = get_geography_housing_security_pop_data(
-        clean_data=clean_data, geography=geography
+    clean_data_md = load_clean_housing_security_pop_data(name_mapper_md)
+
+    clean_data_hh = load_clean_housing_security_pop_data(name_mapper_hh)
+
+    final_md = get_geography_housing_security_pop_data(
+        clean_data=clean_data_md, geography=geography
     )
-
-    final.set_index(geography, inplace=True)
-
-    final = rename_col_housing_security(
-        final, name_mapper, race_suffix_mapper, year_mapper, stat_suffix_mapper_md
-    )
-
-    final.dropna(axis=1, how="all", inplace=True)
-
-    col_order = order_PUMS_QOL_multiple_years(
+    final_md = final_md.reindex(
+        columns=order_PUMS_QOL_multiple_years(
         categories=["rent_median"],
         measures=["_median", "_median_moe", "_median_cv"],
         years=["_0812", "_1519"],
+        )
+    )
+    final_hh = get_geography_housing_security_pop_data(
+        clean_data=clean_data_hh, geography=geography
+    )
+    final_hh = final_hh.reindex(
+        columns=order_PUMS_QOL_multiple_years(
+        categories=["households_payingrent"],
+        measures=["_count", "_count_moe", "_count_cv"],
+        years=["_0812", "_1519"],
+        )
     )
 
-    final = final.reindex(columns=col_order)
+    final = pd.concat([final_md, final_hh], axis=1)
+
+    final.dropna(axis=1, how="all", inplace=True)
 
     if write_to_internal_review:
         set_internal_review_files(

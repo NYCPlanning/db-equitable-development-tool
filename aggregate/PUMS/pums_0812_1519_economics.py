@@ -1,6 +1,6 @@
 import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
-from utils.PUMA_helpers import borough_name_mapper, get_all_boroughs
+from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs, get_all_boroughs
 from utils.dcp_population_excel_helpers import (
     race_suffix_mapper_global,
     stat_suffix_mapper_global,
@@ -36,6 +36,7 @@ def ACS_PUMS_economics(geography, year: str = "0812", write_to_internal_review=F
 
     if geography == "puma":
         final = source.loc[3701:4114]  # Don't love this but it's a common pattern
+        final.index = final.index.map(clean_PUMAs)
 
     if geography == "borough":
         final = source.loc[get_all_boroughs()]
@@ -65,4 +66,4 @@ def convert_col_label(col_label: str):
     year_token = year_mapper[tokens[:2]]
     tokens = tokens[2:]
     measure_token = stat_suffix_mapper_global[tokens[0].lower()]
-    return f"{indicator_label}_{year_token}{subgroup}_{measure_token}"
+    return f"{indicator_label}{subgroup}_{measure_token}"

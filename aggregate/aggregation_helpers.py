@@ -1,4 +1,7 @@
 import pandas as pd
+from typing import List
+import numpy as np
+
 from utils.PUMA_helpers import (
     census_races,
     clean_PUMAs,
@@ -57,6 +60,58 @@ def order_aggregated_columns(
     print(col_order)
     return df.reindex(columns=col_order)
 
+
+def order_multiyr_aggregated_columns(
+    df: pd.DataFrame,
+    indicators_denom,
+    categories,
+    household,
+    census_PUMS=False,
+    demographics_category=False,
+    years=List,
+) -> pd.DataFrame:
+    """This can be DRY'd out, written quickly to meet deadline"""
+
+    col_order = []
+    for y in years:
+        for ind_denom in indicators_denom:
+            ind = ind_denom[0]
+            for ind_category in categories[ind]:
+                for measure in ["_count", "_pct"]:
+                    col_order.append(f"{ind_category}_{y}{measure}")
+                    col_order.append(f"{ind_category}_{y}{measure}_moe")
+                    if measure == "_count":
+                        col_order.append(f"{ind_category}_{y}{measure}_cv")
+                if not census_PUMS:
+                    col_order.append(f"{ind_category}_pct_denom")
+                if census_PUMS and ind == "LEP":
+                    col_order.append("age_p5pl")
+            if not household:
+                for ind_category in categories[ind]:
+                    for race_crosstab in categories["race"]:
+                        for measure in ["_count", "_pct"]:
+                            column_label_base = f"{ind_category}_{y}_{race_crosstab}{measure}"
+                            col_order.append(f"{column_label_base}")
+                            col_order.append(f"{column_label_base}_moe")
+                            if measure == "_count":
+                                col_order.append(f"{column_label_base}_cv")
+                        if not census_PUMS:
+                            col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
+                        if census_PUMS and ind == "LEP":
+                            col_order.append(f"age_p5pl_{y}_{race_crosstab}")
+        if census_PUMS and demographics_category == True:
+            for crosstab in [""] + [f"_{r}" for r in categories["race"]]:
+                for measure in ["", "_moe", "_cv"]:
+                    col_order.append(f"age_median_{y}{crosstab}_median{measure}")
+
+            #col_order.extend(median_age_col_order(categories["race"]))
+    print(col_order)
+    print(len(col_order))
+    diff = np.setdiff1d(df.columns, col_order)
+    print(diff)
+    df.drop(columns=diff, inplace=True)
+    #print(df.columns)
+    return df.reindex(columns=col_order)
 
 def median_age_col_order(race_crosstabs):
     """Order median age columns. The calculate_median_LI.py code does this ordering

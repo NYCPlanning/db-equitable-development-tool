@@ -112,21 +112,11 @@ def rename_columns_demo(df:pd.DataFrame, end_year: int, year: str):
     cols = [col.replace(f"_{end_year}p", f"_{year}_pct") for col in cols]
     cols = [col.replace(f"_{end_year}z", f"_{year}_pct_moe") for col in cols]
 
-    # cols = [col.replace("_19e", "_count") for col in cols]
-    # cols = [col.replace("_19m", "_count_moe") for col in cols]
-    # cols = [col.replace("_19c", "_count_cv") for col in cols]
-    # cols = [col.replace("_19p", "_pct") for col in cols]
-    # cols = [col.replace("_19z", "_pct_moe") for col in cols]
-
     cols = [col.replace("mdage", "age_median") for col in cols]
     cols = [col.replace("pu16", "age_popu16") for col in cols]
     cols = [col.replace("p16t64", "age_p16t64") for col in cols]
     cols = [col.replace("p65pl", "age_p65pl") for col in cols]
     cols = [col.replace("p5pl", "age_p5pl") for col in cols]
-    #cols = [col.replace("_median_anh", "_anh_median") for col in cols]
-    #cols = [col.replace("_median_bnh", "_bnh_median") for col in cols]
-    #cols = [col.replace("_median_hsp", "_hsp_median") for col in cols]
-    #cols = [col.replace("_median_wnh", "_wnh_median") for col in cols]
 
     for k, v in reorder_year_race_mapper.items():
 

@@ -11,7 +11,7 @@ import pandas as pd
 from aggregate.aggregation_helpers import demographic_indicators_denom
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
-from aggregate.aggregation_helpers import order_aggregated_columns, get_category, get_geography_pop_data
+from aggregate.aggregation_helpers import order_multiyr_aggregated_columns, get_category, get_geography_pop_data
 from aggregate.clean_aggregated import rename_columns_demo
 
 
@@ -41,17 +41,19 @@ def demographics(geography: str, write_to_internal_review=False) -> pd.DataFrame
 
     final = pd.concat([final_0812, final_1519], axis=1)
 
+    final.set_index(geography, inplace=True)
 
     #print(final)
     print(final.columns)
 
-    final = order_aggregated_columns(
+    final = order_multiyr_aggregated_columns(
         df=final,
         indicators_denom=indicators_denom,
         categories=categories,
         household=False,
         census_PUMS=True,
         demographics_category=True,
+        years=["0812", "1519"]
     )
 
     if write_to_internal_review:

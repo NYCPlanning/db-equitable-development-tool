@@ -104,13 +104,9 @@ def order_multiyr_aggregated_columns(
                 for measure in ["", "_moe", "_cv"]:
                     col_order.append(f"age_median_{y}{crosstab}_median{measure}")
 
-            #col_order.extend(median_age_col_order(categories["race"]))
-    print(col_order)
-    print(len(col_order))
     diff = np.setdiff1d(df.columns, col_order)
-    print(diff)
     df.drop(columns=diff, inplace=True)
-    #print(df.columns)
+    
     return df.reindex(columns=col_order)
 
 def median_age_col_order(race_crosstabs):
@@ -179,5 +175,6 @@ def get_geography_pop_data(clean_data: pd.DataFrame, geography: str):
             .rename(columns={"Geog": "puma"})
             .copy()
         )
+    final.set_index(geography, inplace=True)
 
     return final

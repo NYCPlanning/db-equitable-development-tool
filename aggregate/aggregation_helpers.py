@@ -13,10 +13,12 @@ from utils.PUMA_helpers import (
 
 
 demographic_indicators_denom = [
+    ("total_pop", ),
+    ("age_bucket",),
     ("LEP", "over_five_filter"),
     ("foreign_born",),
-    ("age_bucket",),
-   ("total_pop", ),
+
+   
 ]
 
 
@@ -32,6 +34,7 @@ def order_aggregated_columns(
     """This can be DRY'd out, written quickly to meet deadline"""
     col_order = []
     for ind_denom in indicators_denom:
+        print(ind_denom)
         ind = ind_denom[0]
         for ind_category in categories[ind]:
             for measure in ["_count", "_pct"]:

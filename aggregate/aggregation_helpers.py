@@ -1,4 +1,3 @@
-from matplotlib.pyplot import axis
 import pandas as pd
 from typing import List
 import numpy as np
@@ -13,12 +12,11 @@ from utils.PUMA_helpers import (
 
 
 demographic_indicators_denom = [
-    ("total_pop", ),
+    ("total_pop",),
+    ("age_p5pl",),
     ("age_bucket",),
     ("LEP", "over_five_filter"),
     ("foreign_born",),
-
-   
 ]
 
 
@@ -34,7 +32,6 @@ def order_aggregated_columns(
     """This can be DRY'd out, written quickly to meet deadline"""
     col_order = []
     for ind_denom in indicators_denom:
-        print(ind_denom)
         ind = ind_denom[0]
         for ind_category in categories[ind]:
             for measure in ["_count", "_pct"]:
@@ -45,7 +42,7 @@ def order_aggregated_columns(
             if not exclude_denom:
                 print("adding denom")
                 col_order.append(f"{ind_category}_pct_denom")
-            #if exclude_denom and ind == "LEP":
+            # if exclude_denom and ind == "LEP":
             #    col_order.append("age_p5pl")
         if not household:
             for ind_category in categories[ind]:
@@ -58,7 +55,7 @@ def order_aggregated_columns(
                             col_order.append(f"{column_label_base}_cv")
                     if not exclude_denom:
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
-                    #if exclude_denom and ind == "LEP":
+                    # if exclude_denom and ind == "LEP":
                     #    col_order.append(f"age_p5pl_{race_crosstab}")
 
     if exclude_denom and demographics_category == True:
@@ -67,7 +64,6 @@ def order_aggregated_columns(
         return col_order
     return df.reindex(columns=col_order)
 
-    return df.reindex(columns=col_order)
 
 def median_age_col_order(race_crosstabs):
     """Order median age columns. The calculate_median_LI.py code does this ordering

@@ -56,9 +56,9 @@ from aggregate.quality_of_life.access_to_broadband import access_to_broadband
 from aggregate.quality_of_life.access_transit_car import access_transit_car
 
 # Census imports
-from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics
+from aggregate.PUMS.pums_2000_demographics import pums_2000_demographics
+from aggregate.decennial_census.decennial_census_001020 import decennial_census_001020
 from aggregate.PUMS.pums_2000_economics import pums_2000_economics
-from aggregate.decennial_census.decennial_census_001020 import decennial_census_data
 from aggregate.PUMS.pums_0812_1519_demographics import acs_pums_demographics
 from aggregate.PUMS.pums_0812_1519_economics import acs_pums_economics
 
@@ -98,8 +98,8 @@ housing_security_accessors = [
 
 
 census_accessors = [
-    census_2000_pums_demographics,
-    decennial_census_data,
+    pums_2000_demographics,
+    decennial_census_001020,
     acs_pums_economics,
     pums_2000_economics,
 ]

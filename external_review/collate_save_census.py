@@ -37,8 +37,6 @@ def collate_save_census(
 class CensusAccessors:
     """All function calls return iterables for consistency."""
 
-    test = "a"
-
     @classmethod
     def demographics_2000(cls):
         return [decennial_census_data, census_2000_pums_demographics]
@@ -48,19 +46,19 @@ class CensusAccessors:
         return [pums_2000_economics]
 
     @classmethod
-    def demographics_0812():
+    def demographics_0812(cls):
         return []
 
     @classmethod
-    def economics_0812():
+    def economics_0812(cls):
         return []
 
     @classmethod
-    def demographics_1519():
+    def demographics_1519(cls):
         return []
 
     @classmethod
-    def economics_1519():
+    def economics_1519(cls):
         return []
 
 

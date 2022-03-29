@@ -118,7 +118,8 @@ def order_pums_2000_demographics(final: pd.DataFrame):
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
-        "total_pop": ["pop", "age_p5pl"],
+        "total_pop": ["pop"],
+        "age_p5pl": ["age_p5pl"],
         "race": dcp_pop_races,
     }
     final = order_aggregated_columns(

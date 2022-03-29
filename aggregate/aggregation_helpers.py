@@ -14,6 +14,7 @@ from utils.PUMA_helpers import (
 
 demographic_indicators_denom = [
     ("total_pop",),
+    ("age_p5pl",),
     ("age_bucket",),
     ("LEP", "over_five_filter"),
     ("foreign_born",),

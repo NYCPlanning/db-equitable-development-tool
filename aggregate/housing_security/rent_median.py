@@ -18,7 +18,7 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
     }
 
     name_mapper_hh = {
-        "HUPRt": "households_payingrent"
+        "HUPRt": "units_payingrent"
     }
 
     clean_data_md = load_clean_housing_security_pop_data(name_mapper_md)
@@ -55,7 +55,7 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
     final_hh = final_hh.reindex(
         columns=order_PUMS_QOL_multiple_years(
-        categories=["households_payingrent"],
+        categories=["units_payingrent"],
         measures=["_count", "_count_moe", "_count_cv"],
         years=["_0812", "_1519"],
         )

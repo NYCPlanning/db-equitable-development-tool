@@ -18,7 +18,7 @@ def acs_pums_demographics(geography: str, year: str, write_to_internal_review=Fa
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
-        "total_pop": ["pop"],
+        "total_pop": ["pop", "age_p5pl",],
         "race": dcp_pop_races,
     }
 

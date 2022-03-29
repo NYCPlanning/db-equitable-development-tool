@@ -16,7 +16,7 @@ demographic_indicators_denom = [
     ("LEP", "over_five_filter"),
     ("foreign_born",),
     ("age_bucket",),
-    ("total_pop", ),
+   ("total_pop", ),
 ]
 
 
@@ -40,8 +40,8 @@ def order_aggregated_columns(
                     col_order.append(f"{ind_category}{measure}_cv")
             if not census_PUMS:
                 col_order.append(f"{ind_category}_pct_denom")
-            if census_PUMS and ind == "LEP":
-                col_order.append("age_p5pl")
+            #if census_PUMS and ind == "LEP":
+            #    col_order.append("age_p5pl")
         if not household:
             for ind_category in categories[ind]:
                 for race_crosstab in categories["race"]:
@@ -53,13 +53,12 @@ def order_aggregated_columns(
                             col_order.append(f"{column_label_base}_cv")
                     if not census_PUMS:
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
-                    if census_PUMS and ind == "LEP":
-                        col_order.append(f"age_p5pl_{race_crosstab}")
+                    #if census_PUMS and ind == "LEP":
+                    #    col_order.append(f"age_p5pl_{race_crosstab}")
 
     if census_PUMS and demographics_category == True:
         col_order.extend(median_age_col_order(categories["race"]))
-    diff = np.setdiff1d(df.columns, col_order)
-    df.drop(columns=diff, inplace=True)
+
     return df.reindex(columns=col_order)
 
 def median_age_col_order(race_crosstabs):
@@ -75,7 +74,7 @@ def median_age_col_order(race_crosstabs):
 def get_category(indicator, data=None):
     """Outdated now that we use dcp_pop_races for race crosstabs"""
     if indicator == "age_bucket":
-        return ["age_p5plp", "age_popu16", "age_p16t64", "age_p65pl"]
+        return ["age_popu16", "age_p16t64", "age_p65pl"]
     elif indicator == "household_income_bands":
         return [
             "ELI",

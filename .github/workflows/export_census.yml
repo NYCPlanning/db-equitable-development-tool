@@ -65,7 +65,7 @@ jobs:
 
       - name: export
         run: |
-          poetry run python3 -m external_review.collate_census_category ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
+          poetry run python3 -m external_review.collate_save_census ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
           ./external_review/export_DO.sh export_census ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
 
 

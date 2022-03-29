@@ -18,9 +18,9 @@ from aggregate.aggregation_helpers import order_aggregated_columns, get_category
 edu_name_mapper = {
     "p25pl": "age_p25pl",
     "lths": "edu_lths",
-    "hsgrd": "edu_hsgrd",
-    "sclga": "edu_sclga",
-    "bchd": "edu_bchd",
+    "hsgrd": "edu_hs",
+    "sclga": "edu_smcol",
+    "bchd": "edu_bchpl",
 }
 
 
@@ -93,7 +93,7 @@ def order_pums_2000_economic(final: pd.DataFrame):
         )
     ]
     categories = {
-        "edu": ["edu_lths", "edu_hsgrd", "edu_sclga", "edu_bchd", "age_p25pl"],
+        "edu": ["edu_lths", "edu_hs", "edu_smcol", "edu_bchpl", "age_p25pl"],
         "race": dcp_pop_races,
     }
     final = order_aggregated_columns(
@@ -101,7 +101,7 @@ def order_pums_2000_economic(final: pd.DataFrame):
         indicators_denom=indicators_denom,
         categories=categories,
         household=False,
-        census_PUMS=True,
+        exclude_denom=True,
         demographics_category=False,
     )
     return final

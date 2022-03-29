@@ -30,7 +30,7 @@ def acs_pums_demographics(geography: str, year: str, write_to_internal_review=Fa
         indicators_denom=indicators_denom,
         categories=categories,
         household=False,
-        census_PUMS=True,
+        exclude_denom=True,
         demographics_category=True,
     )
 

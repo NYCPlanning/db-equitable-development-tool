@@ -46,4 +46,4 @@ jobs:
       - name: Pytest
         run: |
           . $HOME/.poetry/env
-          poetry run pytest -v tests/general_indicator_tests
+          poetry run pytest -v tests/general_indicator_tests/test_index_type.py

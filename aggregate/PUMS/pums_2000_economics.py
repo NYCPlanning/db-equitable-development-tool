@@ -4,56 +4,24 @@ that they can be collated using the established collate process"""
 
 import pandas as pd
 from utils.PUMA_helpers import clean_PUMAs, census_races, dcp_pop_races
+from utils.dcp_population_excel_helpers import (
+    race_suffix_mapper,
+    stat_suffix_mapper,
+    load_2000_census_pums_all_data,
+)
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
 
 # from aggregate.aggregation_helpers import order_aggregated_columns, get_category
 
 
-race_suffix_mapper = {
-    "_a": "_anh_",
-    "_b": "_bnh_",
-    "_h": "_hsp_",
-    "_w": "_wnh_",
-}  # TODO: Move this into a utils helper as this is standard throughout population raw data
-
-stat_suffix_mapper = {
-    "_00e": "",
-    "_00m": "_moe",
-    "_00c": "_cv",
-    "_00p": "_pct",
-    "_00z": "_pct_moe",
-}  # TODO: Move this into a utils helper with an extended dictionary that can handle multiple pums time periods
-
 edu_name_mapper = {
     "p25pl": "age_p25pl",
     "lths": "edu_lths",
-    "hsgrd": "edu_hsgrd",
-    "sclga": "edu_sclga",
-    "bchd": "edu_bchd",
+    "hsgrd": "edu_hs",
+    "sclga": "edu_smcol",
+    "bchd": "edu_bchpl",
 }
-
-
-def load_2000_census_pums_economic() -> pd.DataFrame:
-    df = pd.read_excel(
-        "./resources/ACS_PUMS/EDDT_Census2000PUMS.xlsx",
-        skiprows=1,
-        dtype={"GeoID": str},
-    )
-    df = df.replace(
-        {
-            "GeoID": {
-                "Bronx": "BX",
-                "Brooklyn": "BK",
-                "Manhattan": "MN",
-                "Queens": "QN",
-                "Staten Island": "SI",
-                "NYC": "citywide",
-            }
-        }
-    )
-    df.set_index("GeoID", inplace=True)
-    return df
 
 
 def filter_to_economic(df):
@@ -79,17 +47,16 @@ def rename_cols(df):
     return df
 
 
-def edu_attain_economic(geography: str, write_to_internal_review=False):
+def pums_2000_economics(geography: str, write_to_internal_review=False):
     """Main accessor for this indicator"""
     assert geography in ["puma", "borough", "citywide"]
 
-    df = load_2000_census_pums_economic()
+    df = load_2000_census_pums_all_data()
 
     df = filter_to_economic(df)
 
     final = rename_cols(df)
 
-    # TODO: Move into a utils helper fucntions for erica's code
     if geography == "citywide":
         final = df.loc[["citywide"]].reset_index().rename(columns={"GeoID": "citywide"})
     elif geography == "borough":
@@ -103,7 +70,6 @@ def edu_attain_economic(geography: str, write_to_internal_review=False):
         final["puma"] = final["puma"].apply(func=clean_PUMAs)
 
     final.set_index(geography, inplace=True)
-    # TODO: migrate comment to comment
 
     if write_to_internal_review:
         set_internal_review_files(
@@ -127,7 +93,7 @@ def order_pums_2000_economic(final: pd.DataFrame):
         )
     ]
     categories = {
-        "edu": ["edu_lths", "edu_hsgrd", "edu_sclga", "edu_bchd", "age_p25pl"],
+        "edu": ["edu_lths", "edu_hs", "edu_smcol", "edu_bchpl", "age_p25pl"],
         "race": dcp_pop_races,
     }
     final = order_aggregated_columns(
@@ -135,7 +101,7 @@ def order_pums_2000_economic(final: pd.DataFrame):
         indicators_denom=indicators_denom,
         categories=categories,
         household=False,
-        census_PUMS=True,
+        exclude_denom=True,
         demographics_category=False,
     )
     return final

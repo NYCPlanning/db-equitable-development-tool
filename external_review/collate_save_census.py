@@ -8,8 +8,14 @@ from aggregate.PUMS.pums_0812_1519_demographics import acs_pums_demographics
 from aggregate.PUMS.pums_0812_1519_economics import acs_pums_economics
 from aggregate.PUMS.pums_2000_economics import pums_2000_economics
 
-from aggregate.decennial_census.decennial_census_001020 import decennial_census_001020, decennial_census_data
-from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics, pums_2000_demographics
+from aggregate.decennial_census.decennial_census_001020 import (
+    decennial_census_001020,
+    decennial_census_data,
+)
+from aggregate.PUMS.pums_2000_demographics import (
+    census_2000_pums_demographics,
+    pums_2000_demographics,
+)
 from aggregate.load_aggregated import initialize_dataframe_geo_index
 
 app = typer.Typer()
@@ -26,7 +32,7 @@ def collate_save_census(
     This needs to be updated to handle economics correctly"""
     final = initialize_dataframe_geo_index(geography=geography)
     for accessor in getattr(CensusAccessors, f"{eddt_category}_{year}")():
-        df = accessor(geography)
+        df = accessor(geography, year)
         final = final.merge(df, left_index=True, right_index=True)
     folder_path = f".staging/{eddt_category}"
     if not path.exists(folder_path):
@@ -48,7 +54,7 @@ class CensusAccessors:
 
     @classmethod
     def demographics_0812(cls):
-        return [acs_pums_economics]
+        return [decennial_census_001020, acs_pums_demographics]
 
     @classmethod
     def economics_0812(cls):
@@ -56,7 +62,7 @@ class CensusAccessors:
 
     @classmethod
     def demographics_1519(cls):
-        return [acs_pums_demographics]
+        return [decennial_census_001020, acs_pums_demographics]
 
     @classmethod
     def economics_1519(cls):

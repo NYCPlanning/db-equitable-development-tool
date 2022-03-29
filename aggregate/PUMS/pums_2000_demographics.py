@@ -64,9 +64,10 @@ def rename_cols(df):
     return df
 
 
-def pums_2000_demographics(geography: str, write_to_internal_review=False):
-    """Main accessor"""
-
+def pums_2000_demographics(geography: str, year="2000", write_to_internal_review=False):
+    """Main accessor. I know passing year here is silly, need to write it his way to
+    export. Needs refactor"""
+    assert year == "2000"
     source_data = load_2000_census_pums_all_data()
 
     source_data = filter_to_demo_indicators(source_data)

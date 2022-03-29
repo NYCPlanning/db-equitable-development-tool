@@ -13,6 +13,7 @@ from utils.PUMA_helpers import (
 
 demographic_indicators_denom = [
     ("total_pop",),
+    ("age_p5pl",),
     ("age_bucket",),
     ("LEP", "over_five_filter"),
     ("foreign_born",),
@@ -61,8 +62,6 @@ def order_aggregated_columns(
         col_order.extend(median_age_col_order(categories["race"]))
     if return_col_order:
         return col_order
-    return df.reindex(columns=col_order)
-
     return df.reindex(columns=col_order)
 
 

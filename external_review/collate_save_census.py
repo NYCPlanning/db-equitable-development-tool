@@ -4,10 +4,12 @@ write a new file but this step can be DRY'd out and brought down to a simplier f
 
 from os import path, makedirs
 import typer
+from aggregate.PUMS.pums_0812_1519_demographics import acs_pums_demographics
+from aggregate.PUMS.pums_0812_1519_economics import acs_pums_economics
 from aggregate.PUMS.pums_2000_economics import pums_2000_economics
 
-from aggregate.decennial_census.decennial_census_001020 import decennial_census_data
-from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics
+from aggregate.decennial_census.decennial_census_001020 import decennial_census_001020, decennial_census_data
+from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics, pums_2000_demographics
 from aggregate.load_aggregated import initialize_dataframe_geo_index
 
 app = typer.Typer()
@@ -38,7 +40,7 @@ class CensusAccessors:
 
     @classmethod
     def demographics_2000(cls):
-        return [decennial_census_data, census_2000_pums_demographics]
+        return [decennial_census_001020, pums_2000_demographics]
 
     @classmethod
     def economics_2000(cls):
@@ -46,19 +48,19 @@ class CensusAccessors:
 
     @classmethod
     def demographics_0812(cls):
-        return []
+        return [acs_pums_economics]
 
     @classmethod
     def economics_0812(cls):
-        return [pums_2000_economics]
+        return [acs_pums_economics]
 
     @classmethod
     def demographics_1519(cls):
-        return []
+        return [acs_pums_demographics]
 
     @classmethod
     def economics_1519(cls):
-        return [pums_2000_economics]
+        return [acs_pums_economics]
 
 
 if __name__ == "__main__":

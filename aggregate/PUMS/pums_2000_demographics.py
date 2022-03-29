@@ -7,41 +7,36 @@ breakdowns]).
 
 import pandas as pd
 from aggregate.aggregation_helpers import demographic_indicators_denom
+from aggregate.clean_aggregated import order_PUMS_QOL
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
-from utils.dcp_population_excel_helpers import remove_duplicate_cols
+from utils.dcp_population_excel_helpers import (
+    load_2000_census_pums_all_data,
+    race_suffix_mapper,
+    stat_suffix_mapper,
+    remove_duplicate_cols,
+)
 
-demo_suffix = {
-    ## Rename the demographic race columns with wiki conventions
-    "_a": "_anh_",
-    "_b": "_bnh_",
-    "_h": "_hsp_",
-    #   "o00": "00_onh", No other non hispanic in excel file
-    "_w": "_wnh_",
+# Create name mapper for variables - include like for like swap for consistncy
+name_mapper = {
+    "fb": "fb",
+    "lep": "lep",
+    "mdage": "age_median",
+    "p5pl": "age_p5pl",
+    "pu16": "age_popu16",
+    "p16t64": "age_p16t64",
+    "p65pl": "age_p65pl",
+    "pop": "pop",
 }
 
-
-def load_dec_2000_demographic_pop_demo():
-    df = pd.read_excel(
-        "./resources/ACS_PUMS/EDDT_Census2000PUMS.xlsx",
-        skiprows=1,
-        dtype={"GeoID": str},
-    )
-    df = df.replace(
-        {
-            "GeoID": {
-                "Bronx": "BX",
-                "Brooklyn": "BK",
-                "Manhattan": "MN",
-                "Queens": "QN",
-                "Staten Island": "SI",
-                "NYC": "citywide",
-            }
-        }
-    )
-    df.set_index("GeoID", inplace=True)
-    return df
+median_mapper = {
+    "age_median_count": "age_median_median",
+    "age_median_anh_count": "age_median_anh_median",
+    "age_median_bnh_count": "age_median_bnh_median",
+    "age_median_hsp_count": "age_median_hsp_median",
+    "age_median_wnh_count": "age_median_wnh_median",
+}
 
 
 def filter_to_demo_indicators(df):
@@ -54,42 +49,31 @@ def filter_to_demo_indicators(df):
     return df
 
 
-def rename_columns(df):
+def rename_cols(df):
     cols = map(str.lower, df.columns)
-    for code, race in demo_suffix.items():
+    for code, race in race_suffix_mapper.items():
         cols = [col.replace(code, race) for col in cols]
-    # print(cols)
-    cols = [col.replace("_00e", "") for col in cols]
-    # print(cols)
-    cols = [col.replace("_00m", "_moe") for col in cols]
-    cols = [col.replace("_00c", "_cv") for col in cols]
-    cols = [col.replace("_00p", "_pct") for col in cols]
-    cols = [col.replace("_00z", "_pct_moe") for col in cols]
-
-    cols = [col.replace("mdage", "age_median") for col in cols]
-    cols = [col.replace("pu16", "age_popu16") for col in cols]
-    cols = [col.replace("p16t64", "age_p16t64") for col in cols]
-    cols = [col.replace("p65pl", "age_p65pl") for col in cols]
-    cols = [col.replace("p5pl", "age_p5pl") for col in cols]
-    cols = [col.replace("_median_anh", "_anh_median") for col in cols]
-    cols = [col.replace("_median_bnh", "_bnh_median") for col in cols]
-    cols = [col.replace("_median_hsp", "_hsp_median") for col in cols]
-    cols = [col.replace("_median_wnh", "_wnh_median") for col in cols]
+    for code, stat in stat_suffix_mapper.items():
+        cols = [col.replace(code, stat) for col in cols]
+    for code, name in name_mapper.items():
+        cols = [col.replace(code, name) for col in cols]
+    for code, med in median_mapper.items():
+        cols = [col.replace(code, med) for col in cols]
 
     df.columns = cols
     return df
 
 
-def census_2000_pums_demographics(geography: str, write_to_internal_review=False):
+def pums_2000_demographics(geography: str, write_to_internal_review=False):
     """Main accessor"""
 
-    source_data = load_dec_2000_demographic_pop_demo()
+    source_data = load_2000_census_pums_all_data()
 
     source_data = filter_to_demo_indicators(source_data)
 
     source_data = remove_duplicate_cols(source_data)
 
-    source_data = rename_columns(source_data)
+    source_data = rename_cols(source_data)
 
     if geography == "citywide":
         final = (
@@ -134,6 +118,8 @@ def order_pums_2000_demographics(final: pd.DataFrame):
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
+        "total_pop": ["pop"],
+        "age_p5pl": ["age_p5pl"],
         "race": dcp_pop_races,
     }
     final = order_aggregated_columns(

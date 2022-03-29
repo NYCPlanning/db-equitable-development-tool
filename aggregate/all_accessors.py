@@ -56,9 +56,9 @@ from aggregate.quality_of_life.access_to_broadband import access_to_broadband
 from aggregate.quality_of_life.access_transit_car import access_transit_car
 
 # Census imports
-from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics
+from aggregate.PUMS.pums_2000_demographics import pums_2000_demographics
+from aggregate.decennial_census.decennial_census_001020 import decennial_census_001020
 from aggregate.PUMS.pums_2000_economics import pums_2000_economics
-from aggregate.decennial_census.decennial_census_001020 import decennial_census_data
 from aggregate.PUMS.pums_0812_1519_demographics import acs_pums_demographics
 from aggregate.PUMS.pums_0812_1519_economics import acs_pums_economics
 
@@ -97,19 +97,13 @@ housing_security_accessors = [
 ]
 
 demographics_accessors = [
-    census_2000_pums_demographics,
-    decennial_census_data,
-    # ACS PUMS demographics to go here
-]
-
-economics_accessors = [
-    pums_2000_economics,
-    acs_pums_economics,
-]
-
-demographics_accessors = [
+    decennial_census_001020,
+    pums_2000_demographics,
     acs_pums_demographics,
 ]
+
+economics_accessors = [pums_2000_economics, acs_pums_economics]
+
 
 accessors = (
     housing_security_accessors
@@ -128,5 +122,6 @@ class Accessors:
     quality_of_life = QOL_accessors
     housing_production = housing_production_accessors
     housing_security = housing_security_accessors
-    pums_demographics = demographics_accessors
+    demographics = demographics_accessors
+    economics = economics_accessors
     all = accessors

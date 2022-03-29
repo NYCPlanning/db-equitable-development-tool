@@ -27,7 +27,7 @@ name_mapper = {
     "pu16": "age_popu16",
     "p16t64": "age_p16t64",
     "p65pl": "age_p65pl",
-    "pop": "pop",
+    "pop": "pop_denom",
 }
 
 median_mapper = {
@@ -119,7 +119,7 @@ def order_pums_2000_demographics(final: pd.DataFrame):
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
-        "total_pop": ["pop"],
+        "total_pop": ["pop_denom"],
         "age_p5pl": ["age_p5pl"],
         "race": dcp_pop_races,
     }

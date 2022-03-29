@@ -23,7 +23,7 @@ def acs_pums_demographics(
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
-        "total_pop": ["pop"],
+        "total_pop": ["pop_denom"],
         "age_p5pl": ["age_p5pl"],
         "race": dcp_pop_races,
     }

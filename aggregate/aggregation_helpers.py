@@ -1,4 +1,3 @@
-from matplotlib.pyplot import axis
 import pandas as pd
 from typing import List
 import numpy as np

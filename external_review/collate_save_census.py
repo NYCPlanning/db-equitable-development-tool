@@ -4,18 +4,13 @@ write a new file but this step can be DRY'd out and brought down to a simplier f
 
 from os import path, makedirs
 import typer
+from aggregate.decennial_census.decennial_census_001020 import decennial_census_001020
+from aggregate.PUMS.pums_2000_demographics import pums_2000_demographics
+from aggregate.PUMS.pums_2000_economics import pums_2000_economics
 from aggregate.PUMS.pums_0812_1519_demographics import acs_pums_demographics
 from aggregate.PUMS.pums_0812_1519_economics import acs_pums_economics
-from aggregate.PUMS.pums_2000_economics import pums_2000_economics
 
-from aggregate.decennial_census.decennial_census_001020 import (
-    decennial_census_001020,
-    decennial_census_data,
-)
-from aggregate.PUMS.pums_2000_demographics import (
-    census_2000_pums_demographics,
-    pums_2000_demographics,
-)
+
 from aggregate.load_aggregated import initialize_dataframe_geo_index
 
 app = typer.Typer()

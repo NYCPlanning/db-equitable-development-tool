@@ -16,7 +16,7 @@ function export_DO_census {
     year=$3
     filename="${EDDT_category}_${year}_${geography}.csv"
     SPACES="spaces/edm-publishing/db-eddt/${EDDT_category}"
-    mc cp .staging/$filename $SPACES/$filename
+    mc cp .staging/$category/$filename $SPACES/$filename
 
 }
 

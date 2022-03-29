@@ -6,7 +6,7 @@ from aggregate.clean_aggregated import (
 from utils.dcp_population_excel_helpers import race_suffix_mapper, stat_suffix_mapper_md, stat_suffix_mapper_ty
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_housing_security_pop_data
-from aggregate.aggregation_helpers import get_geography_housing_security_pop_data
+from aggregate.aggregation_helpers import get_geography_pop_data
 
 year_mapper = {"12": "0812", "19": "1519"}
 
@@ -25,7 +25,7 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
     clean_data_hh = load_clean_housing_security_pop_data(name_mapper_hh)
 
-    final_md = get_geography_housing_security_pop_data(
+    final_md = get_geography_pop_data(
         clean_data=clean_data_md, geography=geography
     )
     rename_col_housing_security(
@@ -42,7 +42,7 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
             years=["_0812", "_1519"],
         )
     )
-    final_hh = get_geography_housing_security_pop_data(
+    final_hh = get_geography_pop_data(
         clean_data=clean_data_hh, geography=geography
     )
     rename_col_housing_security(

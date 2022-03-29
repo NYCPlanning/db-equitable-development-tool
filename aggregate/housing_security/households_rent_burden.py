@@ -6,7 +6,7 @@ from aggregate.clean_aggregated import (
 from utils.dcp_population_excel_helpers import race_suffix_mapper, stat_suffix_mapper_ty
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_housing_security_pop_data
-from aggregate.aggregation_helpers import get_geography_housing_security_pop_data
+from aggregate.aggregation_helpers import get_geography_pop_data
 
 year_mapper = {"12": "0812", "19": "1519"}
 
@@ -23,11 +23,9 @@ def households_rent_burden(
 
     clean_data = load_clean_housing_security_pop_data(name_mapper)
 
-    final = get_geography_housing_security_pop_data(
+    final = get_geography_pop_data(
         clean_data=clean_data, geography=geography
     )
-
-    final.set_index(geography, inplace=True)
 
     final = rename_col_housing_security(
         final, name_mapper, race_suffix_mapper, year_mapper, stat_suffix_mapper_ty

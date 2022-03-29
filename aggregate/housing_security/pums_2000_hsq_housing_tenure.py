@@ -99,7 +99,7 @@ def order_pums_2000_hsq(final: pd.DataFrame):
         indicators_denom=indicators_denom,
         categories=categories,
         household=False,
-        census_PUMS=True,
+        exclude_denom=True,
         demographics_category=False,
     )
     return final

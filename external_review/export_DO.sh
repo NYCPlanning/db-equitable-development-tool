@@ -11,11 +11,11 @@ function export_DO {
 }
 
 function export_DO_census {
-    EDDT_category=$1
+    category=$1
     geography=$2
     year=$3
-    filename="${EDDT_category}_${year}_${geography}.csv"
-    SPACES="spaces/edm-publishing/db-eddt/${EDDT_category}"
+    filename="${category}_${year}_${geography}.csv"
+    SPACES="spaces/edm-publishing/db-eddt/${category}"
     mc cp .staging/$category/$filename $SPACES/$filename
 
 }

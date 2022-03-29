@@ -7,7 +7,6 @@ breakdowns]).
 
 import pandas as pd
 from aggregate.aggregation_helpers import demographic_indicators_denom
-from aggregate.clean_aggregated import order_PUMS_QOL
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
@@ -27,7 +26,7 @@ name_mapper = {
     "pu16": "age_popu16",
     "p16t64": "age_p16t64",
     "p65pl": "age_p65pl",
-    "pop": "pop_denom",
+    "pop_": "pop_denom_",
 }
 
 median_mapper = {

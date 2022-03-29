@@ -4,7 +4,17 @@ import pandas as pd
 
 races = ["anh", "bnh", "hsp", "wnh"]
 
-reorder_mapper = {
+demo_suffix = {
+    ## Rename the demographic race columns with wiki conventions
+    "_a": "_anh_",
+    "_b": "_bnh_",
+    "_h": "_hsp_",
+    #   "o00": "00_onh", No other non hispanic in excel file
+    "_w": "_wnh_",
+}
+
+
+reorder_year_race_mapper = {
     '_anh_0812': '_0812_anh',
     '_anh_1519': '_1519_anh',
     '_bnh_0812': '_0812_bnh',
@@ -14,6 +24,11 @@ reorder_mapper = {
     '_wnh_0812': '_0812_wnh',
     '_wnh_1519': '_1519_wnh'
  }
+
+endyear_mapper = {
+    12 : "0812",
+    19 : "1519"
+}
 
 def sort_columns(df: pd.DataFrame):
     """Put each indicator next to it's standard error"""
@@ -79,8 +94,42 @@ def rename_col_housing_security(df: pd.DataFrame, name_mapper: dict, race_mapper
         cols = [col.replace(k.lower(), ind_name) for col in cols]
 
     # Reorder the columns to follow wiki conventions - TODO: this could be redone
-    for code, reorder in reorder_mapper.items():
+    for code, reorder in reorder_year_race_mapper.items():
         cols = [col.replace(code, reorder) for col in cols]
+
+    df.columns = cols
+
+    return df
+
+def rename_columns_demo(df:pd.DataFrame, end_year: int, year: str):
+    cols = map(str.lower, df.columns)
+    for code, race in demo_suffix.items():
+        cols = [col.replace(code, race) for col in cols]
+
+    # cols = [col.replace(f"_{end_year}e", f"_{year}_count") for col in cols]
+    # cols = [col.replace(f"_{end_year}m", f"_{year}_count_moe") for col in cols]
+    # cols = [col.replace(f"_{end_year}c", f"_{year}_count_cv") for col in cols]
+    # cols = [col.replace(f"_{end_year}p", f"_{year}_pct") for col in cols]
+    # cols = [col.replace(f"_{end_year}z", f"_{year}_pct_moe") for col in cols]
+    
+    cols = [col.replace(f"_{end_year}e", f"_count") for col in cols]
+    cols = [col.replace(f"_{end_year}m", f"_count_moe") for col in cols]
+    cols = [col.replace(f"_{end_year}c", f"_count_cv") for col in cols]
+    cols = [col.replace(f"_{end_year}p", f"_pct") for col in cols]
+    cols = [col.replace(f"_{end_year}z", f"_pct_moe") for col in cols]
+
+    cols = [col.replace("mdage", "age_median") for col in cols]
+    cols = [col.replace("pu16", "age_popu16") for col in cols]
+    cols = [col.replace("p16t64", "age_p16t64") for col in cols]
+    cols = [col.replace("p65pl", "age_p65pl") for col in cols]
+    cols = [col.replace("pop5p", "age_p5pl") for col in cols]
+    cols = [col.replace("pop1", "pop") for col in cols]
+
+    #for k, v in reorder_year_race_mapper.items():
+
+        #cols = [col.replace(k, v) for col in cols]
+    
+    cols = [col.replace("count", "median")if "median" in col else col for col in cols]
 
     df.columns = cols
 

@@ -1,41 +1,33 @@
 import pandas as pd
-from sqlalchemy import column
 from aggregate.clean_aggregated import order_PUMS_QOL, order_PUMS_QOL_multiple_years
 from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper
 from internal_review.set_internal_review_file import set_internal_review_files
-
-race_mapper = {
-    ## Rename the demographic race columns with wiki conventions. Note: no other non hispanic in data
-    "_a": "_anh_",
-    "_b": "_bnh_",
-    "_h": "_hsp_",
-    "_w": "_wnh_",
-}
+from utils.dcp_population_excel_helpers import race_suffix_mapper
 
 year_mapper = {"12": "0812", "19": "1519"}
 
 suffix_mapper = {
-    "_0812e": "_0812",
-    "_0812m": "_0812_moe",
-    "_0812c": "_0812_cv",
+    "_0812e": "_0812_count",
+    "_0812m": "_0812_count_moe",
+    "_0812c": "_0812_count_cv",
     "_0812p": "_0812_pct",
     "_0812z": "_0812_pct_moe",
-    "_1519e": "_1519",
-    "_1519m": "_1519_moe",
-    "_1519c": "_1519_cv",
+    "_1519e": "_1519_count",
+    "_1519m": "_1519_count_moe",
+    "_1519c": "_1519_count_cv",
     "_1519p": "_1519_pct",
     "_1519z": "_1519_pct_moe",
 }
 
 reorder_mapper = {
-    "_0812_anh": "_anh_0812",
-    "_1519_anh": "_anh_1519",
-    "_0812_bnh": "_bnh_0812",
-    "_1519_bnh": "_bnh_1519",
-    "_0812_hsp": "_hsp_0812",
-    "_1519_hsp": "_hsp_1519",
-    "_0812_wnh": "_wnh_0812",
-    "_1519_wnh": "_wnh_1519",
+    "_anh_0812": "_0812_anh",
+    "_anh_1519": "_1519_anh",
+    "_bnh_0812": "_0812_bnh",
+    "_bnh_1519": "_1519_bnh",
+    "_hsp_0812": "_0812_hsp",
+    "_hsp_1519": "_1519_hsp",
+    "_wnh_0812": "_0812_wnh",
+    "_wnh_1519": "_1519_wnh",
 }
 
 
@@ -79,7 +71,7 @@ def rename_cols(df):
     """Rename the columns to follow conventions laid out in the wiki and issue #59"""
     cols = map(str.lower, df.columns)
     # Recode race id
-    for code, race in race_mapper.items():
+    for code, race in race_suffix_mapper.items():
         cols = [col.replace(code, race) for col in cols]
 
     # Recode year
@@ -94,7 +86,6 @@ def rename_cols(df):
     cols = [col.replace("cwcar_", "access_carcommute_") for col in cols]
     cols = [col.replace("wk16p_", "access_workers16pl_") for col in cols]
 
-    # Reorder the columns to follow wiki conventions - TODO: this could be redone
     for code, reorder in reorder_mapper.items():
         cols = [col.replace(code, reorder) for col in cols]
 
@@ -102,7 +93,7 @@ def rename_cols(df):
     return df
 
 
-def access_to_car(geography: str, write_to_internal_review=False):
+def access_transit_car(geography: str, write_to_internal_review=False):
     """Main accessor for this indicator"""
     assert geography in ["puma", "borough", "citywide"]
 
@@ -125,7 +116,7 @@ def access_to_car(geography: str, write_to_internal_review=False):
     final.set_index(geography, inplace=True)
     col_order = order_PUMS_QOL_multiple_years(
         categories=["access_carcommute", "access_workers16pl"],
-        measures=["", "_moe", "_cv", "_pct", "_pct_moe"],
+        measures=["_count", "_count_moe", "_count_cv", "_pct", "_pct_moe"],
         years=["_0812", "_1519"],
     )
     final = final.reindex(columns=col_order)

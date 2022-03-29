@@ -6,7 +6,7 @@ from utils.dcp_population_excel_helpers import (
 )
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
-from aggregate.aggregation_helpers import order_aggregated_columns, get_category
+from aggregate.aggregation_helpers import order_aggregated_columns
 
 ## Mapper specific to this script
 housing_tenure_name_mapper = {
@@ -99,7 +99,7 @@ def order_pums_2000_hsq(final: pd.DataFrame):
         indicators_denom=indicators_denom,
         categories=categories,
         household=False,
-        census_PUMS=True,
+        exclude_denom=True,
         demographics_category=False,
     )
     return final

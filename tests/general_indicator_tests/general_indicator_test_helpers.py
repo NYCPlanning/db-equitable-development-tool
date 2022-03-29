@@ -3,12 +3,9 @@ from aggregate.all_accessors import Accessors
 accessors = Accessors()
 
 
-def get_by_geo(housing_security=False):
+def get_by_geo():
     """housing security parameter is temporary"""
-    if housing_security:
-        accessors_list = accessors.housing_security
-    else:
-        accessors_list = accessors.all
+    accessors_list = accessors.all
     by_puma = []
     by_borough = []
     by_citywide = []

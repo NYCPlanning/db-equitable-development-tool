@@ -1,17 +1,9 @@
-from typing import final
 import pandas as pd
-
 from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper
 from aggregate.clean_aggregated import order_PUMS_QOL
 from internal_review.set_internal_review_file import set_internal_review_files
+from utils.dcp_population_excel_helpers import race_suffix_mapper
 
-race_suffix = {
-    ## Rename the demographic race columns with wiki conventions
-    "_a": "_anh_",
-    "_b": "_bnh_",
-    "_h": "_hsp_",
-    "_w": "_wnh_",
-}
 
 ind_mapper = {
     "hhlds": "access_households",
@@ -20,15 +12,15 @@ ind_mapper = {
 }
 
 suffix_mapper = {
-    "_19e": "",
-    "_19m": "_moe",
-    "_19c": "_cv",
+    "_19e": "_count",
+    "_19m": "_count_moe",
+    "_19c": "_count_cv",
     "_19p": "_pct",
     "_19z": "_pct_moe",
 }
 
 
-def access_broadband(geography: str, write_to_internal_review=False):
+def access_to_broadband(geography: str, write_to_internal_review=False):
 
     clean_df = load_clean_source_data(geography)
 
@@ -74,7 +66,7 @@ def load_clean_source_data(geography: str) -> pd.DataFrame:
     df = pd.read_excel(**read_excel_arg)
 
     cols = [col.lower() for col in df.columns]
-    for code, race in race_suffix.items():
+    for code, race in race_suffix_mapper.items():
         cols = [col.replace(code, race) for col in cols]
     for code, name in ind_mapper.items():
         cols = [col.replace(code, name) for col in cols]

@@ -15,6 +15,7 @@ from utils.dcp_population_excel_helpers import (
     load_2000_census_pums_all_data,
     race_suffix_mapper,
     stat_suffix_mapper,
+    remove_duplicate_cols,
 )
 
 # Create name mapper for variables - include like for like swap for consistncy
@@ -45,12 +46,6 @@ def filter_to_demo_indicators(df):
     df = df.drop(
         df.filter(regex="P25pl|LTHS|HSGrd|SClgA|BchD|Occ|OOcc|ROcc").columns, axis=1
     )
-    return df
-
-
-def remove_duplicate_cols(df):
-    """Excel spreadsheet has some duplicate columns that Erica used for calculations"""
-    df = df.drop(df.filter(regex="E.1$|M.1$|C.1$|P.1$|Z.1$").columns, axis=1)
     return df
 
 
@@ -123,7 +118,7 @@ def order_pums_2000_demographics(final: pd.DataFrame):
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
-        "pop": ["pop"],
+        "total_pop": ["pop", "age_p5pl"],
         "race": dcp_pop_races,
     }
     final = order_aggregated_columns(
@@ -131,7 +126,7 @@ def order_pums_2000_demographics(final: pd.DataFrame):
         indicators_denom=indicators_denom,
         categories=categories,
         household=False,
-        census_PUMS=True,
+        exclude_denom=True,
         demographics_category=True,
     )
     return final

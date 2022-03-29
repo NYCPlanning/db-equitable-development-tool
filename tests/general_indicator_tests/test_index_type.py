@@ -5,8 +5,8 @@ from utils.PUMA_helpers import get_all_NYC_PUMAs, get_all_boroughs
 
 all_PUMAs = get_all_NYC_PUMAs()
 all_boroughs = get_all_boroughs()
-#by_puma, by_borough, by_citywide = get_by_geo(housing_security=True)
-by_puma, by_borough, by_citywide = get_by_geo(pums_demographics=True)
+
+by_puma, by_borough, by_citywide = get_by_geo()
 
 
 @pytest.mark.parametrize("data, ind_name", by_puma)

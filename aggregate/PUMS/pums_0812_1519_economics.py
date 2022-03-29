@@ -134,7 +134,7 @@ def economics_median_cols_order():
     return rv
 
 
-def ACS_PUMS_economics(geography, year: str = "0812", write_to_internal_review=False):
+def acs_pums_economics(geography, year: str = "0812", write_to_internal_review=False):
     """Main accessor"""
     assert geography in ["puma", "borough", "citywide"]
     assert year in ["0812", "1519"]

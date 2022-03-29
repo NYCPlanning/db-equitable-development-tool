@@ -1,9 +1,12 @@
-name: Export PUMS Aggregated 
+name: Export census (demographics and economics) 
 
 on:
-  push:
-   paths:
-      - ".github/workflows/export_PUMS_aggregated.yml"
+  workflow_dispatch:
+    
+  # push:
+  #  paths:
+      # - s".github/workflows/export_census.yml"
+
 
 jobs:
   export:
@@ -22,7 +25,7 @@ jobs:
           - citywide
         category:
           - demographics
-          # - economics
+          - economics
         year:
           - "2000"
           - "0812"
@@ -62,8 +65,8 @@ jobs:
 
       - name: export
         run: |
-          poetry run python3 -m external_review.external_review_PUMS ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
-          ./external_review/export_DO.sh export_PUMS ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
+          poetry run python3 -m external_review.collate_census_category ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
+          ./external_review/export_DO.sh export_census ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
 
 
 

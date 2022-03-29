@@ -17,7 +17,7 @@ app = typer.Typer()
 dec_census_year_mapper = {"1519": 2020, "0812": 2010, "2000": 2000}
 
 
-def save_PUMS(
+def collate_census_category(
     eddt_category,
     geography,
     year,
@@ -48,4 +48,4 @@ def save_PUMS(
 
 
 if __name__ == "__main__":
-    typer.run(save_PUMS)
+    typer.run(collate_census_category)

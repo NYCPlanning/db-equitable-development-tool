@@ -10,7 +10,7 @@ function export_DO {
     mc cp .staging/$category/$filename $SPACES/$filename
 }
 
-function export_DO_PUMS {
+function export_DO_census {
     EDDT_category=$1
     geography=$2
     year=$3
@@ -22,5 +22,5 @@ function export_DO_PUMS {
 
 case $1 in
     export ) export_DO $2 $3 ;;
-    export_PUMS ) export_DO_PUMS $2 $3 $4
+    export_census ) export_DO_census $2 $3 $4
 esac

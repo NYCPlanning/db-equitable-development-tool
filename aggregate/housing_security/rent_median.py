@@ -37,9 +37,9 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
     )
     final_md = final_md.reindex(
         columns=order_PUMS_QOL_multiple_years(
-        categories=["rent_median"],
-        measures=["_median", "_median_moe", "_median_cv"],
-        years=["_0812", "_1519"],
+            categories=["rent_median"],
+            measures=["_median", "_median_moe", "_median_cv"],
+            years=["_0812", "_1519"],
         )
     )
     final_hh = get_geography_housing_security_pop_data(
@@ -55,9 +55,9 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
 
     final_hh = final_hh.reindex(
         columns=order_PUMS_QOL_multiple_years(
-        categories=["units_payingrent"],
-        measures=["_count", "_count_moe", "_count_cv"],
-        years=["_0812", "_1519"],
+            categories=["units_payingrent"],
+            measures=["_count", "_count_moe", "_count_cv"],
+            years=["_0812", "_1519"],
         )
     )
 

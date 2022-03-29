@@ -26,7 +26,7 @@ industries = [
     "oth",
     "pbadm",
 ]
-ages = ["p25p", "p16t64"]
+ages = ["p25pl", "p16t64"]
 income_bands = ["eli", "vli", "li", "mi", "midi", "hi"]
 
 age_categories = [f"age_{a}" for a in ages]
@@ -88,7 +88,7 @@ def order_economics(source_data, year):
         ("misc",),
     ]
     if year == "1519":
-        reorder_categories["income band"] = (income_band_categories,)
+        reorder_categories["income band"] = income_band_categories
     else:
         reorder_categories["income band"] = []
     count_cols = order_aggregated_columns(
@@ -188,6 +188,8 @@ def process_ind_label(indicator_label, wages=False):
 
     if indicator_label == "p16t64y":
         indicator_label = "p16t64"
+    if indicator_label == "p25p":
+        indicator_label = "p25pl"
 
     if indicator_label in ages:
         return f"age_{indicator_label}"

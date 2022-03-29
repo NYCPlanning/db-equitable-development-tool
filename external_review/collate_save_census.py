@@ -26,7 +26,6 @@ def collate_save_census(
     for accessor in getattr(CensusAccessors, f"{eddt_category}_{year}")():
         df = accessor(geography)
         final = final.merge(df, left_index=True, right_index=True)
-    print(final)
     folder_path = f".staging/{eddt_category}"
     if not path.exists(folder_path):
         makedirs(folder_path)

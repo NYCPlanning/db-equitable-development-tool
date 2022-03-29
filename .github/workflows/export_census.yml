@@ -1,11 +1,11 @@
 name: Export census (demographics and economics) 
 
 on:
-  workflow_dispatch:
+  # workflow_dispatch:
     
-  # push:
-  #  paths:
-      # - s".github/workflows/export_census.yml"
+  push:
+   paths:
+      - ".github/workflows/export_census.yml"
 
 
 jobs:

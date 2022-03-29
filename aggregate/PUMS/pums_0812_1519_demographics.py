@@ -33,7 +33,6 @@ def acs_pums_demographics(geography: str, year: str, write_to_internal_review=Fa
         census_PUMS=True,
         demographics_category=True,
     )
-    final.dropna(axis=1, how="all", inplace=True)
 
     if write_to_internal_review:
         set_internal_review_files(

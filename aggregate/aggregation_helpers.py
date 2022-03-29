@@ -29,7 +29,6 @@ def order_aggregated_columns(
     demographics_category=False,
 ) -> pd.DataFrame:
     """This can be DRY'd out, written quickly to meet deadline"""
-    print(df)
     col_order = []
     for ind_denom in indicators_denom:
         ind = ind_denom[0]

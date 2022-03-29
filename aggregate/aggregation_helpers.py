@@ -1,4 +1,8 @@
+from matplotlib.pyplot import axis
 import pandas as pd
+from typing import List
+import numpy as np
+
 from utils.PUMA_helpers import (
     census_races,
     clean_PUMAs,
@@ -9,9 +13,12 @@ from utils.PUMA_helpers import (
 
 
 demographic_indicators_denom = [
+    ("total_pop", ),
+    ("age_bucket",),
     ("LEP", "over_five_filter"),
     ("foreign_born",),
-    ("age_bucket",),
+
+   
 ]
 
 
@@ -27,6 +34,7 @@ def order_aggregated_columns(
     """This can be DRY'd out, written quickly to meet deadline"""
     col_order = []
     for ind_denom in indicators_denom:
+        print(ind_denom)
         ind = ind_denom[0]
         for ind_category in categories[ind]:
             for measure in ["_count", "_pct"]:
@@ -37,8 +45,8 @@ def order_aggregated_columns(
             if not exclude_denom:
                 print("adding denom")
                 col_order.append(f"{ind_category}_pct_denom")
-            if exclude_denom and ind == "LEP":
-                col_order.append("age_p5pl")
+            #if exclude_denom and ind == "LEP":
+            #    col_order.append("age_p5pl")
         if not household:
             for ind_category in categories[ind]:
                 for race_crosstab in categories["race"]:
@@ -50,8 +58,8 @@ def order_aggregated_columns(
                             col_order.append(f"{column_label_base}_cv")
                     if not exclude_denom:
                         col_order.append(f"{ind_category}_{race_crosstab}_pct_denom")
-                    if exclude_denom and ind == "LEP":
-                        col_order.append(f"age_p5pl_{race_crosstab}")
+                    #if exclude_denom and ind == "LEP":
+                    #    col_order.append(f"age_p5pl_{race_crosstab}")
 
     if exclude_denom and demographics_category == True:
         col_order.extend(median_age_col_order(categories["race"]))
@@ -59,6 +67,7 @@ def order_aggregated_columns(
         return col_order
     return df.reindex(columns=col_order)
 
+    return df.reindex(columns=col_order)
 
 def median_age_col_order(race_crosstabs):
     """Order median age columns. The calculate_median_LI.py code does this ordering
@@ -66,7 +75,7 @@ def median_age_col_order(race_crosstabs):
     col_order = []
     for crosstab in [""] + [f"_{r}" for r in race_crosstabs]:
         for measure in ["", "_moe", "_cv"]:
-            col_order.append(f"age{crosstab}_median{measure}")
+            col_order.append(f"age_median{crosstab}_median{measure}")
     return col_order
 
 
@@ -100,7 +109,7 @@ def get_category(indicator, data=None):
         return categories
 
 
-def get_geography_housing_security_pop_data(clean_data: pd.DataFrame, geography: str):
+def get_geography_pop_data(clean_data: pd.DataFrame, geography: str):
 
     if geography == "citywide":
         final = (
@@ -126,5 +135,6 @@ def get_geography_housing_security_pop_data(clean_data: pd.DataFrame, geography:
             .rename(columns={"Geog": "puma"})
             .copy()
         )
+    final.set_index(geography, inplace=True)
 
     return final

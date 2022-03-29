@@ -59,7 +59,11 @@ from aggregate.quality_of_life.access_transit_car import access_transit_car
 from aggregate.PUMS.pums_2000_demographics import census_2000_pums_demographics
 from aggregate.PUMS.pums_2000_economics import pums_2000_economics
 from aggregate.decennial_census.decennial_census_001020 import decennial_census_data
+<<<<<<< HEAD
+from aggregate.PUMS.pums_0812_1519_demographics import acs_pums_demographics
+=======
 from aggregate.PUMS.pums_0812_1519_economics import acs_pums_economics
+>>>>>>> dev
 
 housing_production_accessors = [fraction_historic, change_in_units, affordable_housing]
 
@@ -103,6 +107,9 @@ census_accessors = [
     pums_2000_economics,
 ]
 
+demographics_accessors = [
+    acs_pums_demographics,
+]
 
 accessors = (
     housing_security_accessors
@@ -117,4 +124,5 @@ class Accessors:
     housing_production = housing_production_accessors
     census = census_accessors
     housing_security = housing_security_accessors
+    pums_demographics = demographics_accessors
     all = accessors

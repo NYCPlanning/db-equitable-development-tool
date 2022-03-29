@@ -59,8 +59,6 @@ def order_aggregated_columns(
 
     if census_PUMS and demographics_category == True:
         col_order.extend(median_age_col_order(categories["race"]))
-    #assert len(df.columns.to_list()) == len(col_order)
-    #print(df.columns)
     diff = np.setdiff1d(df.columns, col_order)
     df.drop(columns=diff, inplace=True)
     return df.reindex(columns=col_order)

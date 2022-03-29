@@ -122,7 +122,8 @@ def rename_columns_demo(df:pd.DataFrame, end_year: int, year: str):
     cols = [col.replace("pu16", "age_popu16") for col in cols]
     cols = [col.replace("p16t64", "age_p16t64") for col in cols]
     cols = [col.replace("p65pl", "age_p65pl") for col in cols]
-    cols = [col.replace("p5pl", "age_p5pl") for col in cols]
+    cols = [col.replace("pop5", "age_p5pl") for col in cols]
+    cold = [col.replace("pop1", "pop") for col in cols]
 
     for k, v in reorder_year_race_mapper.items():
 

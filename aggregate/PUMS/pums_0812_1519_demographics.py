@@ -1,11 +1,3 @@
-"""This script takes the xlsx files Erica from DCP Population sent us imports them, 
-cleans the column names to match our column schema naming conventions, filters out 
-unnecessary columns (the Housing Security and Quality Indicators 
-[Total Occupied Units, Owner Occupied, Renter Occupied and the corresponding racial 
-breakdowns]). 
-"""
-
-from webbrowser import get
 import pandas as pd
 from aggregate.aggregation_helpers import demographic_indicators_denom, order_aggregated_columns, get_category, get_geography_pop_data
 from utils.PUMA_helpers import dcp_pop_races
@@ -26,6 +18,7 @@ def acs_pums_demographics(geography: str, year: str, write_to_internal_review=Fa
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
+        "total_pop": ["pop"],
         "race": dcp_pop_races,
     }
 

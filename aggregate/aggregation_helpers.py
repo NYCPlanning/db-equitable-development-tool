@@ -16,6 +16,7 @@ demographic_indicators_denom = [
     ("LEP", "over_five_filter"),
     ("foreign_born",),
     ("age_bucket",),
+    ("total_pop", ),
 ]
 
 
@@ -77,7 +78,7 @@ def median_age_col_order(race_crosstabs):
 def get_category(indicator, data=None):
     """Outdated now that we use dcp_pop_races for race crosstabs"""
     if indicator == "age_bucket":
-        return ["age_popu16", "age_p16t64", "age_p65pl"]
+        return ["age_p5plp", "age_popu16", "age_p16t64", "age_p65pl"]
     elif indicator == "household_income_bands":
         return [
             "ELI",

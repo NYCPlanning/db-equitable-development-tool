@@ -50,7 +50,7 @@ class CensusAccessors:
 
     @classmethod
     def economics_0812(cls):
-        return []
+        return [pums_2000_economics]
 
     @classmethod
     def demographics_1519(cls):
@@ -58,7 +58,7 @@ class CensusAccessors:
 
     @classmethod
     def economics_1519(cls):
-        return []
+        return [pums_2000_economics]
 
 
 if __name__ == "__main__":

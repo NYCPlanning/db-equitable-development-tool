@@ -15,9 +15,6 @@ from aggregate.load_aggregated import initialize_dataframe_geo_index
 
 app = typer.Typer()
 
-dec_census_year_mapper = {"1519": 2020, "0812": 2010, "2000": 2000}
-
-
 def collate_save_census(
     eddt_category,
     geography,

@@ -122,6 +122,4 @@ class Accessors:
     quality_of_life = QOL_accessors
     housing_production = housing_production_accessors
     housing_security = housing_security_accessors
-    demographics = demographics_accessors
-    economics = economics_accessors
     all = accessors

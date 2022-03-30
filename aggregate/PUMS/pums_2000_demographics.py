@@ -7,7 +7,6 @@ breakdowns]).
 
 import pandas as pd
 from aggregate.aggregation_helpers import demographic_indicators_denom
-from aggregate.clean_aggregated import order_PUMS_QOL
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.aggregation_helpers import order_aggregated_columns, get_category
@@ -27,7 +26,7 @@ name_mapper = {
     "pu16": "age_popu16",
     "p16t64": "age_p16t64",
     "p65pl": "age_p65pl",
-    "pop": "pop",
+    "pop_": "pop_denom_",
 }
 
 median_mapper = {
@@ -64,9 +63,10 @@ def rename_cols(df):
     return df
 
 
-def pums_2000_demographics(geography: str, write_to_internal_review=False):
-    """Main accessor"""
-
+def pums_2000_demographics(geography: str, year="2000", write_to_internal_review=False):
+    """Main accessor. I know passing year here is silly, need to write it his way to
+    export. Needs refactor"""
+    assert year == "2000"
     source_data = load_2000_census_pums_all_data()
 
     source_data = filter_to_demo_indicators(source_data)
@@ -118,7 +118,7 @@ def order_pums_2000_demographics(final: pd.DataFrame):
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
-        "total_pop": ["pop"],
+        "total_pop": ["pop_denom"],
         "age_p5pl": ["age_p5pl"],
         "race": dcp_pop_races,
     }

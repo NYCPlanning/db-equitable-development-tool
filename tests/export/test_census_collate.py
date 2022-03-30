@@ -6,16 +6,16 @@ to digital ocean. These files should be as consistent as possible, using similar
 column orders, etc. 
 """
 
-from external_review.external_review_PUMS import save_PUMS
+from external_review.collate_save_census import collate_save_census
 
 save_kwargs = {
     "eddt_category": "demographics",
     "geography": "puma",
     "test_data": True,
 }
-demos_2000 = save_PUMS(year="2000", **save_kwargs)
-demos_0812 = save_PUMS(year="0812", **save_kwargs)
-demos_1519 = save_PUMS(year="1519", **save_kwargs)
+demos_2000 = collate_save_census(year="2000", **save_kwargs)
+demos_0812 = collate_save_census(year="0812", **save_kwargs)
+demos_1519 = collate_save_census(year="1519", **save_kwargs)
 
 
 def test_matching_column_orders_demographics_0812_1519():

@@ -96,30 +96,30 @@ housing_security_accessors = [
     units_overcrowd,
 ]
 
-
-census_accessors = [
-    pums_2000_demographics,
-    decennial_census_001020,
-    acs_pums_economics,
-    pums_2000_economics,
-]
-
 demographics_accessors = [
+    decennial_census_001020,
+    pums_2000_demographics,
     acs_pums_demographics,
 ]
+
+economics_accessors = [pums_2000_economics, acs_pums_economics]
+
 
 accessors = (
     housing_security_accessors
     + QOL_accessors
     + housing_production_accessors
-    + census_accessors
+    + demographics_accessors
+    + economics_accessors
 )
 
 
 class Accessors:
+    """Used for testing, exporting QOL/housing security/housing prod"""
+
+    demographics = demographics_accessors
+    economics = economics_accessors
     quality_of_life = QOL_accessors
     housing_production = housing_production_accessors
-    census = census_accessors
     housing_security = housing_security_accessors
-    pums_demographics = demographics_accessors
     all = accessors

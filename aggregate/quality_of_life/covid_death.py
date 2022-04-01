@@ -30,9 +30,9 @@ def covid_death(geography: str, write_to_internal_review=False):
     )
     pivot_by_race.replace(0, np.nan, inplace=True)  # needed for the censored datapoint
 
-    for col in pivot_by_race.columns:
+    for race in pivot_by_race.columns:
         pivot_by_race.rename(
-            columns={col: f"{indicator_col_label}{col}{token_label}"}, inplace=True
+            columns={race: f"{indicator_col_label}{race}{token_label}"}, inplace=True
         )
 
     agg_all_races = clean_df.groupby(geography).sum(numeric_only=True).reset_index()

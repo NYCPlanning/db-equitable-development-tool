@@ -35,6 +35,7 @@ from aggregate.housing_security.pums_2000_hsq_housing_tenure import (
 )
 from aggregate.housing_security.units_housing_tenure import units_housing_tenure
 from aggregate.housing_security.units_overcrowd import units_overcrowd
+from aggregate.housing_security.nycha_tenants import nycha_tenants
 
 
 # Quality of life imports
@@ -94,6 +95,7 @@ housing_security_accessors = [
     households_rent_burden,
     rent_median,
     units_overcrowd,
+    nycha_tenants
 ]
 
 demographics_accessors = [

@@ -4,24 +4,24 @@ import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import clean_PUMAs, puma_to_borough
 
-race_labels = ["", "_wnh", "_bnh", "_hsp", "_anh", "_oth"]
+race_labels = ["", "_wnh", "_bnh", "_hsp", "_anh", "_onh"]
 
-def nycha_pop(geography: str):
+def nycha_pop(geography: str, write_to_internal_review=False):
     assert geography in ["citywide", "borough", "puma"]
 
     clean_data = load_clean_nycha_data()
     if geography == "puma":
         final = get_percentage(clean_data)
-        final = clean_data
+        #final = clean_data
     elif geography == "borough":
-        clean_data["borough"] = puma_to_borough(clean_data.puma)
+        #clean_data["borough"] = puma_to_borough(clean_data.index)
         final = get_percentage(clean_data.groupby("borough").agg("sum"))
         #final = clean_data
     elif geography == "citywide":
         clean_data["citywide"] = "citywide"
-        final = clean_data.groupby("citywide").agg("sum")
+        final = get_percentage(clean_data.groupby("citywide").agg("sum"))
 
-    final = order_aggregated_columns()
+    #final = order_aggregated_columns()
 
     return final 
 
@@ -39,20 +39,26 @@ def load_clean_nycha_data():
     nycha_data = pd.read_excel(**read_excel_arg)
     nycha_data.rename(columns={"PUMA (2010)": "puma"}, inplace=True)
     nycha_data.puma = nycha_data.puma.apply(func=clean_PUMAs)
+    nycha_data["borough"] = nycha_data.apply(axis=1, func=puma_to_borough)
+    nycha_data["citywide"] = "citywide"
     nycha_data.set_index("puma", inplace=True)
     #print(nycha_data)
     # calculating the total for each race categories
     for i in range(6):
         nycha_data[f"nycha_tenants{race_labels[i]}_count"] = nycha_data.iloc[:, i] + nycha_data.iloc[:, i + 6] 
     #print(census20_pop)
-    print(nycha_data.iloc[:, -6:])
-    nycha_pop = pd.concat([census20, nycha_data.iloc[:, -6:]], axis=1)
+    #print(nycha_data.iloc[:, -8:])
+    nycha_pop = pd.concat([census20, nycha_data.iloc[:, -8:]], axis=1)
 
     return nycha_pop
     
 
 def get_percentage(df: pd.DataFrame):
 
+    for r in race_labels:
+        if r == "":
+            df["nycha_tenants_pct"] = df["nycha_tenants_count"] / df["pop_count"]
+        else:
+            df[f"nycha_tenants{r}_pct"] = df[f"nycha_tenants{r}_count"] / df[f"pop{r}_count"]
 
-
-    return 
+    return df

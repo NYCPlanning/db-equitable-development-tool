@@ -28,8 +28,8 @@ jobs:
           - citywide
         category:
           # - housing_production
-          # - quality_of_life
-          - housing_security
+          - quality_of_life
+          # - housing_security
  
     steps:
       - uses: actions/checkout@v2

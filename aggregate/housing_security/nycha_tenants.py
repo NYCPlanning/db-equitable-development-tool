@@ -6,7 +6,7 @@ from utils.PUMA_helpers import clean_PUMAs, puma_to_borough
 
 race_labels = ["", "_wnh", "_bnh", "_hsp", "_anh", "_onh"]
 
-def nycha_pop(geography: str, write_to_internal_review=False):
+def nycha_tenants(geography: str, write_to_internal_review=False):
     assert geography in ["citywide", "borough", "puma"]
 
     clean_data = load_clean_nycha_data()
@@ -21,7 +21,19 @@ def nycha_pop(geography: str, write_to_internal_review=False):
         clean_data["citywide"] = "citywide"
         final = get_percentage(clean_data.groupby("citywide").agg("sum"))
 
+    final = final.round(2)
     #final = order_aggregated_columns()
+    if write_to_internal_review:
+        set_internal_review_files(
+            data=[
+                (
+                    final,
+                    "nycha_tenants.csv",
+                    geography,
+                )
+            ],
+            category="housing_security",
+        )
 
     return final 
 
@@ -57,8 +69,8 @@ def get_percentage(df: pd.DataFrame):
 
     for r in race_labels:
         if r == "":
-            df["nycha_tenants_pct"] = df["nycha_tenants_count"] / df["pop_count"]
+            df["nycha_tenants_pct"] = df["nycha_tenants_count"] / df["pop_count"] * 100
         else:
-            df[f"nycha_tenants{r}_pct"] = df[f"nycha_tenants{r}_count"] / df[f"pop{r}_count"]
+            df[f"nycha_tenants{r}_pct"] = df[f"nycha_tenants{r}_count"] / df[f"pop{r}_count"] * 100
 
     return df

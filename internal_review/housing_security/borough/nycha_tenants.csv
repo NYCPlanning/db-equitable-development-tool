@@ -1,0 +1,6 @@
+borough,pop_count,pop_pct,pop_anh_count,pop_anh_pct,pop_bnh_count,pop_bnh_pct,pop_hsp_count,pop_hsp_pct,pop_onh_count,pop_onh_pct,pop_wnh_count,pop_wnh_pct,nycha_tenants_count,nycha_tenants_pct,nycha_tenants_anh_count,nycha_tenants_anh_pct,nycha_tenants_bnh_count,nycha_tenants_bnh_pct,nycha_tenants_hsp_count,nycha_tenants_hsp_pct,nycha_tenants_onh_count,nycha_tenants_onh_pct,nycha_tenants_wnh_count,nycha_tenants_wnh_pct
+BX,1472654,100,67766,4.6,419393,28.5,806463,54.8,48236,3.3,130796,8.9,94007.0,6.38,369.0,0.54,33761.0,8.05,55623.0,6.9,1552.0,3.22,2702.0,2.07
+BK,2736074,100,370776,13.6,729696,26.7,516426,18.9,150749,5.5,968427,35.4,124285.0,4.54,5663.0,1.53,66687.0,9.14,43350.0,8.39,1763.0,1.17,6822.0,0.7
+MN,1694251,100,219624,13.0,199592,11.8,402640,23.8,79101,4.7,793294,46.8,109755.0,6.48,12011.0,5.47,38087.0,19.08,53821.0,13.37,1269.0,1.6,4567.0,0.58
+QN,2405464,100,656583,27.3,381375,15.9,667861,27.8,150287,6.2,549358,22.8,35120.0,1.46,2447.0,0.37,17438.0,4.57,12436.0,1.86,870.0,0.58,1929.0,0.35
+SI,495747,100,58753,11.9,46835,9.4,96960,19.6,15218,3.1,277981,56.1,9430.0,1.9,307.0,0.52,4399.0,9.39,3335.0,3.44,99.0,0.65,1290.0,0.46

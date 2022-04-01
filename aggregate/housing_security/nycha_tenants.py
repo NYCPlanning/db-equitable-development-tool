@@ -12,16 +12,17 @@ def nycha_tenants(geography: str, write_to_internal_review=False):
     assert geography in ["citywide", "borough", "puma"]
 
     clean_data = load_clean_nycha_data()
+    census20 = decennial_census_001020(geography=geography, year="1519")
     if geography == "puma":
-        final = get_percentage(clean_data)
-        #final = clean_data
+        final = get_percentage(pd.concat([census20, clean_data], axis=1))
     elif geography == "borough":
-        #clean_data["borough"] = puma_to_borough(clean_data.index)
-        final = get_percentage(clean_data.groupby("borough").agg("sum"))
-        #final = clean_data
+        agg = clean_data.groupby("borough").agg("sum")
+        census20_agg = pd.concat([census20, agg], axis=1)
+        final = get_percentage(census20_agg)
     elif geography == "citywide":
-        clean_data["citywide"] = "citywide"
-        final = get_percentage(clean_data.groupby("citywide").agg("sum"))
+        agg = clean_data.groupby("citywide").agg("sum")
+        census20_agg = pd.concat([census20, agg], axis=1)
+        final = get_percentage(census20_agg)
         
     final = final.round(2)
 
@@ -32,9 +33,11 @@ def nycha_tenants(geography: str, write_to_internal_review=False):
         return_col_order=True,
         exclude_denom=True
     )
-    final_cols = [col for col in order_cols if "cv" or "moe" not in col]
-    print(final_cols)
-    
+    # 24 final columns match the results 
+    final_cols = [col for col in order_cols if "cv" not in col]
+    final_cols = [col for col in final_cols if "moe" not in col]
+    final = final.reindex(columns=final_cols)
+
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "nycha_tenants.csv", geography)],
@@ -60,15 +63,11 @@ def load_clean_nycha_data():
     nycha_data["borough"] = nycha_data.apply(axis=1, func=puma_to_borough)
     nycha_data["citywide"] = "citywide"
     nycha_data.set_index("puma", inplace=True)
-    #print(nycha_data)
     # calculating the total for each race categories
     for i in range(6):
         nycha_data[f"nycha_tenants{race_labels[i]}_count"] = nycha_data.iloc[:, i] + nycha_data.iloc[:, i + 6] 
-    #print(census20_pop)
-    #print(nycha_data.iloc[:, -8:])
-    nycha_pop = pd.concat([census20, nycha_data.iloc[:, -8:]], axis=1)
 
-    return nycha_pop
+    return nycha_data.iloc[:, -8:]
     
 
 def get_percentage(df: pd.DataFrame):
@@ -80,8 +79,3 @@ def get_percentage(df: pd.DataFrame):
             df[f"nycha_tenants{r}_pct"] = df[f"nycha_tenants{r}_count"] / df[f"pop{r}_count"] * 100
 
     return df
-
-def reorder_cols():
-
-    return 
-

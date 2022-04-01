@@ -1,8 +1,10 @@
-from aggregate.aggregation_helpers import order_aggregated_columns
 from aggregate.decennial_census.decennial_census_001020 import decennial_census_001020
+from aggregate.aggregation_helpers import order_aggregated_columns
 import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import clean_PUMAs, puma_to_borough
+dcp_pop_races = ["anh", "bnh", "hsp", "onh", "wnh"]
+
 
 race_labels = ["", "_wnh", "_bnh", "_hsp", "_anh", "_onh"]
 
@@ -22,7 +24,17 @@ def nycha_tenants(geography: str, write_to_internal_review=False):
         final = get_percentage(clean_data.groupby("citywide").agg("sum"))
         
     final = final.round(2)
-    #final = order_aggregated_columns()
+
+    order_cols = order_aggregated_columns(
+        df=final,
+        indicators_denom=[("pop",), ("nycha_tenants",)],
+        categories={"pop": ["pop"], "nycha_tenants": ["nycha_tenants"], "race": dcp_pop_races},
+        return_col_order=True,
+        exclude_denom=True
+    )
+    final_cols = [col for col in order_cols if "cv" or "moe" not in col]
+    print(final_cols)
+    
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "nycha_tenants.csv", geography)],
@@ -68,3 +80,8 @@ def get_percentage(df: pd.DataFrame):
             df[f"nycha_tenants{r}_pct"] = df[f"nycha_tenants{r}_count"] / df[f"pop{r}_count"] * 100
 
     return df
+
+def reorder_cols():
+
+    return 
+

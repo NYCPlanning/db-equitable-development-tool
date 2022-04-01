@@ -16,7 +16,8 @@ def covid_death(geography: str, write_to_internal_review=False):
     """this is used to create the final dataframe and write final output to internal review files"""
 
     assert geography in ["citywide", "borough", "puma"]
-    indicator_col_label = "health_covid19deaths_rate"
+    indicator_col_label = "health_covid19deaths"
+    token_label = "_rate"
 
     clean_df = load_clean_source_data()
 
@@ -29,8 +30,10 @@ def covid_death(geography: str, write_to_internal_review=False):
     )
     pivot_by_race.replace(0, np.nan, inplace=True)  # needed for the censored datapoint
 
-    for col in pivot_by_race.columns:
-        pivot_by_race.rename(columns={col: f"{indicator_col_label}{col}"}, inplace=True)
+    for race in pivot_by_race.columns:
+        pivot_by_race.rename(
+            columns={race: f"{indicator_col_label}{race}{token_label}"}, inplace=True
+        )
 
     agg_all_races = clean_df.groupby(geography).sum(numeric_only=True).reset_index()
     calculate_rate_by_100k(indicator_col_label, agg_all_races)
@@ -46,6 +49,9 @@ def covid_death(geography: str, write_to_internal_review=False):
     final = final.set_index(geography)
     final = final.sort_index(axis=1, ascending=True)
     final.index.rename(geography, inplace=True)
+    final.rename(
+        columns={"health_covid19deaths": "health_covid19deaths_rate"}, inplace=True
+    )
     final = final.round(2)
 
     if write_to_internal_review:

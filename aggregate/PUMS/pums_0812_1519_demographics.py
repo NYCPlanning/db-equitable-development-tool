@@ -13,7 +13,7 @@ endyear_mapper = {"0812": "12", "1519": "19"}
 
 
 def acs_pums_demographics(
-    geography: str, year: str, write_to_internal_review=False
+    geography: str, year: str = "0812", write_to_internal_review=False
 ) -> pd.DataFrame:
     assert geography in ["citywide", "borough", "puma"]
     assert year in ["0812", "1519"]
@@ -23,7 +23,7 @@ def acs_pums_demographics(
         "LEP": ["lep"],
         "foreign_born": ["fb"],
         "age_bucket": get_category("age_bucket"),
-        "total_pop": ["pop"],
+        "total_pop": ["pop_denom"],
         "age_p5pl": ["age_p5pl"],
         "race": dcp_pop_races,
     }

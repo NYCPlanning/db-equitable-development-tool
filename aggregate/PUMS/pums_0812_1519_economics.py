@@ -98,7 +98,6 @@ def order_economics(source_data, year):
         return_col_order=True,
         exclude_denom=True,
     )
-    [print(c) for c in count_cols if c not in source_data.columns]
 
     assert all(col in source_data.columns for col in count_cols)
     median_cols = economics_median_cols_order()

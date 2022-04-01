@@ -20,19 +20,13 @@ def nycha_tenants(geography: str, write_to_internal_review=False):
     elif geography == "citywide":
         clean_data["citywide"] = "citywide"
         final = get_percentage(clean_data.groupby("citywide").agg("sum"))
-
+        
     final = final.round(2)
     #final = order_aggregated_columns()
     if write_to_internal_review:
         set_internal_review_files(
-            data=[
-                (
-                    final,
-                    "nycha_tenants.csv",
-                    geography,
-                )
-            ],
-            category="housing_security",
+            [(final, "nycha_tenants.csv", geography)],
+            "housing_security",
         )
 
     return final 

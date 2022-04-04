@@ -111,24 +111,22 @@ def economics_median_cols_order():
     as not all categories are crosstabbed by race"""
     rv = []
     category_mapper = {
-        "household_income": (["household_income"], True),
-        "occupation": ([f"{o}_wages" for o in occupation_categories], False),
-        "industry": ([f"{i}_wages" for i in industry_categories], True),
+        "household_income": ["household_income"],
+        "occupation": [f"{o}_wages" for o in occupation_categories],
+        "industry": [f"{i}_wages" for i in industry_categories],
     }
 
     for k, i in category_mapper.items():
-        categories = i[0]
-        race_crosstab = i[1]
+        categories = i
         for c in categories:
             rv.append(f"{c}_median")
             rv.append(f"{c}_median_moe")
             rv.append(f"{c}_median_cv")
         for c in categories:
-            if race_crosstab:
-                for r in dcp_pop_races:
-                    rv.append(f"{c}_{r}_median")
-                    rv.append(f"{c}_{r}_median_moe")
-                    rv.append(f"{c}_{r}_median_cv")
+            for r in dcp_pop_races:
+                rv.append(f"{c}_{r}_median")
+                rv.append(f"{c}_{r}_median_moe")
+                rv.append(f"{c}_{r}_median_cv")
 
     return rv
 

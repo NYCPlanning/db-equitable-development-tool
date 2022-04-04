@@ -74,20 +74,20 @@ housing_production_accessors = [fraction_historic, change_in_units, affordable_h
 
 
 QOL_accessors = [
-    access_to_openspace,
-    get_education_outcome,
-    traffic_fatalities_injuries,
     access_to_jobs,
+    access_to_openspace,
+    access_to_broadband,
+    access_transit_car,
+    access_subway_and_access_ADA,
+    get_education_outcome,
     covid_death,
     heat_vulnerability,
     health_self_reported,
-    access_subway_and_access_ADA,
     infant_mortality,
     overdose_mortality,
     premature_mortality,
     health_diabetes,
-    access_to_broadband,
-    access_transit_car,
+    traffic_fatalities_injuries,
     assault_hospitalizations,
     pedestrian_hospitalizations,
 ]

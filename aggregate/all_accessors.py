@@ -44,6 +44,10 @@ from aggregate.quality_of_life.access_subway_and_access_ADA import (
     access_subway_and_access_ADA,
 )
 from aggregate.quality_of_life.covid_death import covid_death
+from aggregate.quality_of_life.diabetes_self_report import (
+    health_self_reported,
+    health_diabetes,
+)
 from aggregate.quality_of_life.education_outcome import get_education_outcome
 from aggregate.quality_of_life.health_mortality import (
     infant_mortality,
@@ -76,10 +80,12 @@ QOL_accessors = [
     access_to_jobs,
     covid_death,
     heat_vulnerability,
+    health_self_reported,
     access_subway_and_access_ADA,
     infant_mortality,
     overdose_mortality,
     premature_mortality,
+    health_diabetes,
     access_to_broadband,
     access_transit_car,
     assault_hospitalizations,

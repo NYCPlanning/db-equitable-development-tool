@@ -22,7 +22,7 @@ jobs:
           - borough
           - citywide
         category:
-          - demographics
+          # - demographics
           - economics
         year:
           - "2000"

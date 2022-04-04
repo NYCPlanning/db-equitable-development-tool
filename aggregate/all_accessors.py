@@ -44,6 +44,10 @@ from aggregate.quality_of_life.access_subway_and_access_ADA import (
     access_subway_and_access_ADA,
 )
 from aggregate.quality_of_life.covid_death import covid_death
+from aggregate.quality_of_life.diabetes_self_report import (
+    health_self_reported,
+    health_diabetes,
+)
 from aggregate.quality_of_life.education_outcome import get_education_outcome
 from aggregate.quality_of_life.health_mortality import (
     infant_mortality,
@@ -70,18 +74,20 @@ housing_production_accessors = [fraction_historic, change_in_units, affordable_h
 
 
 QOL_accessors = [
-    access_to_openspace,
-    get_education_outcome,
-    traffic_fatalities_injuries,
     access_to_jobs,
+    access_to_openspace,
+    access_to_broadband,
+    access_transit_car,
+    access_subway_and_access_ADA,
+    get_education_outcome,
     covid_death,
     heat_vulnerability,
-    access_subway_and_access_ADA,
+    health_self_reported,
     infant_mortality,
     overdose_mortality,
     premature_mortality,
-    access_to_broadband,
-    access_transit_car,
+    health_diabetes,
+    traffic_fatalities_injuries,
     assault_hospitalizations,
     pedestrian_hospitalizations,
 ]

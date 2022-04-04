@@ -11,7 +11,7 @@ def add_CD_code(df):
     df["CD_code"] = df["borough"] + df["borough_CD_code"]
 
 
-def get_CD_puma_crosswalk():
+def get_CD_NTA_puma_crosswalk():
     puma_cross = pd.read_excel(
         "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx",
         sheet_name="NTA in PUMA_",
@@ -31,6 +31,8 @@ def get_CD_puma_crosswalk():
         columns={
             "Community District(PUMAs approximate NYC Community  Districts and are not coterminous)": "CD",
             "PUMACode": "puma",
+            "NTACode": "nta",
+            "Name": "name",
         },
         inplace=True,
     )
@@ -48,7 +50,7 @@ def community_district_to_PUMA(df, CD_col, CD_abbr_type="alpha_borough"):
     """
     assert CD_abbr_type in ["alpha_borough", "numeric_borough"]
 
-    puma_cross = get_CD_puma_crosswalk()
+    puma_cross = get_CD_NTA_puma_crosswalk()
 
     mapper = {}
 
@@ -63,6 +65,20 @@ def community_district_to_PUMA(df, CD_col, CD_abbr_type="alpha_borough"):
     return df
 
 
+def nta_to_puma(df, nta_col):
+    """Create a function that maps ntas to pumas"""
+    puma_cross = get_CD_NTA_puma_crosswalk()
+
+    mapper = {}
+
+    for _, row in puma_cross.iterrows():
+        for nta_num in re.findall(r"\d+", row["nta"]):
+            nta_code = row["nta"][:2] + nta_num
+        mapper[nta_code] = row.puma
+    df["puma"] = df[nta_col].map(mapper)
+    return df
+
+
 def construct_three_digit_CD_code(borough_code: str, cd_num: str) -> str:
 
     if len(cd_num) == 1:
@@ -71,8 +87,8 @@ def construct_three_digit_CD_code(borough_code: str, cd_num: str) -> str:
 
 
 def get_borough_num_mapper():
-    puma_cross = get_CD_puma_crosswalk()
-    puma_cross["borough_abbr"] = puma_cross["NTACode"].str[:2]
+    puma_cross = get_CD_NTA_puma_crosswalk()
+    puma_cross["borough_abbr"] = puma_cross["nta"].str[:2]
     boroughs = (
         puma_cross[["borough_code", "borough_abbr"]]
         .drop_duplicates()

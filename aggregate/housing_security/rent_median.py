@@ -64,9 +64,6 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
     final = pd.concat([final_md, final_hh], axis=1)
 
     final["units_payingrent_1519_pct"] = 100
-    final["units_payingrent_0812_pct"] = 100
-
-    #final.dropna(axis=1, how="all", inplace=True)
 
     if write_to_internal_review:
         set_internal_review_files(

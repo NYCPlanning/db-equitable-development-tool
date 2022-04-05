@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from aggregate.clean_aggregated import (
     rename_col_housing_security,
     order_PUMS_QOL_multiple_years,
@@ -61,9 +62,17 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
         )
     )
 
+    final_hh = final_hh.filter(regex="0812|" + "|".join(race_suffix_mapper.values()))
+
     final = pd.concat([final_md, final_hh], axis=1)
 
     final["units_payingrent_1519_pct"] = 100
+    final["units_payingrent_1519_pct_moe"] = 1
+
+    final.dropna(how="all", axis=1, inplace=True)
+
+    final["units_payingrent_1519_pct_moe"] = np.nan
+    
 
     if write_to_internal_review:
         set_internal_review_files(

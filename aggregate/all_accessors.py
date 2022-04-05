@@ -29,7 +29,10 @@ from aggregate.housing_security.rent_stable_three_maintenance import (
     three_maintenance_units,
 )
 from aggregate.housing_security.units_affordable import units_affordable
-from aggregate.housing_security.income_restricted_units import income_restricted_units
+from aggregate.housing_security.income_restricted_units import (
+    income_restricted_units,
+    income_restricted_units_hpd,
+)
 from aggregate.housing_security.pums_2000_hsq_housing_tenure import (
     pums_2000_hsq_housing_tenure,
 )
@@ -86,6 +89,7 @@ housing_security_accessors = [
     eviction_cases,
     units_affordable,
     income_restricted_units,
+    income_restricted_units_hpd,
     rent_stabilized_units,
     three_maintenance_units,
     pums_2000_hsq_housing_tenure,

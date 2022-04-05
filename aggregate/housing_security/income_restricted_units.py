@@ -1,5 +1,4 @@
 from os import rename
-from matplotlib.pyplot import get
 from numpy import NaN
 import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
@@ -40,10 +39,7 @@ def load_clean_income_restricted():
     source_data["citywide"] = "citywide"
 
     source_data.rename(
-        columns={
-            "Total Unit Count": "units_nycha_count",
-            #            "RAD Units": "units_rad_count",
-        },
+        columns={"Total Unit Count": "units_nycha_count"},
         inplace=True,
     )
     return source_data
@@ -55,7 +51,7 @@ def income_restricted_units_hpd(
     """Main accessor"""
     assert geography in ["puma", "borough", "citywide"]
 
-    source_data = load_clean_hny_data()
+    source_data = load_clean_hpd_data()
     final = source_data.groupby(geography).sum()[["units_hpd_count"]]
 
     if write_to_internal_review:
@@ -66,7 +62,7 @@ def income_restricted_units_hpd(
     return final
 
 
-def load_clean_hny_data():
+def load_clean_hpd_data():
     source_data = pd.read_csv(
         ".library/hpd_hny_units_by_building.csv",
         usecols=[

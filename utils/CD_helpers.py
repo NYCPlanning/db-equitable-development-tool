@@ -68,14 +68,8 @@ def community_district_to_PUMA(df, CD_col, CD_abbr_type="alpha_borough"):
 def nta_to_puma(df, nta_col):
     """Create a function that maps ntas to pumas"""
     puma_cross = get_CD_NTA_puma_crosswalk()
-
-    mapper = {}
-
-    for _, row in puma_cross.iterrows():
-        for nta_num in re.findall(r"\d+", row["nta"]):
-            nta_code = row["nta"][:2] + nta_num
-        mapper[nta_code] = row.puma
-    df["puma"] = df[nta_col].map(mapper)
+    puma_cross = dict(zip(puma_cross.nta, puma_cross.puma))
+    df["puma"] = df[nta_col].map(puma_cross)
     return df
 
 

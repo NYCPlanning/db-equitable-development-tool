@@ -1,6 +1,6 @@
-borough,nycha_units_count,rad_units_count
-BK,54681.0,3940.0
-BX,40866.0,2458.0
-MN,52539.0,1718.0
-QN,15478.0,1395.0
-SI,4510.0,0.0
+borough,units_nycha_count
+BK,58621.0
+BX,43324.0
+MN,54257.0
+QN,16873.0
+SI,4510.0

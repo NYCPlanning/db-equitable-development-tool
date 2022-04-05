@@ -7,7 +7,7 @@ from utils.PUMA_helpers import (
     borough_name_mapper,
 )
 
-ind_mapper = {"Af": "units_affordable_", "ROcc2": "units_renteroccu"}
+ind_mapper = {"Af": "units_affordable_",}
 
 income_mapper = {
     "ELI": "eli",

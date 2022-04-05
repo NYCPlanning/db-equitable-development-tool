@@ -62,8 +62,6 @@ def rent_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
         )
     )
 
-    final_hh = final_hh.filter(regex="0812|" + "|".join(race_suffix_mapper.values()))
-
     final = pd.concat([final_md, final_hh], axis=1)
 
     final["units_payingrent_1519_pct"] = 100

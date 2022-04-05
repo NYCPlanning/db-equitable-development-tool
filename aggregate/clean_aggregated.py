@@ -65,8 +65,6 @@ def order_PUMS_QOL_multiple_years(categories, measures, years):
 def order_affordable(measures, income) -> List:
 
     rv = []
-    for m in measures:
-        rv.append(f"units_renteroccu{m}")
     for i in income:
         for m in measures:
             rv.append(f"units_affordable_{i}{m}")

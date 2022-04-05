@@ -9,6 +9,7 @@ dcp_pop_races = ["anh", "bnh", "hsp", "onh", "wnh"]
 
 race_labels = ["", "_wnh", "_bnh", "_hsp", "_anh", "_onh"]
 
+pop_labels = ["Total Population" , "White", "Black", "Hispanic", "Asian", "Other"]
 
 def nycha_tenants(geography: str, write_to_internal_review=False):
     assert geography in ["citywide", "borough", "puma"]
@@ -72,12 +73,14 @@ def load_clean_nycha_data():
     nycha_data["citywide"] = "citywide"
     nycha_data.set_index("puma", inplace=True)
     # calculating the total for each race categories
-    for i in range(6):
+    final_cols = ["borough", "citywide"]
+    for i, pl in enumerate(pop_labels):
         nycha_data[f"nycha_tenants{race_labels[i]}_count"] = (
-            nycha_data.iloc[:, i] + nycha_data.iloc[:, i + 6]
+            nycha_data.loc[:, "Public Housing " + pl] + nycha_data.loc[:, "RAD " + pl]
         )
+        final_cols.append(f"nycha_tenants{race_labels[i]}_count")
 
-    return nycha_data.iloc[:, -8:]
+    return nycha_data[final_cols]
 
 
 def get_percentage(df: pd.DataFrame):

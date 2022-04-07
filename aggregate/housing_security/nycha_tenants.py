@@ -4,6 +4,7 @@ import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import clean_PUMAs, puma_to_borough
 
+
 dcp_pop_races = ["anh", "bnh", "hsp", "onh", "wnh"]
 
 
@@ -32,6 +33,7 @@ def nycha_tenants(geography: str, write_to_internal_review=False):
         final = get_percentage(census20_agg)
 
     final = final.round(2)
+    final.fillna(0, inplace=True)
 
     order_cols = order_aggregated_columns(
         df=final,

@@ -27,7 +27,7 @@ jobs:
           - borough
           - citywide
         category:
-          # - housing_production
+          - housing_production
           #- quality_of_life
           - housing_security
  

@@ -22,6 +22,7 @@ def load_housing_data():
         usecols=[
             "job_number",
             "job_inactive",
+            "complete_year",
             "job_status",
             "job_type",
             "boro",
@@ -118,7 +119,8 @@ def NYC_PUMA_geographies():
 
 def clean_jobs(df):
     # DROP INACTIVATE JOBS ACCRODING TO SAM
-    df.drop(df.loc[~df.job_inactive.isnull()].index, axis=0, inplace=True)
+    df = df.loc[df.job_inactive.isnull()]
+    df = df.loc[df["complete_year"] >= 2010]
 
     # drop records where their status is not complete
     df.drop(

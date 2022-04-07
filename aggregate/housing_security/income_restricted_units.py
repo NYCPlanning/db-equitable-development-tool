@@ -7,6 +7,7 @@ from utils.PUMA_helpers import (
     borough_name_mapper,
 )
 from utils.CD_helpers import nta_to_puma
+from aggregate.load_aggregated import initialize_dataframe_geo_index
 
 
 def income_restricted_units(
@@ -16,7 +17,10 @@ def income_restricted_units(
     assert geography in ["puma", "borough", "citywide"]
 
     source_data = load_clean_income_restricted()
+    empty_df = initialize_dataframe_geo_index(geography=geography)
     final = source_data.groupby(geography).sum()[["units_nycha_count"]]
+    final = pd.concat([empty_df, final], axis=1)
+    final.fillna(0, inplace=True)
 
     if write_to_internal_review:
         set_internal_review_files(

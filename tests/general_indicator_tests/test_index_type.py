@@ -4,23 +4,27 @@ from tests.general_indicator_tests.general_indicator_test_helpers import get_by_
 from utils.PUMA_helpers import get_all_NYC_PUMAs, get_all_boroughs
 
 all_PUMAs = get_all_NYC_PUMAs()
+all_PUMAs.sort()
 all_boroughs = get_all_boroughs()
+all_boroughs.sort()
 
 by_puma, by_borough, by_citywide = get_by_geo()
 
 
 @pytest.mark.parametrize("data, ind_name", by_puma)
 def test_all_PUMAs_present(data, ind_name):
+    returned_index = data.index
     assert (
-        data.index.values.sort() == all_PUMAs.sort()
-    ), f"not all PUMAs present for {ind_name}"
+        returned_index.sort_values() == all_PUMAs
+    ).all(), f"not all PUMAs present for {ind_name}"
 
 
 @pytest.mark.parametrize("data, ind_name", by_borough)
 def test_all_boroughs_present(data, ind_name):
+    returned_index = data.index
     assert (
-        data.index.values.sort() == all_boroughs.sort()
-    ), f"not all boroughs present for {ind_name}"
+        returned_index.sort_values() == all_boroughs
+    ).all(), f"not all boroughs present for {ind_name}"
 
 
 @pytest.mark.parametrize("data, ind_name", by_citywide)

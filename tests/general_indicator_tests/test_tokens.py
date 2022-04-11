@@ -9,4 +9,4 @@ def test_measure_token_present(data, ind_name):
     for c in data.columns:
         assert any(
             token in c for token in ["count", "pct", "rate", "index", "median"]
-        ), f"{ind_name} returns column {c} with no count or pct token"
+        ), f"{ind_name} returns column {c} with no metric token"

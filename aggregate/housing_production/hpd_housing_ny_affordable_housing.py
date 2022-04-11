@@ -1,4 +1,5 @@
 import pandas as pd
+from aggregate.aggregation_helpers import initialize_dataframe_geo_index
 from utils.PUMA_helpers import assign_PUMA_col
 from internal_review.set_internal_review_file import set_internal_review_files
 
@@ -140,8 +141,10 @@ def PUMA_hny_units_con_type(df):
     )
 
     results = pivot_and_flatten_index(results, "puma")
-
-    return results.set_index("puma")
+    results = results.set_index("puma")
+    full_pumas = initialize_dataframe_geo_index("puma")
+    results = full_pumas.merge(results, how="left", left_index=True, right_index=True)
+    return results
 
 
 def affordable_housing(geography: str) -> pd.DataFrame:

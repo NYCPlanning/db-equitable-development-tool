@@ -29,6 +29,20 @@ census_races = ["anh", "bnh", "hsp", "onh", "wnh"]
 dcp_pop_races = ["anh", "bnh", "hsp", "wnh"]
 
 
+def clean_PUMAs(puma) -> pd.DataFrame:
+    """Re-uses code from remove_state_code_from_PUMA col in access to subway, call this instead
+    Possible refactor: apply to dataframe and ensure that re-named column is label \"puma\" """
+    puma = str(puma)
+    puma = puma.split(".")[0]
+    if puma == "nan" or puma == nan:
+        return nan
+    elif puma[:2] == "36":
+        puma = puma[2:]
+    elif puma[0] != "0":
+        puma = "0" + puma
+    return puma
+
+
 def puma_to_borough(record):
 
     borough_code = record.puma[:3]

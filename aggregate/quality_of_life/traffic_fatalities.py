@@ -1,4 +1,5 @@
 import pandas as pd
+from aggregate.aggregation_helpers import initialize_dataframe_geo_index
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import (
     get_all_NYC_PUMAs,
@@ -14,12 +15,7 @@ def traffic_fatalities_injuries(geography, save_for_internal_review=False):
         ("1014", range(2010, 2015)),
         ("1620", range(2016, 2021)),
     ]
-    if geography == "puma":
-        final = pd.DataFrame(index=get_all_NYC_PUMAs())
-    if geography == "borough":
-        final = pd.DataFrame(index=get_all_boroughs())
-    if geography == "citywide":
-        final = pd.DataFrame(index=["citywide"])
+    final = initialize_dataframe_geo_index(geography)
     final.index.rename(geography, inplace=True)
 
     for year_code, year_range in year_ranges:
@@ -66,7 +62,7 @@ def get_year_range_df(year_range):
     of events. Later the calculation to get number per 100 street miles in done in mean_by_geography
 
     """
-    big_df = pd.DataFrame(data={"puma": get_all_NYC_PUMAs()})
+    big_df = initialize_dataframe_geo_index("puma")
     for year in year_range:
         raw_df = pd.read_csv(f".library/dcp_dot_trafficinjuries_{year}.csv")
         injuries_col_name = f"injuries_total_{year}"

@@ -54,8 +54,11 @@ def income_restricted_units_hpd(
     assert geography in ["puma", "borough", "citywide"]
 
     source_data = load_clean_hpd_data()
-    final = source_data.groupby(geography).sum()[["units_hpd_count"]]
-
+    final = initialize_dataframe_geo_index(geography)
+    aggregated = source_data.groupby(geography).sum()[["units_hpd_count"]]
+    final = final.merge(
+        aggregated, how="left", left_index=True, right_index=True
+    ).fillna(0)
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "income_restricted_units_hpd.csv", geography)],

@@ -1,7 +1,7 @@
 """Aggregation for this indicator is unusual in that some records have borough 
 but no CD. Something to watch out for when testing"""
 
-from aggregate.load_aggregated import initialize_dataframe_geo_index
+from aggregate.aggregation_helpers import initialize_dataframe_geo_index
 from ingest.housing_security.DHS_shelter import load_DHS_shelter
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.CD_helpers import community_district_to_PUMA

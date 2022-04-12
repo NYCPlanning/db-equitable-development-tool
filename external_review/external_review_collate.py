@@ -2,6 +2,7 @@
 from os import makedirs, path
 import pandas as pd
 import typer
+from aggregate.aggregation_helpers import initialize_dataframe_geo_index
 
 from aggregate.all_accessors import Accessors
 
@@ -11,17 +12,15 @@ app = typer.Typer()
 
 def collate(geography_level, category):
     """Collate indicators together"""
+    final_df = initialize_dataframe_geo_index(geography_level)
     accessor_functions = accessors.__getattribute__(category)
-    final_df = pd.DataFrame()
     for ind_accessor in accessor_functions:
         try:
             ind = ind_accessor(geography_level)
-            if final_df.empty:
-                final_df = ind
-            else:
-                final_df = final_df.merge(
-                    ind, right_index=True, left_index=True, how="left"
-                )
+
+            final_df = final_df.merge(
+                ind, right_index=True, left_index=True, how="left"
+            )
         except Exception as e:
             print(
                 f"Error merging indicator {ind_accessor.__name__} at geography level {geography_level}"

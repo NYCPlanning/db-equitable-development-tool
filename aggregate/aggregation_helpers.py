@@ -105,6 +105,20 @@ def get_category(indicator, data=None):
         return categories
 
 
+def initialize_dataframe_geo_index(geography):
+    """This should be moved to PUMA helpers and referenced in other code that merges
+    to a final dataframe"""
+    indicies = {
+        "puma": get_all_NYC_PUMAs(),
+        "borough": get_all_boroughs(),
+        "citywide": ["citywide"],
+    }
+
+    rv = pd.DataFrame(index=indicies[geography])
+    rv.index.rename(geography, inplace=True)
+    return rv
+
+
 def get_geography_pop_data(clean_data: pd.DataFrame, geography: str):
 
     if geography == "citywide":

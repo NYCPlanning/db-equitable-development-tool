@@ -16,7 +16,7 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
-
+RUN apt-get update
 #Install R
 RUN apt-get -y install r-base
 # Install poetry
@@ -25,3 +25,4 @@ ENV PATH="~/.poetry/bin:$PATH"
 ENV PATH="~/.local/bin:$PATH"
 
 RUN /usr/local/bin/python3 -m pip install -U flake8
+RUN /usr/local/bin/python3 -m pip install -U black

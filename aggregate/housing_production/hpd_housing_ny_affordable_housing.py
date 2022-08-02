@@ -103,7 +103,7 @@ def add_total(df):
             f"units_{band}_{t}_count"
             for band in ["eli", "vli", "li", "mi", "midi", "oi"]
         ]
-        df[f"units_TOTAL_{t}_count"] = df[cols].sum(axis=1)
+        df[f"units_allami_{t}_count"] = df[cols].sum(axis=1)
     return df
 
 
@@ -199,17 +199,19 @@ if __name__ == "__main__":
 
     # output to csv for data checks  - these need to be dumped in DO edm-recipes
 
-    results_citywide.to_csv(
-        "internal_review/housing_production/affordable_housing_preservation_construction_citywide.csv",
-        index=False,
-    )
-
-    results_borough.to_csv(
-        "internal_review/housing_production/affordable_housing_preservation_construction_borough.csv",
-        index=False,
-    )
-
-    results_puma.to_csv(
-        "internal_review/housing_production/affordable_housing_preservation_construction_puma.csv",
-        index=False,
+    set_internal_review_files(
+        [
+            (
+                results_citywide,
+                "affordable_housing_preservation_construction.csv",
+                "citywide",
+            ),
+            (
+                results_borough,
+                "affordable_housing_preservation_construction.csv",
+                "borough",
+            ),
+            (results_puma, "affordable_housing_preservation_construction.csv", "puma"),
+        ],
+        "housing_production",
     )

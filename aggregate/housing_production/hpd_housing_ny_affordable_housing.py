@@ -57,6 +57,12 @@ def load_housing_ny():
     return df
 
 
+def pivot_add_total(df, geography):
+    df = pivot_and_flatten_index(df, geography)
+    df = add_total(df)
+    return df
+
+
 def pivot_and_flatten_index(df, geography):
     level_mapper = {
         "extremely_low_income_units": "units_eli",
@@ -91,6 +97,16 @@ def pivot_and_flatten_index(df, geography):
     return df
 
 
+def add_total(df):
+    for t in ["preservation", "newconstruction"]:
+        cols = [
+            f"units_{band}_{t}_count"
+            for band in ["eli", "vli", "li", "mi", "midi", "oi"]
+        ]
+        df[f"units_allami_{t}_count"] = df[cols].sum(axis=1)
+    return df
+
+
 def citywide_hny_units_con_type(df):
     """Get total unit counts by construction type (new construction vs preservation)"""
 
@@ -102,7 +118,7 @@ def citywide_hny_units_con_type(df):
 
     results["citywide"] = "citywide"
 
-    results = pivot_and_flatten_index(results, "citywide")
+    results = pivot_add_total(results, "citywide")
 
     return results.set_index("citywide")
 
@@ -115,7 +131,7 @@ def borough_hny_units_con_type(df):
         .reset_index()
     )
 
-    results = pivot_and_flatten_index(results, "borough")
+    results = pivot_add_total(results, "borough")
 
     return results.set_index("borough")
 
@@ -139,7 +155,7 @@ def PUMA_hny_units_con_type(df):
         .reset_index()
     )
 
-    results = pivot_and_flatten_index(results, "puma")
+    results = pivot_add_total(results, "puma")
 
     return results.set_index("puma")
 
@@ -183,17 +199,19 @@ if __name__ == "__main__":
 
     # output to csv for data checks  - these need to be dumped in DO edm-recipes
 
-    results_citywide.to_csv(
-        "internal_review/housing_production/affordable_housing_preservation_construction_citywide.csv",
-        index=False,
-    )
-
-    results_borough.to_csv(
-        "internal_review/housing_production/affordable_housing_preservation_construction_borough.csv",
-        index=False,
-    )
-
-    results_puma.to_csv(
-        "internal_review/housing_production/affordable_housing_preservation_construction_puma.csv",
-        index=False,
+    set_internal_review_files(
+        [
+            (
+                results_citywide,
+                "affordable_housing_preservation_construction.csv",
+                "citywide",
+            ),
+            (
+                results_borough,
+                "affordable_housing_preservation_construction.csv",
+                "borough",
+            ),
+            (results_puma, "affordable_housing_preservation_construction.csv", "puma"),
+        ],
+        "housing_production",
     )

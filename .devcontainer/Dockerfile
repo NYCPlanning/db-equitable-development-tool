@@ -24,5 +24,5 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 ENV PATH="~/.poetry/bin:$PATH"
 ENV PATH="~/.local/bin:$PATH"
 
-RUN /usr/local/bin/python3 -m pip install -U flake8
+RUN /usr/local/bin/python3 -m pip install -U bandit
 RUN /usr/local/bin/python3 -m pip install -U black

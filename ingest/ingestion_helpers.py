@@ -8,7 +8,6 @@ import pandas as pd
 import boto3
 import yaml
 from .data_library.metadata import add_version
-from . import BASE_PATH, BASE_URL
 
 
 def add_leading_zero_PUMA(df: DataFrame) -> DataFrame:

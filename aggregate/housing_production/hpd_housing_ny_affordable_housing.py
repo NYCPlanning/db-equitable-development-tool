@@ -1,7 +1,8 @@
 import pandas as pd
-from ingest.ingestion_helpers import read_from_S3
 from utils.PUMA_helpers import assign_PUMA_col
 from internal_review.set_internal_review_file import set_internal_review_files
+from ingest.ingestion_helpers import read_from_S3
+from ingest.data_library.metadata import dump_metadata
 
 """"We need to download the data, separate the data by construction type (New Construction vs. Preservation)
 as these will be two separate indicators, unit income level, and the various citywide reporting geography 
@@ -21,7 +22,7 @@ unit_income_levels = [
 
 def load_housing_ny():
     """load the HPD Housing NY Units by Building dataset"""
-    df = read_from_S3("hpd_hny_units_by_building.csv",
+    df = read_from_S3("hpd_hny_units_by_building",
                       cols=[
                           "project_id",
                           "project_name",
@@ -42,29 +43,7 @@ def load_housing_ny():
                           "other_income_units",
                       ],
                       )
-
-    df = pd.read_csv(
-        ".library/hpd_hny_units_by_building.csv",
-        usecols=[
-            "project_id",
-            "project_name",
-            "project_start_date",
-            "project_completion_date",
-            "number",
-            "street",
-            "borough",
-            "latitude_(internal)",
-            "longitude_(internal)",
-            "building_completion_date",
-            "reporting_construction_type",
-            "extremely_low_income_units",
-            "very_low_income_units",
-            "low_income_units",
-            "moderate_income_units",
-            "middle_income_units",
-            "other_income_units",
-        ],
-    )
+    dump_metadata()
     df = df.replace(
         {
             "borough": {
@@ -76,6 +55,15 @@ def load_housing_ny():
             }
         }
     )
+    # casting to numeric for calculation
+    num_cols = ["extremely_low_income_units",
+                "very_low_income_units",
+                "low_income_units",
+                "moderate_income_units",
+                "middle_income_units",
+                "other_income_units", ]
+    for c in num_cols:
+        df[c] = pd.to_numeric(df[c])
 
     return df
 

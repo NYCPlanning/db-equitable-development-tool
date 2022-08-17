@@ -7,7 +7,7 @@ from pandas import DataFrame
 import pandas as pd
 import boto3
 import yaml
-from .metadata import add_version
+from .data_library.metadata import add_version
 from . import BASE_PATH, BASE_URL
 
 
@@ -17,7 +17,7 @@ def add_leading_zero_PUMA(df: DataFrame) -> DataFrame:
 
 
 def read_datasets_yml() -> dict:
-    with open(Path(__file__).parent.parent / ("datasets.yml"), "r") as f:
+    with open(Path(__file__).parent.parent / ("ingest/data_library/datasets.yml"), "r") as f:
         return yaml.safe_load(f.read())["datasets"]
 
 

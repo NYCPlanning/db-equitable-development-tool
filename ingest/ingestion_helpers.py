@@ -34,6 +34,6 @@ def read_from_S3(name: str, cols: list = None) -> pd.DataFrame:
             f".library/{name}/{read_version}/{name}.csv", dtype=str, index_col=False, usecols=cols
         )
     else:
-        return print(f"check version in dataloading for {name}")
+        return print(f"Cannot find the file version {read_version}. Check version in dataloading for {name}")
     add_version(dataset=name, version=int(read_version))
     return df

@@ -20,7 +20,13 @@ function export_DO_census {
 
 }
 
+function export_metadata (
+    mc cp ./ingest/metadata.yml $SPACES/metadata.yml
+    rm ./ingest/metadata.yml
+)
+
 case $1 in
     export ) export_DO $2 $3 ;;
-    export_census ) export_DO_census $2 $3 $4
+    export_census ) export_DO_census $2 $3 $4 ;;
+    export_meta ) export_metadata
 esac

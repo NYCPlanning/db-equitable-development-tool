@@ -27,7 +27,7 @@ def get_dataset_version(name: str) -> str:
     return str(dataset.get("version", "latest"))
 
 
-def read_from_S3(name: str, cols: list) -> pd.DataFrame:
+def read_from_S3(name: str, cols: list = None) -> pd.DataFrame:
     read_version = get_dataset_version(name)
     df = pd.read_csv(
         f".library/{name}/{read_version}/{name}.csv", dtype=str, index_col=False, usecols=cols

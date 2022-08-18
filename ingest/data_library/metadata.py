@@ -12,6 +12,10 @@ class MyDumper(yaml.Dumper):
 
 
 def add_version(dataset: str, version: int):
+    try:
+        version = int(version)
+    except ValueError:
+        version = str(version)
     metadata["datasets"].append({"name": dataset, "version": version})
 
 

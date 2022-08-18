@@ -11,7 +11,7 @@ class MyDumper(yaml.Dumper):
         return super(MyDumper, self).increase_indent(flow, False)
 
 
-def add_version(dataset: str, version: str):
+def add_version(dataset: str, version: int):
     metadata["datasets"].append({"name": dataset, "version": version})
 
 

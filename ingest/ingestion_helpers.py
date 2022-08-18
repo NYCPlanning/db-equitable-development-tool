@@ -32,5 +32,5 @@ def read_from_S3(name: str, cols: list = None) -> pd.DataFrame:
     df = pd.read_csv(
         f".library/{name}/{read_version}/{name}.csv", dtype=str, index_col=False, usecols=cols
     )
-    add_version(dataset=name, version=read_version)
+    add_version(dataset=name, version=int(read_version))
     return df

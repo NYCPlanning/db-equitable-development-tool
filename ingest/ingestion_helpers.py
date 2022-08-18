@@ -29,8 +29,11 @@ def get_dataset_version(name: str) -> str:
 
 def read_from_S3(name: str, cols: list = None) -> pd.DataFrame:
     read_version = get_dataset_version(name)
-    df = pd.read_csv(
-        f".library/{name}/{read_version}/{name}.csv", dtype=str, index_col=False, usecols=cols
-    )
+    if os.path.exists(f".library/{name}/{read_version}/{name}.csv"):
+        df = pd.read_csv(
+            f".library/{name}/{read_version}/{name}.csv", dtype=str, index_col=False, usecols=cols
+        )
+    else:
+        return print(f"check version in dataloading for {name}")
     add_version(dataset=name, version=int(read_version))
     return df

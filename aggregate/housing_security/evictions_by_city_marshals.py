@@ -23,8 +23,8 @@ def count_residential_evictions(
 
 
 def load_residential_evictions(debug) -> pd.DataFrame:
-    evictions = read_from_S3("doi_evictions")
-    dump_metadata()
+    evictions = read_from_S3("doi_evictions", "housing_security")
+
     if debug:
         evictions = evictions.iloc[:1000, :]
     residential_evictions = evictions[

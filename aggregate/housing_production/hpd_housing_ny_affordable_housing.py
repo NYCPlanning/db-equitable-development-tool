@@ -23,6 +23,7 @@ unit_income_levels = [
 def load_housing_ny():
     """load the HPD Housing NY Units by Building dataset"""
     df = read_from_S3("hpd_hny_units_by_building",
+                      "housing_production",
                       cols=[
                           "project_id",
                           "project_name",
@@ -43,7 +44,7 @@ def load_housing_ny():
                           "other_income_units",
                       ],
                       )
-    dump_metadata()
+
     df = df.replace(
         {
             "borough": {

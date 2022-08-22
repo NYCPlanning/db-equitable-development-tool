@@ -70,7 +70,7 @@ def calculate_access_fraction(data, gb_col, count_col, fraction_col):
 
 
 def load_access_subway_SBS() -> pd.DataFrame:
-    access = read_from_S3("dcp_access_subway_sbs")
+    access = read_from_S3("dcp_access_subway_sbs", "quality_of_life")
     access = remove_state_code_from_PUMA(access)
     access.rename(
         columns={
@@ -88,8 +88,7 @@ def remove_state_code_from_PUMA(access: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_access_ADA_subway() -> pd.DataFrame:
-    access = read_from_S3("dcp_access_ada_subway")
-    dump_metadata()
+    access = read_from_S3("dcp_access_ada_subway", "quality_of_life")
 
     access = remove_state_code_from_PUMA(access)
     access.rename(

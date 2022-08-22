@@ -68,6 +68,7 @@ def income_restricted_units_hpd(
 
 def load_clean_hpd_data():
     source_data = read_from_S3("hpd_hny_units_by_building",
+                               "housing_security",
                                cols=[
                                    "project_id",
                                    "project_name",
@@ -83,7 +84,7 @@ def load_clean_hpd_data():
                                    "all_counted_units",
                                ],
                                )
-    dump_metadata()
+
     source_data.rename(
         columns={
             "nta_-_neighborhood_tabulation_area": "nta",

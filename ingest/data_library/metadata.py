@@ -19,6 +19,6 @@ def add_version(dataset: str, version: int):
     metadata["datasets"].append({"name": dataset, "version": version})
 
 
-def dump_metadata():
-    with open(Path(__file__).parent.parent / "metadata.yml", "w") as outfile:
+def dump_metadata(category: str):
+    with open(Path(__file__).parent.parent.parent / f".staging/{category}/metadata.yml", "w") as outfile:
         yaml.dump(metadata, outfile, Dumper=MyDumper, default_flow_style=False)

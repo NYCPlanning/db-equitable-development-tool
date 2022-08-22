@@ -22,6 +22,7 @@ def load_housing_data():
 
     df = read_from_S3(
         "dcp_housing",
+        "housing_production",
         cols=[
             "job_number",
             "job_inactive",
@@ -34,7 +35,6 @@ def load_housing_data():
             "longitude",
         ]
     )
-    dump_metadata()
 
     for c in ["complete_year", "classa_net"]:
         df[c] = pd.to_numeric(df[c])

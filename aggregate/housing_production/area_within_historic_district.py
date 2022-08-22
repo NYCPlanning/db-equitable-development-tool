@@ -74,8 +74,8 @@ def fraction_PUMA_historic(PUMA, hd):
 
 
 def load_historic_districts_gdf() -> gp.GeoDataFrame:
-    df = read_from_S3("lpc_historic_district_areas")
-    dump_metadata()
+    df = read_from_S3("lpc_historic_district_areas", "housing_production")
+
     hd = gp.GeoDataFrame(df)
     hd["the_geom"] = hd["the_geom"].apply(wkt.loads)
     hd.set_geometry(col="the_geom", inplace=True, crs="EPSG:4326")

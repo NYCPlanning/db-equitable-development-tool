@@ -77,7 +77,6 @@ def load_historic_districts_gdf() -> gp.GeoDataFrame:
     df = read_from_S3("lpc_historic_district_areas")
     dump_metadata()
     hd = gp.GeoDataFrame(df)
-    #hd = gp.read_file(".library/lpc_historic_district_areas.csv")
     hd["the_geom"] = hd["the_geom"].apply(wkt.loads)
     hd.set_geometry(col="the_geom", inplace=True, crs="EPSG:4326")
     hd = hd.explode(column="the_geom")

@@ -8,6 +8,7 @@ import pandas as pd
 import boto3
 import yaml
 from .data_library.metadata import add_version
+from . import BASE_URL, BASE_PATH
 
 
 def add_leading_zero_PUMA(df: DataFrame) -> DataFrame:
@@ -29,11 +30,8 @@ def get_dataset_version(name: str) -> str:
 
 def read_from_S3(name: str, cols: list = None) -> pd.DataFrame:
     read_version = get_dataset_version(name)
-    if os.path.exists(f".library/{name}/{read_version}/{name}.csv"):
-        df = pd.read_csv(
-            f".library/{name}/{read_version}/{name}.csv", dtype=str, index_col=False, usecols=cols
-        )
-    else:
-        return print(f"Cannot find the file version {read_version}. Check version in dataloading for {name}")
+    df = pd.read_csv(
+        f"{BASE_URL}/{name}/{read_version}/{name}.csv", dtype=str, index_col=False, usecols=cols
+    )
     add_version(dataset=name, version=read_version)
     return df

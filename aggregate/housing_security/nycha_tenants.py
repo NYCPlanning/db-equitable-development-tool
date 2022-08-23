@@ -78,7 +78,6 @@ def load_clean_nycha_data():
     # calculating the total for each race categories
     final_cols = ["borough", "citywide"]
     for pl, rl in zip(pop_labels, race_labels):
-        print(f"assigning data from {pl} to {rl}")
         nycha_data[f"nycha_tenants{rl}_count"] = (
             nycha_data.loc[:, "Public Housing " + pl] + nycha_data.loc[:, "RAD " + pl]
         )

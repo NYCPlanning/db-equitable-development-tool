@@ -42,6 +42,11 @@ def load_residential_evictions(debug) -> pd.DataFrame:
     residential_evictions["borough"] = residential_evictions["borough_name"].map(
         borough_name_mapper
     )
+
+    num_cols = ["latitude", "longitude"]
+    for c in num_cols:
+        residential_evictions[c] = pd.to_numeric(residential_evictions[c])
+
     return residential_evictions
 
 

@@ -62,7 +62,9 @@ def load_housing_ny():
                 "low_income_units",
                 "moderate_income_units",
                 "middle_income_units",
-                "other_income_units", ]
+                "other_income_units",
+                "latitude_(internal)",
+                "longitude_(internal)", ]
     for c in num_cols:
         df[c] = pd.to_numeric(df[c])
 

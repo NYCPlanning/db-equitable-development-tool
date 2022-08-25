@@ -3,10 +3,17 @@
 function export_DO {
     echo $1
     echo $2
+    echo $3
     geography_level=$1
     category=$2
+    branch=$3
     filename="${category}_${geography_level}.csv"
-    SPACES="spaces/edm-publishing/db-eddt/${category}"
+    if [$branch = "main"]
+    then
+        SPACES="spaces/edm-publishing/db-eddt/${category}"
+    else
+        SPACES="spaces/edm-publishing/db-eddt/${branch}/${category}"
+    fi
     mc cp .staging/$category/$filename $SPACES/$filename
     mc cp .staging/$category/metadata.yml $SPACES/metadata.yml
 }

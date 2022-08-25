@@ -5,8 +5,13 @@ function export_DO {
     echo $2
     geography_level=$1
     category=$2
-    filename="${category}_${geography_level}.csv"
-    SPACES="spaces/edm-publishing/db-eddt/${category}"
+    local filename="${category}_${geography_level}.csv"
+    local branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
+    if [ "$branchname" = "main" ] ; then
+        SPACES="spaces/edm-publishing/db-eddt/${category}"
+    else
+        SPACES="spaces/edm-publishing/db-eddt/${branchname}/${category}"
+    fi
     mc cp .staging/$category/$filename $SPACES/$filename
     mc cp .staging/$category/metadata.yml $SPACES/metadata.yml
 }

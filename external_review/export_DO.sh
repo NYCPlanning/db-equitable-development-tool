@@ -3,11 +3,10 @@
 function export_DO {
     echo $1
     echo $2
-    echo $3
     geography_level=$1
     category=$2
-    branch=$3
-    filename="${category}_${geography_level}.csv"
+    local filename="${category}_${geography_level}.csv"
+    local branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
     if [ "$branch" = "main" ] ; then
         SPACES="spaces/edm-publishing/db-eddt/${category}"
     else
@@ -29,6 +28,6 @@ function export_DO_census {
 
 
 case $1 in
-    export ) export_DO $2 $3 $4;;
+    export ) export_DO $2 $3 ;;
     export_census ) export_DO_census $2 $3 $4 ;;
 esac

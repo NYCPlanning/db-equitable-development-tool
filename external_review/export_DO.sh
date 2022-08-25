@@ -8,8 +8,7 @@ function export_DO {
     category=$2
     branch=$3
     filename="${category}_${geography_level}.csv"
-    if [$branch = "main"]
-    then
+    if [ "$branch" = "main" ] ; then
         SPACES="spaces/edm-publishing/db-eddt/${category}"
     else
         SPACES="spaces/edm-publishing/db-eddt/${branch}/${category}"
@@ -30,6 +29,6 @@ function export_DO_census {
 
 
 case $1 in
-    export ) export_DO $2 $3 ;;
+    export ) export_DO $2 $3 $4;;
     export_census ) export_DO_census $2 $3 $4 ;;
 esac

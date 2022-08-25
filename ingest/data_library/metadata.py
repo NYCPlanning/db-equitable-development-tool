@@ -11,9 +11,9 @@ class MyDumper(yaml.Dumper):
         return super(MyDumper, self).increase_indent(flow, False)
 
 
-def add_version(dataset: str, version: int):
-    if not version.isnumeric():
-        version = str(version)
+def add_version(dataset: str, version: str):
+    if version.isnumeric():
+        version = int(version)
     metadata["datasets"].append({"name": dataset, "version": version})
 
 

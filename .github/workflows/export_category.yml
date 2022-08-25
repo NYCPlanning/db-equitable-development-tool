@@ -1,9 +1,6 @@
 name: Export Category 
 
 on:
-  push:
-    paths:
-      - ".github/workflows/export_category.yml"
   workflow_dispatch:
     inputs:
       category:

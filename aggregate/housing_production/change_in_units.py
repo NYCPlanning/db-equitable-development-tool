@@ -7,7 +7,7 @@ from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import clean_PUMAs
 
 from ingest.ingestion_helpers import read_from_S3
-from ingest.data_library.metadata import dump_metadata
+
 
 job_type_mapper = {
     "All": "",
@@ -17,26 +17,30 @@ job_type_mapper = {
     "Alteration_Decrease": "alt_decrease",
 }
 
+COLUMNS = [
+    "job_number",
+    "job_inactive",
+    "complete_year",
+    "job_status",
+    "job_type",
+    "boro",
+    "classa_net",
+    "latitude",
+    "longitude",
+]
+
+NUMERICAL_COLS = ["complete_year", "classa_net", "latitude", "longitude", ]
+
 
 def load_housing_data():
 
     df = read_from_S3(
         "dcp_housing",
         "housing_production",
-        cols=[
-            "job_number",
-            "job_inactive",
-            "complete_year",
-            "job_status",
-            "job_type",
-            "boro",
-            "classa_net",
-            "latitude",
-            "longitude",
-        ]
+        cols=COLUMNS
     )
 
-    for c in ["complete_year", "classa_net"]:
+    for c in NUMERICAL_COLS:
         df[c] = pd.to_numeric(df[c])
 
     census10 = pd.read_excel(

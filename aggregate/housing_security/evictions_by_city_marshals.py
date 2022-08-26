@@ -3,7 +3,6 @@ from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import assign_PUMA_col, clean_PUMAs, borough_name_mapper
 
 from ingest.ingestion_helpers import read_from_S3
-from ingest.data_library.metadata import dump_metadata
 
 
 def count_residential_evictions(

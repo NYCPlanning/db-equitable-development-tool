@@ -6,7 +6,6 @@ import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import puma_to_borough
 from ingest.ingestion_helpers import read_from_S3
-from ingest.data_library.metadata import dump_metadata
 
 
 def access_subway_and_access_ADA(geography, save_for_internal_review=False):

@@ -19,42 +19,12 @@ unit_income_levels = [
     "other_income_units",
 ]
 
-COLUMNS = [
-    "project_id",
-    "project_name",
-    "project_start_date",
-    "project_completion_date",
-    "number",
-    "street",
-    "borough",
-    "latitude_(internal)",
-    "longitude_(internal)",
-    "building_completion_date",
-    "reporting_construction_type",
-    "extremely_low_income_units",
-    "very_low_income_units",
-    "low_income_units",
-    "moderate_income_units",
-    "middle_income_units",
-    "other_income_units",
-]
-
-NUMERICAL_COLS = ["extremely_low_income_units",
-                  "very_low_income_units",
-                  "low_income_units",
-                  "moderate_income_units",
-                  "middle_income_units",
-                  "other_income_units",
-                  "latitude_(internal)",
-                  "longitude_(internal)",
-                  ]
-
 
 def load_housing_ny():
     """load the HPD Housing NY Units by Building dataset"""
     df = read_from_S3("hpd_hny_units_by_building",
                       "housing_production",
-                      cols=COLUMNS,
+                      cols=get_columns(),
                       )
 
     df = df.replace(
@@ -69,10 +39,46 @@ def load_housing_ny():
         }
     )
     # casting to numeric for calculation
-    for c in NUMERICAL_COLS:
+    for c in get_numeric_columns():
         df[c] = pd.to_numeric(df[c])
 
     return df
+
+
+def get_columns() -> list:
+    cols = [
+        "project_id",
+        "project_name",
+        "project_start_date",
+        "project_completion_date",
+        "number",
+        "street",
+        "borough",
+        "latitude_(internal)",
+        "longitude_(internal)",
+        "building_completion_date",
+        "reporting_construction_type",
+        "extremely_low_income_units",
+        "very_low_income_units",
+        "low_income_units",
+        "moderate_income_units",
+        "middle_income_units",
+        "other_income_units",
+    ]
+    return cols
+
+
+def get_numeric_columns() -> list:
+    cols = ["extremely_low_income_units",
+            "very_low_income_units",
+            "low_income_units",
+            "moderate_income_units",
+            "middle_income_units",
+            "other_income_units",
+            "latitude_(internal)",
+            "longitude_(internal)",
+            ]
+    return cols
 
 
 def pivot_add_total(df, geography):

@@ -17,30 +17,16 @@ job_type_mapper = {
     "Alteration_Decrease": "alt_decrease",
 }
 
-COLUMNS = [
-    "job_number",
-    "job_inactive",
-    "complete_year",
-    "job_status",
-    "job_type",
-    "boro",
-    "classa_net",
-    "latitude",
-    "longitude",
-]
-
-NUMERICAL_COLS = ["complete_year", "classa_net", "latitude", "longitude", ]
-
 
 def load_housing_data():
 
     df = read_from_S3(
         "dcp_housing",
         "housing_production",
-        cols=COLUMNS
+        cols=get_columns()
     )
 
-    for c in NUMERICAL_COLS:
+    for c in ["complete_year", "classa_net", "latitude", "longitude", ]:
         df[c] = pd.to_numeric(df[c])
 
     census10 = pd.read_excel(
@@ -95,6 +81,21 @@ def load_housing_data():
     )
     census10_["citywide"] = "citywide"
     return df, census10_
+
+
+def get_columns() -> list:
+    cols = [
+        "job_number",
+        "job_inactive",
+        "complete_year",
+        "job_status",
+        "job_type",
+        "boro",
+        "classa_net",
+        "latitude",
+        "longitude",
+    ]
+    return cols
 
 
 def pivot_and_flatten_index(df, geography):

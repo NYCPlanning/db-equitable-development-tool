@@ -1,0 +1,14 @@
+datasets:
+  - name: lpc_historic_district_areas
+    version: 20210712
+  - name: doi_evictions
+    version: 20220103
+  - name: hpd_hny_units_by_building
+    version: 20220315
+  - name: dcp_housing
+    version: '20Q4'
+  - name: dcp_access_ada_subway
+    version: 20220119
+  - name: dcp_access_subway_sbs
+    version: 20220119
+

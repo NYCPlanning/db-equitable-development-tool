@@ -1,9 +1,6 @@
 name: Export Category 
 
 on:
-  push:
-    paths:
-      - ".github/workflows/export_category.yml"
   workflow_dispatch:
     inputs:
       category:
@@ -60,8 +57,7 @@ jobs:
 
       - name: export
         run: |
-          poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} ${{matrix.category}}
+          poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} ${{matrix.category}} 
           ./external_review/export_DO.sh export ${{matrix.geography}} ${{matrix.category}}
-
 
 

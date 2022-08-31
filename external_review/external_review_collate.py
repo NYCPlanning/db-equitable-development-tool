@@ -15,6 +15,7 @@ def collate(geography_level, category):
     final_df = pd.DataFrame()
     for ind_accessor in accessor_functions:
         try:
+            print(f"calculating {ind_accessor.__name__}")
             ind = ind_accessor(geography_level)
             if final_df.empty:
                 final_df = ind

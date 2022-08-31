@@ -5,6 +5,7 @@
 import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import puma_to_borough
+from ingest.ingestion_helpers import read_from_S3
 
 
 def access_subway_and_access_ADA(geography, save_for_internal_review=False):
@@ -43,7 +44,8 @@ def access_subway_and_access_ADA(geography, save_for_internal_review=False):
 
 
 def assign_geo_cols(access_dataset):
-    access_dataset["borough"] = access_dataset.apply(axis=1, func=puma_to_borough)
+    access_dataset["borough"] = access_dataset.apply(
+        axis=1, func=puma_to_borough)
 
     access_dataset["citywide"] = "citywide"
 
@@ -59,15 +61,15 @@ def set_results_for_internal_review(access_df, geography):
 
 
 def calculate_access_fraction(data, gb_col, count_col, fraction_col):
+    data[count_col] = pd.to_numeric(data[count_col])
+    data["total_pop"] = pd.to_numeric(data["total_pop"])
     gb = data.groupby(gb_col).sum()
-
     gb[fraction_col] = ((gb[count_col] / gb["total_pop"]) * 100).round(2)
-
     return gb[[fraction_col]]
 
 
 def load_access_subway_SBS() -> pd.DataFrame:
-    access = pd.read_csv(".library/dcp_access_subway_sbs.csv")
+    access = read_from_S3("dcp_access_subway_sbs", "quality_of_life")
     access = remove_state_code_from_PUMA(access)
     access.rename(
         columns={
@@ -85,7 +87,7 @@ def remove_state_code_from_PUMA(access: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_access_ADA_subway() -> pd.DataFrame:
-    access = pd.read_csv(".library/dcp_access_ada_subway.csv")
+    access = read_from_S3("dcp_access_ada_subway", "quality_of_life")
 
     access = remove_state_code_from_PUMA(access)
     access.rename(

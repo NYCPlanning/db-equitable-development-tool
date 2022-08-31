@@ -2,6 +2,8 @@ import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import assign_PUMA_col, clean_PUMAs, borough_name_mapper
 
+from ingest.ingestion_helpers import read_from_S3
+
 
 def count_residential_evictions(
     geography_level, write_to_internal_review=False, debug=False
@@ -20,7 +22,8 @@ def count_residential_evictions(
 
 
 def load_residential_evictions(debug) -> pd.DataFrame:
-    evictions = pd.read_csv(".library/doi_evictions.csv")
+    evictions = read_from_S3("doi_evictions", "housing_security")
+
     if debug:
         evictions = evictions.iloc[:1000, :]
     residential_evictions = evictions[
@@ -38,6 +41,11 @@ def load_residential_evictions(debug) -> pd.DataFrame:
     residential_evictions["borough"] = residential_evictions["borough_name"].map(
         borough_name_mapper
     )
+
+    num_cols = ["latitude", "longitude"]
+    for c in num_cols:
+        residential_evictions[c] = pd.to_numeric(residential_evictions[c])
+
     return residential_evictions
 
 

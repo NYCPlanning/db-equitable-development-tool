@@ -42,9 +42,6 @@ def calculate_open_space(df, geography):
         aggregated["access_openspace_count"] / aggregated["total_pop_2020"]
     ) * 100
     aggregated = aggregated.round(2)
-
-    print(f"finished calculating {geography}")
-
     return aggregated[["access_openspace_count", "access_openspace_pct"]]
 
 

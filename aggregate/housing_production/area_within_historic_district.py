@@ -4,6 +4,8 @@ from json import load
 import geopandas as gp
 from shapely import wkt
 from utils.PUMA_helpers import puma_to_borough, NYC_PUMA_geographies
+from ingest.ingestion_helpers import read_from_S3
+
 from internal_review.set_internal_review_file import set_internal_review_files
 
 supported_geographies = ["puma", "borough", "citywide"]
@@ -72,7 +74,9 @@ def fraction_PUMA_historic(PUMA, hd):
 
 
 def load_historic_districts_gdf() -> gp.GeoDataFrame:
-    hd = gp.read_file(".library/lpc_historic_district_areas.csv")
+    df = read_from_S3("lpc_historic_district_areas", "housing_production")
+
+    hd = gp.GeoDataFrame(df)
     hd["the_geom"] = hd["the_geom"].apply(wkt.loads)
     hd.set_geometry(col="the_geom", inplace=True, crs="EPSG:4326")
     hd = hd.explode(column="the_geom")

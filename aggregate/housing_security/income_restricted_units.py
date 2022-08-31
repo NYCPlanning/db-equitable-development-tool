@@ -8,6 +8,7 @@ from utils.PUMA_helpers import (
 )
 from utils.CD_helpers import nta_to_puma
 from aggregate.load_aggregated import initialize_dataframe_geo_index
+from ingest.ingestion_helpers import read_from_S3
 
 
 def income_restricted_units(
@@ -65,23 +66,14 @@ def income_restricted_units_hpd(
 
 
 def load_clean_hpd_data():
-    source_data = pd.read_csv(
-        ".library/hpd_hny_units_by_building.csv",
-        usecols=[
-            "project_id",
-            "project_name",
-            "project_start_date",
-            "project_completion_date",
-            "number",
-            "street",
-            "borough",
-            "community_board",
-            "nta_-_neighborhood_tabulation_area",
-            "latitude_(internal)",
-            "longitude_(internal)",
-            "all_counted_units",
-        ],
-    )
+    source_data = read_from_S3("hpd_hny_units_by_building",
+                               "housing_security",
+                               cols=get_columns(),
+                               )
+    # casting to numeric for calculation
+    for c in ["latitude_(internal)", "longitude_(internal)", "all_counted_units"]:
+        source_data[c] = pd.to_numeric(source_data[c])
+
     source_data.rename(
         columns={
             "nta_-_neighborhood_tabulation_area": "nta",
@@ -94,3 +86,21 @@ def load_clean_hpd_data():
     source_data = nta_to_puma(source_data, "nta")
 
     return source_data
+
+
+def get_columns() -> list:
+    cols = [
+        "project_id",
+        "project_name",
+        "project_start_date",
+        "project_completion_date",
+        "number",
+        "street",
+        "borough",
+        "community_board",
+        "nta_-_neighborhood_tabulation_area",
+        "latitude_(internal)",
+        "longitude_(internal)",
+        "all_counted_units",
+    ]
+    return cols

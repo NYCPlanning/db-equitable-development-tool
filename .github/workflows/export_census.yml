@@ -49,7 +49,6 @@ jobs:
       - name: Poetry Install
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          
           poetry install      
 
       - uses: r-lib/actions/setup-r@v1

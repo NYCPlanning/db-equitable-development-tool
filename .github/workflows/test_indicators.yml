@@ -37,7 +37,6 @@ jobs:
       - name: Poetry Install
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          
           poetry install
       
       - name: dataloading

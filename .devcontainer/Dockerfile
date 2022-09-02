@@ -21,7 +21,7 @@ RUN apt-get update
 RUN apt-get -y install r-base
 # Install poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV PATH="~/.local/bin:$PATH"
+ENV PATH="~/.poetry/bin:$PATH"
 
 RUN /usr/local/bin/python3 -m pip install -U bandit
 RUN /usr/local/bin/python3 -m pip install -U black

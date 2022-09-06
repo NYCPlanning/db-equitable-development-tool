@@ -25,12 +25,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y python3-pip python3-distutils
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+          curl -sSL https://install.python-poetry.org | python3 -
 
       - name: Poetry Install
         run: |
-          . $HOME/.poetry/env
-          pip install poetry
+          export PATH=$PATH:$HOME/.local/bin
           poetry install
 
       - uses: r-lib/actions/setup-r@v1
@@ -45,5 +44,5 @@ jobs:
 
       - name: Pytest
         run: |
-          . $HOME/.poetry/env
+          export PATH=$PATH:$HOME/.local/bin
           poetry run pytest -s -q --all_data -m test_aggregation tests/PUMS 

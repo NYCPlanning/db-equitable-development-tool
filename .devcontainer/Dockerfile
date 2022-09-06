@@ -20,9 +20,8 @@ RUN apt-get update
 #Install R
 RUN apt-get -y install r-base
 # Install poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="~/.poetry/bin:$PATH"
-ENV PATH="~/.local/bin:$PATH"
 
 RUN /usr/local/bin/python3 -m pip install -U bandit
 RUN /usr/local/bin/python3 -m pip install -U black

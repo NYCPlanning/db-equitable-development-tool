@@ -40,7 +40,7 @@ jobs:
           sudo apt update
           sudo apt install -y python3-pip python3-distutils
           sudo apt install -y gdal-bin
-          curl -sSL https://install.python-poetry.org | python3 - poetry --version
+          curl -sSL https://install.python-poetry.org | python3 - --version
           curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x mc
           sudo mv ./mc /usr/bin

@@ -28,14 +28,16 @@ def lottery_data(geography: str, indicator: str):
 
 
 def load_lottery_data(geography: str, indicator: str):
+    read_csv_kwargs = {
+        "index_col": 0,
+        "usecols": list(range(7)),
+    }
     if geography == "citywide":
+        read_csv_kwargs["header"] = 3
+        read_csv_kwargs["nrows"] = 2
         citywide = (
             pd.read_csv(
-                "resources/housing_security/housing_lottery_raw.csv",
-                header=3,
-                index_col=0,
-                usecols=list(range(7)),
-                nrows=2,
+                "resources/housing_security/housing_lottery_raw.csv", **read_csv_kwargs
             )
             .replace(",", "", regex=True)
             .astype(int)
@@ -50,12 +52,8 @@ def load_lottery_data(geography: str, indicator: str):
         rv = citywide.loc[[indicator]]
         rv.rename({indicator: "citywide"}, inplace=True)
     if geography == "borough":
-        read_csv_kwargs = {
-            "header": 8,
-            "index_col": 0,
-            "usecols": list(range(7)),
-            "nrows": 12,
-        }
+        read_csv_kwargs["nrows"] = 12
+        read_csv_kwargs["header"] = 8
         borough_data = pd.read_csv(
             "resources/housing_security/housing_lottery_raw.csv",
             **read_csv_kwargs,
@@ -66,6 +64,10 @@ def load_lottery_data(geography: str, indicator: str):
             rv = borough_data.iloc[7:, :]
         rv = rv.replace(",", "", regex=True).astype(int, errors="ignore")
         rv.rename(index=borough_name_mapper, inplace=True)
+
+    if geography == "puma":
+        if indicator == "housing_lottery_applications":
+            puma_data = pd.read_csv()
     return rv
 
 

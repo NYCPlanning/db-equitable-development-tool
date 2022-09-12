@@ -29,6 +29,7 @@ def lottery_data(geography: str, indicator: str):
 
 def load_lottery_data(geography: str, indicator: str):
     read_csv_kwargs = {
+        "filepath_or_buffer": "resources/housing_security/housing_lottery_raw.csv",
         "index_col": 0,
         "usecols": list(range(7)),
     }
@@ -36,11 +37,7 @@ def load_lottery_data(geography: str, indicator: str):
         read_csv_kwargs["header"] = 3
         read_csv_kwargs["nrows"] = 2
         citywide = (
-            pd.read_csv(
-                "resources/housing_security/housing_lottery_raw.csv", **read_csv_kwargs
-            )
-            .replace(",", "", regex=True)
-            .astype(int)
+            pd.read_csv(**read_csv_kwargs).replace(",", "", regex=True).astype(int)
         )
         citywide.rename(
             index={
@@ -55,7 +52,6 @@ def load_lottery_data(geography: str, indicator: str):
         read_csv_kwargs["nrows"] = 12
         read_csv_kwargs["header"] = 8
         borough_data = pd.read_csv(
-            "resources/housing_security/housing_lottery_raw.csv",
             **read_csv_kwargs,
         )
         if indicator == "housing_lottery_applications":
@@ -66,8 +62,22 @@ def load_lottery_data(geography: str, indicator: str):
         rv.rename(index=borough_name_mapper, inplace=True)
 
     if geography == "puma":
+        read_csv_kwargs["index_col"] = None
+        read_csv_kwargs["nrows"] = 59
         if indicator == "housing_lottery_applications":
-            puma_data = pd.read_csv()
+            read_csv_kwargs["header"] = 24
+        elif indicator == "housing_lottery_leases":
+            read_csv_kwargs["header"] = 89
+        puma_data = (
+            pd.read_csv(**read_csv_kwargs)
+            .replace(",", "", regex=True)
+            .astype(int, errors="ignore")
+        )
+        puma_data["Community District"] = puma_data["Community District"].astype(str)
+        puma_data = community_district_to_PUMA(
+            puma_data, "Community District", CD_abbr_type="numeric_borough"
+        )
+        rv = puma_data.groupby("puma").sum(min_count=1)
     return rv
 
 

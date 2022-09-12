@@ -1,5 +1,5 @@
 import pandas as pd
-from utils.CD_helpers import community_district_to_PUMA
+from utils.CD_helpers import community_district_to_PUMA, borough_name_mapper
 from utils.PUMA_helpers import census_races
 from aggregate.load_aggregated import initialize_dataframe_geo_index
 
@@ -49,7 +49,23 @@ def load_lottery_data(geography: str, indicator: str):
         )
         rv = citywide.loc[[indicator]]
         rv.rename({indicator: "citywide"}, inplace=True)
-
+    if geography == "borough":
+        read_csv_kwargs = {
+            "header": 8,
+            "index_col": 0,
+            "usecols": list(range(7)),
+            "nrows": 12,
+        }
+        borough_data = pd.read_csv(
+            "resources/housing_security/housing_lottery_raw.csv",
+            **read_csv_kwargs,
+        )
+        if indicator == "housing_lottery_applications":
+            rv = borough_data.iloc[1:6, :]
+        if indicator == "housing_lottery_leases":
+            rv = borough_data.iloc[7:, :]
+        rv = rv.replace(",", "", regex=True).astype(int, errors="ignore")
+        rv.rename(index=borough_name_mapper, inplace=True)
     return rv
 
 

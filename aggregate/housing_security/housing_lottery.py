@@ -13,7 +13,8 @@ def housing_lottery_applications(geography) -> pd.DataFrame:
 
 def housing_lottery_leases(geography) -> pd.DataFrame:
     final = initialize_dataframe_geo_index(geography)
-    final["housing_lottery_leases"] = None
+    leases = lottery_data(geography, "housing_lottery_leases")
+    final = final.merge(leases, left_index=True, right_index=True)
     return final
 
 

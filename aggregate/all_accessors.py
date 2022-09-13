@@ -39,7 +39,10 @@ from aggregate.housing_security.pums_2000_hsq_housing_tenure import (
 from aggregate.housing_security.units_housing_tenure import units_housing_tenure
 from aggregate.housing_security.units_overcrowd import units_overcrowd
 from aggregate.housing_security.nycha_tenants import nycha_tenants
-
+from aggregate.housing_security.housing_lottery import (
+    housing_lottery_applications,
+    housing_lottery_leases,
+)
 
 # Quality of life imports
 from aggregate.quality_of_life.access_to_jobs import access_to_jobs
@@ -111,7 +114,9 @@ housing_security_accessors = [
     households_rent_burden,
     rent_median,
     units_overcrowd,
-    nycha_tenants
+    nycha_tenants,
+    housing_lottery_applications,
+    housing_lottery_leases,
 ]
 
 demographics_accessors = [

@@ -3,10 +3,10 @@ name: Export Category
 on:
   workflow_dispatch:
     inputs:
-      type: choice
       category:
         description: 'Pick Category to Export. This corresponds to tabs in the 1572-B data matrix '
         required: true
+        type: choice
         options:
         - housing_production
         - quality_of_life
@@ -14,6 +14,7 @@ on:
       geography:
         description: Pick Geography to Export (citywide, borough, puma).
         required: False
+        type: choice
         options:
         - citywide
         - borough

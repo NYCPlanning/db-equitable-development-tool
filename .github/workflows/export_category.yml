@@ -11,14 +11,7 @@ on:
         - housing_production
         - quality_of_life
         - housing_security
-#    geography:
-#        description: 'Pick Geography to Export.'
-#        required: False
-#        type: choice
-#        options:
-#        - citywide
-#        - borough
-#        - puma
+
 
 jobs:
   export:
@@ -34,10 +27,6 @@ jobs:
           - puma
           - borough
           - citywide
-#        category:
-#          - housing_production
-#          - quality_of_life
-#          - housing_security
  
     steps:
       - uses: actions/checkout@v2

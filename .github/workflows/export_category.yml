@@ -11,14 +11,14 @@ on:
         - housing_production
         - quality_of_life
         - housing_security
-      geography:
-        description: 'Pick Geography to Export (citywide, borough, puma).'
-        required: False
-        type: choice
-        options:
-        - citywide
-        - borough
-        - puma
+#    geography:
+#        description: 'Pick Geography to Export.'
+#        required: False
+#        type: choice
+#        options:
+#        - citywide
+#        - borough
+#        - puma
 
 jobs:
   export:
@@ -28,16 +28,16 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.DO_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SECRET_ACCESS_KEY }}
       
-#    strategy:
-#      matrix:
-#        geography:
-#          - puma
-#          - borough
-#          - citywide
-#        category:
-#          - housing_production
-#          - quality_of_life
-#          - housing_security
+    strategy:
+      matrix:
+        geography:
+          - puma
+          - borough
+          - citywide
+        category:
+          - housing_production
+          - quality_of_life
+          - housing_security
  
     steps:
       - uses: actions/checkout@v2

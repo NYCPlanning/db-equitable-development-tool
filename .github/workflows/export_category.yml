@@ -12,7 +12,7 @@ on:
         - quality_of_life
         - housing_security
       geography:
-        description: Pick Geography to Export (citywide, borough, puma).
+        description: 'Pick Geography to Export (citywide, borough, puma).'
         required: False
         type: choice
         options:

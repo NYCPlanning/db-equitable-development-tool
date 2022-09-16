@@ -1,0 +1,48 @@
+name: Test PUMS Aggregation
+
+on:
+  workflow_dispatch:
+  # push:
+  #   paths:
+  #     - "aggregate/PUMS/**.py"
+  #     - "tests/PUMS/**.py"
+  #     - ".github/workflows/test_PUMS_aggregation.yml"
+  #     - "poetry.lock"
+  #     - "pyproject.toml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9.7'
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip python3-distutils
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Poetry Install
+        run: |
+          export PATH=$PATH:$HOME/.local/bin
+          poetry install
+
+      - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '4.1.2' # The R version to download (if necessary) and use.
+
+      - name: Add dependencies
+        run: |
+          install.packages('survey')
+        shell: Rscript {0}
+
+
+      - name: Pytest
+        run: |
+          export PATH=$PATH:$HOME/.local/bin
+          poetry run pytest -s -q --all_data -m test_aggregation tests/PUMS 

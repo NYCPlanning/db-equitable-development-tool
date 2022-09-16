@@ -83,6 +83,7 @@ ipython_config.py
 
 # pyenv
 .python-version
+pyvenv.cfg
 
 # pipenv
 #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
@@ -127,3 +128,32 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#R History 
+.Rhistory
+
+#DS Store
+.DS_Store
+
+# Cached info
+data/
+logs/
+
+# Local Output
+.output/
+.staging/
+
+#Cached data library datasets
+.library/
+
+# Files to be uploaded to DO
+.staging/
+
+#
+.vscode/
+
+#Local Docker testing
+Dockerfile
+
+# scratch notebook
+notebooks/scratch.ipynb

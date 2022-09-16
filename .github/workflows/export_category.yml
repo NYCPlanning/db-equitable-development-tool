@@ -68,6 +68,6 @@ jobs:
       - name: export
         run: |
           poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} ${{github.event.inputs.category}}  
-          ./external_review/export_DO.sh export ${{matrix.geography}} ${{matrix.category}}
+          ./external_review/export_DO.sh export ${{matrix.geography}} ${{github.event.inputs.category}}
 
 

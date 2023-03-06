@@ -61,9 +61,8 @@ def nycha_tenants(geography: str, write_to_internal_review=False):
 
 
 def load_clean_nycha_data():
-
     read_excel_arg = {
-        "io": "resources/housing_security/Equitable.Development.Data.Tool.-.Displacement.Risk.Index.2-8-2022.1.xlsx",
+        "io": "resources/housing_security/resources/housing_security/Equitable Development Data Tool - NYCHA - 1-27-2023 Final.xlsx",
         "sheet_name": "PUMA",
         "usecols": "A, F:Q",
         "nrows": 41,
@@ -87,7 +86,6 @@ def load_clean_nycha_data():
 
 
 def get_percentage(df: pd.DataFrame):
-
     for r in race_labels:
         if r == "":
             df["nycha_tenants_pct"] = df["nycha_tenants_count"] / df["pop_count"] * 100

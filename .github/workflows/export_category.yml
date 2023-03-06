@@ -40,23 +40,21 @@ jobs:
           sudo apt update
           sudo apt install -y python3-pip python3-distutils
           sudo apt install -y gdal-bin
-          curl -sSL https://install.python-poetry.org | python3 -
           curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x mc
           sudo mv ./mc /usr/bin
           mc config host add spaces $AWS_S3_ENDPOINT $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --api S3v4
 
-      - name: Poetry Install
+      - name: Python packages install
         run: |
-          export PATH=$PATH:$HOME/.local/bin
-          poetry install      
+          python3 -m pip install --requirement requirements.txt
 
       - name: dataloading
         run: ./ingest/data_library/dataloading.sh
 
       - name: export
         run: |
-          poetry run python3 -m external_review.external_review_collate ${{matrix.geography}} ${{github.event.inputs.category}}  
+          python3 -m external_review.external_review_collate ${{matrix.geography}} ${{github.event.inputs.category}}  
           ./external_review/export_DO.sh export ${{matrix.geography}} ${{github.event.inputs.category}}
 
 

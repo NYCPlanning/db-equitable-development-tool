@@ -62,7 +62,7 @@ def nycha_tenants(geography: str, write_to_internal_review=False):
 
 def load_clean_nycha_data():
     read_excel_arg = {
-        "io": "resources/housing_security/nycha_tenants_processed_2023.xlsx",
+        "io": "resources/housing_security/nycha_tenants/nycha_tenants_processed_2023.xlsx",
         "sheet_name": "PUMA",
         "usecols": "A, F:Q",
         "nrows": 41,

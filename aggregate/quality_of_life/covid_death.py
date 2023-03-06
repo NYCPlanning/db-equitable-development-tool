@@ -70,7 +70,7 @@ def calculate_rate_by_100k(new_col, aggregated):
 
 def load_clean_source_data():
     source_data = pd.read_excel(
-        "resources/quality_of_life/covid_deaths_processed_2023.xlsx",
+        "resources/quality_of_life/covid_death/covid_death_processed_2023.xlsx",
         sheet_name="Sheet 1",
     )
     # print(source_data)

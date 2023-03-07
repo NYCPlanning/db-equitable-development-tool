@@ -158,5 +158,5 @@ Dockerfile
 # scratch notebook
 notebooks/scratch.ipynb
 
-# Excel file artifacts
+# Temporary excel files
 ~*.xlsx

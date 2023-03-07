@@ -3,6 +3,10 @@ name: Test PUMS Download
 on:
   workflow_dispatch:
   push:
+    paths:
+      - "ingest/PUMS/**.py"
+      - "tests/PUMS/**.py"
+      - ".github/workflows/test_PUMS_download.yml"
 
 jobs:
   test:

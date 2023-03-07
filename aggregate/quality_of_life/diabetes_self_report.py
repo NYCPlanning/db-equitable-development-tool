@@ -16,7 +16,6 @@ boro_mapper = {
 
 
 def health_diabetes(geography: str, write_to_internal_review=False):
-
     clean_df = load_clean_source_data("diabetes", geography)
 
     clean_df["lower_pct_moe"] = clean_df["Lower 95% CI"] - clean_df["pct"]
@@ -34,7 +33,6 @@ def health_diabetes(geography: str, write_to_internal_review=False):
 
 
 def health_self_reported(geography: str, write_to_internal_review=False):
-
     clean_df = load_clean_source_data("self_reported", geography)
 
     clean_df["lower_pct_moe"] = clean_df["Lower 95% CI"] - clean_df["pct"]
@@ -54,11 +52,16 @@ def health_self_reported(geography: str, write_to_internal_review=False):
 def load_clean_source_data(indicator: str, geography: str):
     assert geography in ["citywide", "borough", "puma"]
 
+    # TODO revise to parse new processed file
     # header row and number of rows to use for each geography
-    header_num_rows = {"citywide": (78, 1), "borough": (70, 5), "puma": (8, 59)}
+    header_num_rows = {
+        "citywide": (78, 1),
+        "borough": (70, 5),
+        "puma": (8, 59),
+    }
 
     read_excel_arg = {
-        "io": "resources/quality_of_life/CD.level.Diabetes.Self-reported.Health_CHS_1516.1.xlsx",
+        "io": "resources/quality_of_life/diabetes_self_report/diabetes_self_report_processed_2023.xlsx",
         "sheet_name": ind_sheet[indicator],
         "usecols": "A:H",
         "header": header_num_rows[geography][0],

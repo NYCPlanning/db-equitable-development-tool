@@ -2,11 +2,11 @@ name: Test PUMS Aggregation
 
 on:
   workflow_dispatch:
-  # push:
-  #   paths:
-  #     - "aggregate/PUMS/**.py"
-  #     - "tests/PUMS/**.py"
-  #     - ".github/workflows/test_PUMS_aggregation.yml"
+  push:
+    paths:
+      - "aggregate/PUMS/**.py"
+      - "tests/PUMS/**.py"
+      - ".github/workflows/test_PUMS_aggregation.yml"
 
 jobs:
   test:

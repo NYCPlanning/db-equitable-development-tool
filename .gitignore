@@ -143,7 +143,7 @@ logs/
 .output/
 .staging/
 
-#Cached data library datasets
+# Cached data library datasets
 .library/
 
 # Files to be uploaded to DO
@@ -157,3 +157,6 @@ Dockerfile
 
 # scratch notebook
 notebooks/scratch.ipynb
+
+# Excel file artifacts
+~*.xlsx

@@ -13,7 +13,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
       AWS_S3_ENDPOINT: ${{ secrets.DO_S3_ENDPOINT }}

@@ -9,22 +9,31 @@ SOURCE_DATA_URL_PUMA_CROSS = "https://www1.nyc.gov/assets/planning/download/offi
 # TODO resolve issue with new data's racial groups
 # new data seems to have replaced all caolumns for Other
 # with new racial groups
-races = ["ALL", "ASN", "BLK", "HIS", "OTH", "WHT"]
+RACIAL_GROUPS = [
+    "ALL",
+    "ASN",
+    "BLK",
+    "HIS",
+    # "OTH",
+    "WHT",
+]
 
 
 def calculate_edu_outcome(df: pd.DataFrame, geography: str):
     agg = df.groupby(geography).sum().reset_index()
 
-    for r in races:
-        agg[f"E38PRFP{r}"] = agg[f"E38PRFN{r}"] / agg[f"E38TEST{r}"]  # ELA
-        agg[f"M38PRFP{r}"] = agg[f"M38PRFN{r}"] / agg[f"M38TEST{r}"]  # MATH
-        agg[f"GRAD17P{r}"] = agg[f"GRAD17N{r}"] / agg[f"GRAD17C{r}"]  # graduation
+    for group in RACIAL_GROUPS:
+        agg[f"E38PRFP{group}"] = agg[f"E38PRFN{group}"] / agg[f"E38TEST{group}"]  # ELA
+        agg[f"M38PRFP{group}"] = agg[f"M38PRFN{group}"] / agg[f"M38TEST{group}"]  # MATH
+        agg[f"GRAD17P{group}"] = (
+            agg[f"GRAD17N{group}"] / agg[f"GRAD17C{group}"]
+        )  # graduation
 
     cols = (
         [geography]
-        + [f"E38PRFP{r}" for r in races]
-        + [f"M38PRFP{r}" for r in races]
-        + [f"GRAD17P{r}" for r in races]
+        + [f"E38PRFP{group}" for group in RACIAL_GROUPS]
+        + [f"M38PRFP{group}" for group in RACIAL_GROUPS]
+        + [f"GRAD17P{group}" for group in RACIAL_GROUPS]
     )
 
     result = agg[cols].set_index(geography).apply(lambda x: x * 100).round(2)
@@ -40,16 +49,16 @@ def rename_fields(df: pd.DataFrame, geography: str):
         "ASN": "anh_",
         "BLK": "bnh_",
         "HIS": "hsp_",
-        "OTH": "onh_",
+        # "OTH": "onh_",
         "WHT": "wnh_",
     }
 
-    for r in races:
+    for group in RACIAL_GROUPS:
         df.rename(
             columns={
-                f"E38PRFP{r}": f"edu_ela_{race_rename[r]}pct",
-                f"M38PRFP{r}": f"edu_math_{race_rename[r]}pct",
-                f"GRAD17P{r}": f"edu_graduation_{race_rename[r]}pct",
+                f"E38PRFP{group}": f"edu_ela_{race_rename[group]}pct",
+                f"M38PRFP{group}": f"edu_math_{race_rename[group]}pct",
+                f"GRAD17P{group}": f"edu_graduation_{race_rename[group]}pct",
             },
             inplace=True,
         )

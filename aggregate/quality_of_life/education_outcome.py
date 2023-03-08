@@ -1,9 +1,14 @@
 import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 
+SOURCE_DATA_PATH_EDU_OUTCOME = (
+    "resources/quality_of_life/education_outcome/education_outcome_processed_2023.xlsx"
+)
+SOURCE_DATA_URL_PUMA_CROSS = "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx"
+
 # TODO resolve issue with new data's racial groups
 # new data seems to have replaced all caolumns for Other
-# with new racial groups 
+# with new racial groups
 races = ["ALL", "ASN", "BLK", "HIS", "OTH", "WHT"]
 
 
@@ -56,7 +61,7 @@ def get_education_outcome(
     geography: str, write_to_internal_review=False
 ) -> pd.DataFrame:
     puma_cross = pd.read_excel(
-        "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx",
+        SOURCE_DATA_URL_PUMA_CROSS,
         sheet_name="NTA in PUMA_",
         header=6,
         dtype=str,
@@ -70,7 +75,7 @@ def get_education_outcome(
 
     # Read in source and do some cleanning and merging with puma cross walk
     raw_edu_outcome = pd.read_excel(
-        "resources/quality_of_life/education_outcome_processed_2023.xlsx",
+        SOURCE_DATA_PATH_EDU_OUTCOME,
         sheet_name="5_StudentPerformance",
         usecols="A:M,AL:AW,CN:CY",
         header=1,

@@ -1,11 +1,13 @@
 import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 
+# TODO resolve issue with new data's racial groups
+# new data seems to have replaced all caolumns for Other
+# with new racial groups 
 races = ["ALL", "ASN", "BLK", "HIS", "OTH", "WHT"]
 
 
 def calculate_edu_outcome(df: pd.DataFrame, geography: str):
-
     agg = df.groupby(geography).sum().reset_index()
 
     for r in races:
@@ -28,7 +30,6 @@ def calculate_edu_outcome(df: pd.DataFrame, geography: str):
 
 
 def rename_fields(df: pd.DataFrame, geography: str):
-
     race_rename = {
         "ALL": "",
         "ASN": "anh_",
@@ -39,7 +40,6 @@ def rename_fields(df: pd.DataFrame, geography: str):
     }
 
     for r in races:
-
         df.rename(
             columns={
                 f"E38PRFP{r}": f"edu_ela_{race_rename[r]}pct",
@@ -52,8 +52,9 @@ def rename_fields(df: pd.DataFrame, geography: str):
     return None
 
 
-def get_education_outcome(geography: str, write_to_internal_review=False) -> pd.DataFrame:
-
+def get_education_outcome(
+    geography: str, write_to_internal_review=False
+) -> pd.DataFrame:
     puma_cross = pd.read_excel(
         "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx",
         sheet_name="NTA in PUMA_",
@@ -87,8 +88,7 @@ def get_education_outcome(geography: str, write_to_internal_review=False) -> pd.
 
     if write_to_internal_review:
         set_internal_review_files(
-            [(result, 'education_outcome.csv', geography)],
-            category="quality_of_life"
+            [(result, "education_outcome.csv", geography)], category="quality_of_life"
         )
 
     return result

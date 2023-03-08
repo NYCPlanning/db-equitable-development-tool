@@ -77,7 +77,6 @@ def get_education_outcome(
     raw_edu_outcome = pd.read_excel(
         SOURCE_DATA_PATH_EDU_OUTCOME,
         sheet_name="5_StudentPerformance",
-        usecols="A:M,AL:AW,CN:CY",
         header=1,
     )
 

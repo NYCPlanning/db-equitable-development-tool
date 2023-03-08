@@ -52,7 +52,7 @@ def health_self_reported(geography: str, write_to_internal_review=False):
 def load_clean_source_data(indicator: str, geography: str):
     assert geography in ["citywide", "borough", "puma"]
 
-    # TODO revise to parse new processed file
+    # TODO revise to parse new processed file using borough column rather than row numbers
     # header row and number of rows to use for each geography
     header_num_rows = {
         "citywide": (78, 1),

@@ -4,7 +4,10 @@ import pandas as pd
 from utils.CD_helpers import community_district_to_PUMA
 from internal_review.set_internal_review_file import set_internal_review_files
 
-ind_sheet = {"diabetes": "Diabetes", "self_reported": "Self Report Health"}
+ind_sheet = {
+    "diabetes": "Diabetes",
+    "self_reported": "Self Report Health",
+}
 
 boro_mapper = {
     "Bronx": "BX",
@@ -52,20 +55,15 @@ def health_self_reported(geography: str, write_to_internal_review=False):
 def load_clean_source_data(indicator: str, geography: str):
     assert geography in ["citywide", "borough", "puma"]
 
-    # TODO revise to parse new processed file using borough column rather than row numbers
-    # header row and number of rows to use for each geography
-    header_num_rows = {
-        "citywide": (78, 1),
-        "borough": (70, 5),
-        "puma": (8, 59),
+    indicator_columns = {
+        "diabetes": ["A:C", "J:O"],
+        "self_reported": "A:H",
     }
 
     read_excel_arg = {
         "io": "resources/quality_of_life/diabetes_self_report/diabetes_self_report_processed_2023.xlsx",
-        "sheet_name": ind_sheet[indicator],
-        "usecols": "A:H",
-        "header": header_num_rows[geography][0],
-        "nrows": header_num_rows[geography][1],
+        "sheet_name": "DCHP_Diabetes_SelfRepHealth",
+        "usecols": indicator_columns[indicator],
     }
 
     df = pd.read_excel(**read_excel_arg)
@@ -73,14 +71,18 @@ def load_clean_source_data(indicator: str, geography: str):
     if geography == "puma":
         boro = {"2": "BX", "3": "BK", "1": "MN", "4": "QN", "5": "SI"}
 
+        df = df[df["Borough"] in boro_mapper.keys()]
+
         df["CD Code"] = df["CD Number"].astype(str).str[0].map(boro) + df[
             "CD Number"
         ].astype(str).str[-2:].astype(int).astype(str)
         df = community_district_to_PUMA(df, CD_col="CD Code")
         df.drop_duplicates(subset=["puma"], keep="first", inplace=True)
     elif geography == "borough":
+        df = df[df["Borough"] == "NYC"]
         df["borough"] = df["Borough Name"].str.strip().map(boro_mapper)
     else:
+        df = df[df["Borough"] == "City"]
         df["citywide"] = "citywide"
 
     df.set_index(geography, inplace=True)

@@ -49,7 +49,9 @@ def test_PUMS_includes_replicate_weights(local_loader):
 @pytest.mark.parametrize("local_loader", local_loaders)
 @pytest.mark.test_download
 def test_PUMA_column_present(local_loader):
-    assert "PUMA" in local_loader.by_person.columns, "PUMA column not present"
+    assert (
+        "PUMA" in local_loader.by_person.columns.str.upper()
+    ), "PUMA column not present"
 
 
 @pytest.mark.parametrize("local_loader", local_loaders)

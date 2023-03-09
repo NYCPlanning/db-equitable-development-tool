@@ -2,17 +2,16 @@ name: Test PUMS Aggregation
 
 on:
   workflow_dispatch:
+  # NOTE: DISABLING THESE TESTS
   # push:
   #   paths:
   #     - "aggregate/PUMS/**.py"
   #     - "tests/PUMS/**.py"
   #     - ".github/workflows/test_PUMS_aggregation.yml"
-  #     - "poetry.lock"
-  #     - "pyproject.toml"
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -25,12 +24,10 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y python3-pip python3-distutils
-          curl -sSL https://install.python-poetry.org | python3 -
 
-      - name: Poetry Install
+      - name: Python packages install
         run: |
-          export PATH=$PATH:$HOME/.local/bin
-          poetry install
+          python3 -m pip install --requirement requirements.txt
 
       - uses: r-lib/actions/setup-r@v1
         with:
@@ -45,4 +42,4 @@ jobs:
       - name: Pytest
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          poetry run pytest -s -q --all_data -m test_aggregation tests/PUMS 
+          python3 -m pytest -s -q --all_data -m test_aggregation tests/PUMS 

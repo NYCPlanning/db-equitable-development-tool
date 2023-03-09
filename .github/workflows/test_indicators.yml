@@ -1,19 +1,12 @@
 name: Test Indicators  
 
 on:
-  # workflow_dispatch:
+  workflow_dispatch:
   push:
-    paths:
-      - "aggregate/**.py"
-      - "tests/**.py"
-      - "external_review/**.py"
-      - ".github/workflows/test_indicators.yml"
-      - "poetry.lock"
-      - "pyproject.toml"
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
       AWS_S3_ENDPOINT: ${{ secrets.DO_S3_ENDPOINT }}
@@ -28,16 +21,14 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y python3-pip python3-distutils
-          curl -sSL https://install.python-poetry.org | python3 -
           curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
           chmod +x mc
           sudo mv ./mc /usr/bin
           mc config host add spaces $AWS_S3_ENDPOINT $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --api S3v4
 
-      - name: Poetry Install
+      - name: Python packages install
         run: |
-          export PATH=$PATH:$HOME/.local/bin
-          poetry install
+          python3 -m pip install --requirement requirements.txt
       
       - name: dataloading
         run: ./ingest/data_library/dataloading.sh
@@ -45,4 +36,4 @@ jobs:
       - name: Pytest
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          poetry run pytest -v tests/general_indicator_tests
+          python3 -m pytest -v tests/general_indicator_tests

@@ -116,22 +116,22 @@ def rename_reorder_columns(df: pd.DataFrame, ind_name: str, geography: str):
 
 
 def load_clean_source_data(geography: str):
-
     read_excel_args = {
         "puma": {
-            "io": "resources/quality_of_life/QOL_health_infant_premature_overdose_PUMA.xlsx",
+            "io": "resources/quality_of_life/health_mortality/DOHMH_death rate and overdose.xlsx",
+            "sheet_name": "PUMA",
             "header": 1,
             "nrows": 55,
             "dtype": {"PUMA": str},
         },
         "borough": {
-            "io": "resources/quality_of_life/QOL_health_infant_premature_overdose_borough.xlsx",
+            "io": "resources/quality_of_life/health_mortality/DOHMH_death rate and overdose.xlsx",
             "sheet_name": "Borough",
             "header": 1,
             "nrows": 5,
         },
         "citywide": {
-            "io": "resources/quality_of_life/QOL_health_infant_premature_overdose_borough.xlsx",
+            "io": "resources/quality_of_life/health_mortality/DOHMH_death rate and overdose.xlsx",
             "sheet_name": "City",
             "header": 1,
             "nrows": 1,

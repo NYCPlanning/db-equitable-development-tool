@@ -9,8 +9,6 @@ on:
       - "external_review/**.py"
       - "resources/**"
       - ".github/workflows/test_indicators.yml"
-      - "poetry.lock"
-      - "pyproject.toml"
 
 jobs:
   test:

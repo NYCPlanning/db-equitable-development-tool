@@ -17,7 +17,9 @@ def add_leading_zero_PUMA(df: DataFrame) -> DataFrame:
 
 
 def read_datasets_yml() -> dict:
-    with open(Path(__file__).parent.parent / ("ingest/data_library/datasets.yml"), "r") as f:
+    with open(
+        Path(__file__).parent.parent / ("ingest/data_library/datasets.yml"), "r"
+    ) as f:
         return yaml.safe_load(f.read())["datasets"]
 
 
@@ -31,8 +33,25 @@ def get_dataset_version(name: str) -> str:
 def read_from_S3(name: str, category: str, cols: list = None) -> pd.DataFrame:
     read_version = get_dataset_version(name)
     df = pd.read_csv(
-        f"{BASE_URL}/{name}/{read_version}/{name}.csv", dtype=str, index_col=False, usecols=cols
+        f"{BASE_URL}/{name}/{read_version}/{name}.csv",
+        dtype=str,
+        index_col=False,
+        usecols=cols,
     )
     add_version(dataset=name, version=read_version)
     dump_metadata(category)
+    return df
+
+
+def read_from_excel(
+    file_path,
+    sheet_name: str = None,
+    columns: str = None,
+) -> pd.DataFrame:
+    read_excel_args = {
+        "io": file_path,
+        "sheet_name": sheet_name,
+        "usecols": columns,
+    }
+    df = pd.read_excel(**read_excel_args)
     return df

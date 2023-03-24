@@ -4,7 +4,7 @@ from ingest.ingestion_helpers import read_from_excel
 from utils.CD_helpers import community_district_to_PUMA, borough_name_mapper
 from internal_review.set_internal_review_file import set_internal_review_files
 
-SOURCE_DATA_FILE = "resources/quality_of_life/diabetes_self_report/diabetes_self_report_proc023.xlsx"
+SOURCE_DATA_FILE = "resources/quality_of_life/diabetes_self_report/diabetes_self_report_processed_2023.xlsx"
 SOURCE_SHEET_NAME = "DCHP_Diabetes_SelfRepHealth"
 SOURCE_INDICATOR_COLUMNS = {
     "diabetes": "A:C, J:M",

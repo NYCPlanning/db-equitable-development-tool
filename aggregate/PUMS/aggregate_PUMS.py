@@ -60,9 +60,9 @@ class PUMSAggregator(BaseAggregator):
 
     def __init__(
         self,
+        year,
         variable_types,
         limited_PUMA,
-        year,
         requery,
         household=False,
         geo_col="puma",

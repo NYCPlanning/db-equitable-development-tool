@@ -14,8 +14,8 @@ class PUMSMedianDemographics(PUMSMedians):
 
     def __init__(
         self,
+        year:int,
         limited_PUMA=False,
-        year=2019,
         requery=False,
         add_MOE=True,
         keep_SE=False,

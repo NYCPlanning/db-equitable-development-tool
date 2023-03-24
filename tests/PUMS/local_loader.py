@@ -13,11 +13,11 @@ class LocalLoader:
     Possible to-do: return ingestor/aggregator instead of data like load_fraction_aggregator
     """
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, year: int = 2021) -> None: # seems like least evil spot to hardcode, somewhat needed for tests
+        self.year=year
 
     def load_by_person(
-        self, all_data, include_rw=True, variable_set="demographic", year=2019
+        self, all_data, include_rw=True, variable_set="demographic"
     ):
         """To be called in first test"""
         limited_PUMA = not all_data
@@ -28,7 +28,7 @@ class LocalLoader:
             include_rw=include_rw,
             return_ingestor=True,
             requery=True,
-            year=year,
+            year=self.year,
         )
         self.by_person_raw = self.ingestor.vi_data_raw
         self.by_person = self.ingestor.vi_data
@@ -36,14 +36,14 @@ class LocalLoader:
     def load_aggregated_counts(self, all_data, type, add_MOE=False, keep_SE=True):
         limited_PUMA = not all_data
         if type == "demographics":
-            aggregator = PUMSCountDemographics(limited_PUMA=limited_PUMA)
+            aggregator = PUMSCountDemographics(year=self.year, limited_PUMA=limited_PUMA)
         elif type == "economics":
             aggregator = PUMSCountEconomics(
-                limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+                year=self.year, limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
             )
         elif type == "households":
             aggregator = PUMSCountHouseholds(
-                limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+                year=self.year, limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
             )
         self.by_person = aggregator.PUMS
         self.aggregated = aggregator.aggregated
@@ -68,7 +68,7 @@ class LocalLoader:
         """How is this different from load_aggregated_counts?"""
         limited_PUMA = not all_data
         self.count_aggregator = PUMSCountDemographics(
-            limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
+            year=self.year, limited_PUMA=limited_PUMA, add_MOE=add_MOE, keep_SE=keep_SE
         )
         self.by_person = self.count_aggregator.PUMS
         self.aggregated = self.count_aggregator.aggregated

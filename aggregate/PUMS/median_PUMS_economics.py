@@ -32,7 +32,7 @@ class PUMSMedianEconomics(PUMSAggregator):
     def __init__(
         self,
         limited_PUMA=False,
-        year=2019,
+        year=2021,
         requery=False,
         add_MOE=True,
         keep_SE=False,

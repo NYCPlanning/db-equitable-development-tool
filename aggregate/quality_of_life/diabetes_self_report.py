@@ -10,7 +10,7 @@ SOURCE_INDICATOR_COLUMNS = {
     "diabetes": "A:C, J:M",
     "self_reported": "A:G",
 }
-COLUMN_MAPPINGS = {  # TODO rename
+COLUMN_MAPPINGS = {
     "cd_number": "ID",
     "percent_diabetes": "Diabetes",
     "percent_self_report": "Self_Rep_Health",

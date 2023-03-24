@@ -10,7 +10,7 @@ SOURCE_INDICATOR_COLUMNS = {
     "diabetes": "A:C, J:M",
     "self_reported": "A:G",
 }
-SOURCE_DATA_COLUMNS = {  # TODO rename
+COLUMN_MAPPINGS = {  # TODO rename
     "cd_number": "ID",
     "percent_diabetes": "Diabetes",
     "percent_self_report": "Self_Rep_Health",
@@ -21,18 +21,14 @@ SOURCE_DATA_COLUMNS = {  # TODO rename
 
 def health_diabetes(geography: str, write_to_internal_review=False):
     clean_df = load_clean_source_data(geography, "diabetes")
-    clean_df["pct"] = clean_df[SOURCE_DATA_COLUMNS["percent_diabetes"]]
+    clean_df["pct"] = clean_df[COLUMN_MAPPINGS["percent_diabetes"]]
 
     clean_df["lower_pct_moe"] = (
-        clean_df[
-            f'{SOURCE_DATA_COLUMNS["percent_diabetes"]}_{SOURCE_DATA_COLUMNS["ci_lower"]}'
-        ]
+        clean_df[f'{COLUMN_MAPPINGS["percent_diabetes"]}_{COLUMN_MAPPINGS["ci_lower"]}']
         - clean_df["pct"]
     )
     clean_df["upper_pct_moe"] = (
-        clean_df[
-            f'{SOURCE_DATA_COLUMNS["percent_diabetes"]}_{SOURCE_DATA_COLUMNS["ci_upper"]}'
-        ]
+        clean_df[f'{COLUMN_MAPPINGS["percent_diabetes"]}_{COLUMN_MAPPINGS["ci_upper"]}']
         - clean_df["pct"]
     )
 
@@ -49,17 +45,17 @@ def health_diabetes(geography: str, write_to_internal_review=False):
 
 def health_self_reported(geography: str, write_to_internal_review=False):
     clean_df = load_clean_source_data(geography, "self_reported")
-    clean_df["pct"] = clean_df[SOURCE_DATA_COLUMNS["percent_self_report"]]
+    clean_df["pct"] = clean_df[COLUMN_MAPPINGS["percent_self_report"]]
 
     clean_df["lower_pct_moe"] = (
         clean_df[
-            f'{SOURCE_DATA_COLUMNS["percent_self_report"]}_{SOURCE_DATA_COLUMNS["ci_lower"]}'
+            f'{COLUMN_MAPPINGS["percent_self_report"]}_{COLUMN_MAPPINGS["ci_lower"]}'
         ]
         - clean_df["pct"]
     )
     clean_df["upper_pct_moe"] = (
         clean_df[
-            f'{SOURCE_DATA_COLUMNS["percent_self_report"]}_{SOURCE_DATA_COLUMNS["ci_upper"]}'
+            f'{COLUMN_MAPPINGS["percent_self_report"]}_{COLUMN_MAPPINGS["ci_upper"]}'
         ]
         - clean_df["pct"]
     )
@@ -88,11 +84,9 @@ def load_clean_source_data(geography: str, indicator: str):
         df = df[df["Borough"].isin(list(borough_name_mapper.keys()))]
         print(f"Shape of {indicator} {geography} data is {df.shape}")
 
-        df["CD Code"] = df[SOURCE_DATA_COLUMNS["cd_number"]].astype(str).str[0].map(
+        df["CD Code"] = df[COLUMN_MAPPINGS["cd_number"]].astype(str).str[0].map(
             boro
-        ) + df[SOURCE_DATA_COLUMNS["cd_number"]].astype(str).str[-2:].astype(
-            int
-        ).astype(
+        ) + df[COLUMN_MAPPINGS["cd_number"]].astype(str).str[-2:].astype(int).astype(
             str
         )
         df = community_district_to_PUMA(df, CD_col="CD Code")

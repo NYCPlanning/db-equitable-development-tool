@@ -1,12 +1,16 @@
 import pandas as pd
 
-# from aggregate.quality_of_life.self_reported_health import load_clean_source_data
+from ingest.ingestion_helpers import read_from_excel
 from utils.CD_helpers import community_district_to_PUMA, borough_name_mapper
 from internal_review.set_internal_review_file import set_internal_review_files
 
-SOURCE_DATA_FILE = "resources/quality_of_life/diabetes_self_report/diabetes_self_report_processed_2023.xlsx"
-
-SOURCE_DATA_COLUMNS = {
+SOURCE_DATA_FILE = "resources/quality_of_life/diabetes_self_report/diabetes_self_report_proc023.xlsx"
+SOURCE_SHEET_NAME = "DCHP_Diabetes_SelfRepHealth"
+SOURCE_INDICATOR_COLUMNS = {
+    "diabetes": "A:C, J:M",
+    "self_reported": "A:G",
+}
+SOURCE_DATA_COLUMNS = {  # TODO rename
     "cd_number": "ID",
     "percent_diabetes": "Diabetes",
     "percent_self_report": "Self_Rep_Health",
@@ -74,18 +78,7 @@ def health_self_reported(geography: str, write_to_internal_review=False):
 def load_clean_source_data(geography: str, indicator: str):
     assert geography in ["citywide", "borough", "puma"]
 
-    indicator_columns = {
-        "diabetes": "A:C, J:M",
-        "self_reported": "A:G",
-    }
-
-    read_excel_arg = {
-        "io": SOURCE_DATA_FILE,
-        "sheet_name": "DCHP_Diabetes_SelfRepHealth",
-        "usecols": indicator_columns[indicator],
-    }
-
-    df = pd.read_excel(**read_excel_arg)
+    df = read_from_excel(file_path=SOURCE_DATA_FILE, sheet_name=SOURCE_SHEET_NAME)
     print(f"Shape of {indicator} data is {df.shape}")
     print(f"Columns in {indicator} data {df.columns}")
 

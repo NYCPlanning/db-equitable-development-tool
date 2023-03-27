@@ -26,6 +26,8 @@ def collate_save_census(
     for accessor in getattr(CensusAccessors, f"{eddt_category}_{year}")():
         df = accessor(geography, year)
         final = final.merge(df, left_index=True, right_index=True)
+
+
     folder_path = f".staging/{eddt_category}"
     if not path.exists(folder_path):
         makedirs(folder_path)
@@ -45,19 +47,11 @@ class CensusAccessors:
         return [pums_2000_economics]
 
     @classmethod
-    def demographics_0812(cls):
+    def demographics_generic(cls):
         return [decennial_census_001020, acs_pums_demographics]
 
     @classmethod
-    def economics_0812(cls):
-        return [acs_pums_economics]
-
-    @classmethod
-    def demographics_1519(cls):
-        return [decennial_census_001020, acs_pums_demographics]
-
-    @classmethod
-    def economics_1519(cls):
+    def economics_generic(cls):
         return [acs_pums_economics]
 
 

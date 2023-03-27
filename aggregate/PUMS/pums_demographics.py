@@ -8,10 +8,12 @@ from aggregate.aggregation_helpers import (
 from utils.PUMA_helpers import dcp_pop_races
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_pop_demographics
+from pums_2000_demographics import pums_2000_demographics
 
 def acs_pums_demographics(
     geography: str, year: str, write_to_internal_review=False
 ) -> pd.DataFrame:
+    if year == '2000': return pums_2000_demographics(geography, write_to_internal_review=write_to_internal_review)
     assert geography in ["citywide", "borough", "puma"]
     #assert year in ["0812", "1519"]
 

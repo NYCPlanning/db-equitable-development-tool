@@ -2,6 +2,7 @@ import pandas as pd
 from aggregate.aggregation_helpers import order_aggregated_columns
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs, get_all_boroughs
+from pums_2000_economics import pums_2000_economics
 from utils.dcp_population_excel_helpers import (
     race_suffix_mapper_global,
     count_suffix_mapper_global,
@@ -130,8 +131,8 @@ def economics_median_cols_order():
 
 def acs_pums_economics(geography, year: str, write_to_internal_review=False):
     """Main accessor"""
+    if year == "2000": return pums_2000_economics(geography, write_to_internal_review=write_to_internal_review)
     assert geography in ["puma", "borough", "citywide"]
-    #assert year in ["0812", "1519", "1721"] seems unnecessary
 
     source = load_clean_source_data(year)
 

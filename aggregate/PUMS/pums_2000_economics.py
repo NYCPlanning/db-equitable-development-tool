@@ -47,11 +47,9 @@ def rename_cols(df):
     return df
 
 
-def pums_2000_economics(geography: str, year="2000", write_to_internal_review=False):
-    """Main accessor. I know passing year here is silly, need to write it his way to
-    export. Needs refactor"""
+def pums_2000_economics(geography: str, write_to_internal_review=False):
+    """Main accessor"""
     assert geography in ["puma", "borough", "citywide"]
-    assert year == "2000"
 
     df = load_2000_census_pums_all_data()
 

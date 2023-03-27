@@ -8,19 +8,16 @@ import pandas as pd
 from tests.PUMS.local_loader import LocalLoader
 import pytest
 
-local_loader_2019 = LocalLoader()
-local_loader_2012 = LocalLoader()
+years = [2012, 2019, 2021]
+local_loaders = [LocalLoader(year=year) for year in years]
 
 
 @pytest.mark.test_download
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
-    local_loader_2019.load_by_person(all_data, variable_set="demographics", year=2019)
-    local_loader_2012.load_by_person(all_data, variable_set="demographics", year=2012)
-
-
-local_loaders = [local_loader_2019, local_loader_2012]
+    for loader in local_loaders:
+        loader.load_by_person(all_data, variable_set="demographics")
 
 
 @pytest.mark.parametrize("local_loader", local_loaders)

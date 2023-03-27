@@ -75,14 +75,11 @@ def load_clean_source_data(geography: str, indicator: str):
     assert geography in ["citywide", "borough", "puma"]
 
     df = read_from_excel(file_path=SOURCE_DATA_FILE, sheet_name=SOURCE_SHEET_NAME)
-    print(f"Shape of {indicator} data is {df.shape}")
-    print(f"Columns in {indicator} data {df.columns}")
 
     if geography == "puma":
         boro = {"2": "BX", "3": "BK", "1": "MN", "4": "QN", "5": "SI"}
 
         df = df[df["Borough"].isin(list(borough_name_mapper.keys()))]
-        print(f"Shape of {indicator} {geography} data is {df.shape}")
 
         df["CD Code"] = df[COLUMN_MAPPINGS["cd_number"]].astype(str).str[0].map(
             boro
@@ -93,11 +90,9 @@ def load_clean_source_data(geography: str, indicator: str):
         df.drop_duplicates(subset=["puma"], keep="first", inplace=True)
     elif geography == "borough":
         df = df[df["Borough"] == "NYC"]
-        print(f"Shape of {indicator} {geography} data is {df.shape}")
         df["borough"] = df["Borough"].str.strip().map(borough_name_mapper)
     else:
         df = df[df["Borough"] == "City"]
-        print(f"Shape of {indicator} {geography} data is {df.shape}")
         df["citywide"] = "citywide"
 
     clean_df = df.set_index(geography)

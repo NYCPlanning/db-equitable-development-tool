@@ -8,6 +8,7 @@ from tests.PUMS.local_loader import LocalLoader
 local_loader_2021 = LocalLoader(year=2021)
 local_loader_2019 = LocalLoader(year=2019)
 local_loader_2012 = LocalLoader(year=2012)
+local_loaders = [local_loader_2012. local_loader_2019, local_loader_2021]
 
 EXPECTED_COLS_VALUES_CATEGORICAL = [
     (

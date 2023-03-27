@@ -8,6 +8,7 @@ from utils.PUMA_helpers import puma_to_borough
 from ingest.ingestion_helpers import read_from_excel
 
 SOURCE_DATA_FILE = "resources/quality_of_life/EDDE_2023_Updates_transportation.xlsx"
+CATEGORY = "quality_of_life"
 SOURCE_SHEET_NAMES = {
     "subway_SBS": "Subway_SBS_Qr_Mile_Access",
     "ada_subway": "ADA_Subway_Qtr_Mile_Access",
@@ -84,7 +85,9 @@ def calculate_access_fraction(data, gb_col, count_col, fraction_col):
 
 def load_access_subway_SBS() -> pd.DataFrame:
     access = read_from_excel(
-        file_path=SOURCE_DATA_FILE, sheet_name=SOURCE_SHEET_NAMES["subway_SBS"]
+        file_path=SOURCE_DATA_FILE,
+        category=CATEGORY,
+        sheet_name=SOURCE_SHEET_NAMES["subway_SBS"],
     )
     access = remove_state_code_from_PUMA(access)
     return access
@@ -97,7 +100,9 @@ def remove_state_code_from_PUMA(access: pd.DataFrame) -> pd.DataFrame:
 
 def load_access_ADA_subway() -> pd.DataFrame:
     access = read_from_excel(
-        file_path=SOURCE_DATA_FILE, sheet_name=SOURCE_SHEET_NAMES["ada_subway"]
+        file_path=SOURCE_DATA_FILE,
+        category=CATEGORY,
+        sheet_name=SOURCE_SHEET_NAMES["ada_subway"],
     )
     access = remove_state_code_from_PUMA(access)
     return access

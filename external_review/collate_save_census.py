@@ -7,8 +7,8 @@ import typer
 from aggregate.decennial_census.decennial_census_001020 import decennial_census_001020
 from aggregate.PUMS.pums_2000_demographics import pums_2000_demographics
 from aggregate.PUMS.pums_2000_economics import pums_2000_economics
-from aggregate.PUMS.pums_0812_1519_demographics import acs_pums_demographics
-from aggregate.PUMS.pums_0812_1519_economics import acs_pums_economics
+from aggregate.PUMS.pums_demographics import acs_pums_demographics
+from aggregate.PUMS.pums_economics import acs_pums_economics
 
 
 from aggregate.load_aggregated import initialize_dataframe_geo_index

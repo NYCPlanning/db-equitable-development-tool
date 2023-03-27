@@ -27,9 +27,9 @@ class PUMSMedianDemographics(PUMSMedians):
         self.categories = {}
         PUMSMedians.__init__(
             self,
+            year=year,
             variable_types=["demographics"],
             limited_PUMA=limited_PUMA,
-            year=year,
             requery=requery,
             add_MOE=add_MOE,
             keep_SE=keep_SE,

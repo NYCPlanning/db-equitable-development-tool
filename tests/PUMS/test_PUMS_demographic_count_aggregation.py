@@ -6,7 +6,7 @@ from tests.util import race_counts, age_bucket_counts
 from tests.PUMS.local_loader import LocalLoader
 
 
-local_loader = LocalLoader(2021)
+local_loader = LocalLoader()
 
 
 @pytest.mark.test_aggregation

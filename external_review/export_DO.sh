@@ -7,7 +7,7 @@ function export_DO {
     category=$2
     local filename="${category}_${geography_level}.csv"
     local branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
-    SPACES="spaces/edm-publishing/db-eddt/${branchname}/
+    SPACES="spaces/edm-publishing/db-eddt/${branchname}/"
     mc rm --force $SPACES/latest/$category/$filename
     mc rm --force $SPACES/$DATE/$category/$filename
     mc cp .staging/$category/* $SPACES/$DATE/$category/

@@ -3,7 +3,7 @@ from typing import List
 from json import load
 import geopandas as gp
 from shapely import wkt
-from utils.PUMA_helpers import puma_to_borough, NYC_PUMA_geographies
+from utils.PUMA_helpers import puma_to_borough, PUMAs
 from ingest.ingestion_helpers import read_from_S3
 
 from internal_review.set_internal_review_file import set_internal_review_files
@@ -46,10 +46,8 @@ def fraction_historic(geography_level, NYC_PUMAs=None):
     ].round(2)
 
 
-def generate_geographies(geography_level, NYC_PUMAs=None):
-    if NYC_PUMAs is None:
-        NYC_PUMAs = NYC_PUMA_geographies()
-    NYC_PUMAs = NYC_PUMAs.to_crs("EPSG:2263")
+def generate_geographies(geography_level):
+    NYC_PUMAs = PUMAs.to_crs("EPSG:2263")
     if geography_level == "puma":
         return NYC_PUMAs.set_index("puma")
     if geography_level == "borough":

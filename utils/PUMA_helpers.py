@@ -72,7 +72,7 @@ def NYC_PUMA_geographies() -> gp.GeoDataFrame:
 def assign_PUMA_col(df: pd.DataFrame, lat_col, long_col, geocode_process=None):
     df.rename(columns={lat_col: "latitude", long_col: "longitude"}, inplace=True)
     df["puma"] = df.apply(assign_PUMA, axis=1, args=(geocode_process,))
-    print(f"got {df.shape[0]} evictions to assign PUMAs to ")
+    print(f"got {df.shape[0]} addresses to assign PUMAs to ")
     print(f"assigned PUMAs to {df['puma'].notnull().sum()}")
     return df
 

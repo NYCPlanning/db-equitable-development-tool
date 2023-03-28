@@ -10,7 +10,7 @@ from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_housing_security_pop_data
 from aggregate.aggregation_helpers import get_geography_pop_data
 
-def rent_median(geography: str, start_year=acs_years[0], end_year=acs_years[1], write_to_internal_review=False) -> pd.DataFrame:
+def rent_median(geography: str, start_year=acs_years[0], end_year=acs_years[-1], write_to_internal_review=False) -> pd.DataFrame:
 
     name_mapper_md = {
         "MdGR": "rent_median", 
@@ -56,7 +56,7 @@ def rent_median(geography: str, start_year=acs_years[0], end_year=acs_years[1], 
         columns=order_PUMS_QOL_multiple_years(
             categories=["units_payingrent"],
             measures=["_count", "_count_moe", "_count_cv", "_pct", "_pct_moe"],
-            years=map(lambda year: f"_{year}", [acs_years[0], acs_years[-1]]),
+            years=[f"_{start_year}", f"_{end_year}"],
         )
     )
 

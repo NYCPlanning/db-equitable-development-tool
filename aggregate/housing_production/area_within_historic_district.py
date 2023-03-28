@@ -79,7 +79,7 @@ def load_historic_districts_gdf() -> gp.GeoDataFrame:
     hd = gp.GeoDataFrame(df)
     hd["the_geom"] = hd["the_geom"].apply(wkt.loads)
     hd.set_geometry(col="the_geom", inplace=True, crs="EPSG:4326")
-    hd = hd.explode(column="the_geom")
+    hd = hd.explode(column="the_geom", index_parts=True)
     hd.set_geometry("the_geom", inplace=True)
     hd = hd.to_crs("EPSG:2263")
     hd = hd.reset_index()

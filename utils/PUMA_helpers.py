@@ -69,9 +69,6 @@ def NYC_PUMA_geographies() -> gp.GeoDataFrame:
     return gdf
 
 
-PUMAs = NYC_PUMA_geographies()
-
-
 def assign_PUMA_col(df: pd.DataFrame, lat_col, long_col, geocode_process=None):
     df.rename(columns={lat_col: "latitude", long_col: "longitude"}, inplace=True)
     df["puma"] = df.apply(assign_PUMA, axis=1, args=(geocode_process,))
@@ -89,7 +86,7 @@ def assign_PUMA(record: gp.GeoDataFrame, geocode_process):
 
 def PUMA_from_coord(record):
     """Don't think I need to make a geodata frame here, shapely object would do"""
-
+    PUMAs = NYC_PUMA_geographies()
     record_loc = Point(record.longitude, record.latitude)
     matched_PUMA = PUMAs[PUMAs.geometry.contains(record_loc)]
     if matched_PUMA.empty:

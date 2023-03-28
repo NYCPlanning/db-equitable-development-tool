@@ -7,13 +7,11 @@ function export_DO {
     category=$2
     local filename="${category}_${geography_level}.csv"
     local branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
-    if [ "$branchname" = "main" ] ; then
-        SPACES="spaces/edm-publishing/db-eddt/${category}"
-    else
-        SPACES="spaces/edm-publishing/db-eddt/${branchname}/${category}"
-    fi
-    mc cp .staging/$category/$filename $SPACES/$filename
-    mc cp .staging/$category/metadata.yml $SPACES/metadata.yml
+    SPACES="spaces/edm-publishing/db-eddt/${branchname}/
+    mc rm --force $SPACES/latest/$category/$filename
+    mc rm --force $SPACES/$DATE/$category/$filename
+    mc cp .staging/$category/* $SPACES/$DATE/$category/
+    mc cp .staging/$category/* $SPACES/latest/$category/
 }
 
 function export_DO_census {

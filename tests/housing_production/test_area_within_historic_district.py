@@ -1,14 +1,13 @@
 import pytest
 import numpy as np
-from utils.PUMA_helpers import PUMAs
 from aggregate.housing_production.area_within_historic_district import (
     load_historic_districts_gdf,
     fraction_historic,
 )
 
-by_puma = fraction_historic("puma", PUMAs)
-by_borough = fraction_historic("borough", PUMAs)
-by_citywide = fraction_historic("citywide", PUMAs)
+by_puma = fraction_historic("puma")
+by_borough = fraction_historic("borough")
+by_citywide = fraction_historic("citywide")
 ind_by_geom = [by_puma, by_borough, by_citywide]
 hd = load_historic_districts_gdf()
 

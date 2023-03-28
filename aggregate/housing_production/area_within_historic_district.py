@@ -32,9 +32,9 @@ def rename_col(cols) -> List:
     return new_cols
 
 
-def fraction_historic(geography_level, NYC_PUMAs=None):
+def fraction_historic(geography_level):
     """Main accessor of indicator"""
-    gdf = generate_geographies(geography_level, NYC_PUMAs)
+    gdf = generate_geographies(geography_level)
     gdf["total_sqmiles"] = gdf.geometry.area / (5280 ** 2)
     hd = load_historic_districts_gdf()
     gdf[["area_historic_pct", "area_historic_sqmiles"]] = gdf.apply(

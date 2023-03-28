@@ -5,7 +5,20 @@
 import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import puma_to_borough
-from ingest.ingestion_helpers import read_from_S3
+from ingest.ingestion_helpers import read_from_excel
+
+SOURCE_DATA_FILE = "resources/quality_of_life/EDDE_2023_Updates_transportation.xlsx"
+CATEGORY = "quality_of_life"
+SOURCE_SHEET_NAMES = {
+    "subway_SBS": "Subway_SBS_Qr_Mile_Access",
+    "ada_subway": "ADA_Subway_Qtr_Mile_Access",
+}
+COLUMN_MAPPINGS = {
+    "puma": "PUMA",
+    "pop_with_access_subway_SBS": "Pop within 1/4 Mile of Subway Stations and SBS Stops",
+    "pop_with_accessible_ADA_subway": "Pop within 1/4 Mile of ADA Subway Stations",
+    "total_pop": "Total_Pop21",
+}
 
 
 def access_subway_and_access_ADA(geography, save_for_internal_review=False):
@@ -26,11 +39,14 @@ def access_subway_and_access_ADA(geography, save_for_internal_review=False):
     subway_fraction = calculate_access_fraction(
         access_subway_SBS,
         geography,
-        "pop_with_access_subway_SBS",
+        COLUMN_MAPPINGS["pop_with_access_subway_SBS"],
         subway_SBS_ind_name,
     )
     ADA_fraction = calculate_access_fraction(
-        access_ADA_subway, geography, "pop_with_accessible_ADA_subway", ADA_ind_name
+        access_ADA_subway,
+        geography,
+        COLUMN_MAPPINGS["pop_with_accessible_ADA_subway"],
+        ADA_ind_name,
     )
     subway_and_ADA_access = subway_fraction.merge(
         ADA_fraction, left_index=True, right_index=True
@@ -44,8 +60,7 @@ def access_subway_and_access_ADA(geography, save_for_internal_review=False):
 
 
 def assign_geo_cols(access_dataset):
-    access_dataset["borough"] = access_dataset.apply(
-        axis=1, func=puma_to_borough)
+    access_dataset["borough"] = access_dataset.apply(axis=1, func=puma_to_borough)
 
     access_dataset["citywide"] = "citywide"
 
@@ -62,39 +77,32 @@ def set_results_for_internal_review(access_df, geography):
 
 def calculate_access_fraction(data, gb_col, count_col, fraction_col):
     data[count_col] = pd.to_numeric(data[count_col])
-    data["total_pop"] = pd.to_numeric(data["total_pop"])
+    data["total_pop"] = pd.to_numeric(data[COLUMN_MAPPINGS["total_pop"]])
     gb = data.groupby(gb_col).sum()
     gb[fraction_col] = ((gb[count_col] / gb["total_pop"]) * 100).round(2)
     return gb[[fraction_col]]
 
 
 def load_access_subway_SBS() -> pd.DataFrame:
-    access = read_from_S3("dcp_access_subway_sbs", "quality_of_life")
-    access = remove_state_code_from_PUMA(access)
-    access.rename(
-        columns={
-            "pop_within_1/4_mile_of_subway_stations_and_sbs_stops": "pop_with_access_subway_SBS",
-            "total_pop_from_census_2020": "total_pop",
-        },
-        inplace=True,
+    access = read_from_excel(
+        file_path=SOURCE_DATA_FILE,
+        category=CATEGORY,
+        sheet_name=SOURCE_SHEET_NAMES["subway_SBS"],
     )
+    access = remove_state_code_from_PUMA(access)
     return access
 
 
 def remove_state_code_from_PUMA(access: pd.DataFrame) -> pd.DataFrame:
-    access["puma"] = access["puma"].astype(str).str[-5:]
+    access["puma"] = access[COLUMN_MAPPINGS["puma"]].astype(str).str[-5:]
     return access
 
 
 def load_access_ADA_subway() -> pd.DataFrame:
-    access = read_from_S3("dcp_access_ada_subway", "quality_of_life")
-
-    access = remove_state_code_from_PUMA(access)
-    access.rename(
-        columns={
-            "pop_within_1/4_mile_of_ada_subway_stations": "pop_with_accessible_ADA_subway",
-            "total_pop_from_census_2020": "total_pop",
-        },
-        inplace=True,
+    access = read_from_excel(
+        file_path=SOURCE_DATA_FILE,
+        category=CATEGORY,
+        sheet_name=SOURCE_SHEET_NAMES["ada_subway"],
     )
+    access = remove_state_code_from_PUMA(access)
     return access

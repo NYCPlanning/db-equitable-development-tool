@@ -93,8 +93,8 @@ def load_clean_housing_security_pop_data(name_mapper: dict, start_year=acs_years
             "dtype": {"Geog": str},
         }
     
-    df_oldest = pd.read_excel(**read_excel_arg[start_year])
-    df_latest= pd.read_excel(**read_excel_arg[end_year])
+    df_oldest = pd.read_excel(**read_excel_arg(start_year))
+    df_latest= pd.read_excel(**read_excel_arg(end_year))
 
     df = pd.merge(df_oldest, df_latest, on="Geog", how="left")
 

@@ -16,7 +16,7 @@ demo_suffix = {
 
 
 def reorder_year_race(col):
-    match = re.search(f"\_({'|'.join(races)})\_(\d{{4}})$", col)
+    match = re.search(f"\\_({'|'.join(races)})\\_(\\d{{4}})$", col)
     if match:
         return col.replace(match.group(0), f"_{match.group(2)}_{match.group(1)}")
     else: 

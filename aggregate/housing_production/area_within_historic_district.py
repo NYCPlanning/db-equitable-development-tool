@@ -32,9 +32,9 @@ def rename_col(cols) -> List:
     return new_cols
 
 
-def fraction_historic(geography_level):
+def fraction_historic(geography_level, NYC_PUMAs=None):
     """Main accessor of indicator"""
-    gdf = generate_geographies(geography_level)
+    gdf = generate_geographies(geography_level, NYC_PUMAs)
     gdf["total_sqmiles"] = gdf.geometry.area / (5280 ** 2)
     hd = load_historic_districts_gdf()
     gdf[["area_historic_pct", "area_historic_sqmiles"]] = gdf.apply(
@@ -46,8 +46,9 @@ def fraction_historic(geography_level):
     ].round(2)
 
 
-def generate_geographies(geography_level):
-    NYC_PUMAs = NYC_PUMA_geographies()
+def generate_geographies(geography_level, NYC_PUMAs=None):
+    if NYC_PUMAs is None:
+        NYC_PUMAs = NYC_PUMA_geographies()
     NYC_PUMAs = NYC_PUMAs.to_crs("EPSG:2263")
     if geography_level == "puma":
         return NYC_PUMAs.set_index("puma")

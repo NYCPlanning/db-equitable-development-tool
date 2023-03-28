@@ -23,10 +23,13 @@ def collate_save_census(
     """--test_data will aggregate on only first puma in each borough
     This needs to be updated to handle economics correctly"""
     final = initialize_dataframe_geo_index(geography=geography)
-    for accessor in getattr(CensusAccessors, f"{eddt_category}_{year}")():
+    if year=='2000':
+        suffix = year
+    else: 
+        suffix = 'generic'
+    for accessor in getattr(CensusAccessors, f"{eddt_category}_{suffix}")():
         df = accessor(geography, year)
         final = final.merge(df, left_index=True, right_index=True)
-
 
     folder_path = f".staging/{eddt_category}"
     if not path.exists(folder_path):

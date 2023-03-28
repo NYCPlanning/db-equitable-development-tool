@@ -13,7 +13,7 @@ class LocalLoader:
     Possible to-do: return ingestor/aggregator instead of data like load_fraction_aggregator
     """
 
-    def __init__(self, year: int = 2021) -> None: # seems like least evil spot to hardcode, somewhat needed for tests
+    def __init__(self, year: int = 2021) -> None: 
         self.year=year
 
     def load_by_person(

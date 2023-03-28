@@ -76,6 +76,7 @@ from aggregate.decennial_census.decennial_census_001020 import decennial_census_
 from aggregate.PUMS.pums_2000_economics import pums_2000_economics
 from aggregate.PUMS.pums_demographics import acs_pums_demographics
 from aggregate.PUMS.pums_economics import acs_pums_economics
+from utils.PUMA_helpers import acs_years
 
 housing_production_accessors = [fraction_historic, change_in_units, affordable_housing]
 
@@ -122,10 +123,13 @@ housing_security_accessors = [
 demographics_accessors = [
     decennial_census_001020,
     pums_2000_demographics,
-    acs_pums_demographics,
+    acs_pums_demographics
 ]
 
-economics_accessors = [pums_2000_economics, acs_pums_economics]
+economics_accessors = [
+    pums_2000_economics, 
+    acs_pums_economics
+]
 
 
 accessors = (

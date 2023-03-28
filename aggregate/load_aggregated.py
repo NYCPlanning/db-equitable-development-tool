@@ -11,6 +11,7 @@ from utils.setup_directory import setup_directory
 from os import path
 import pandas as pd
 from aggregate.clean_aggregated import rename_columns_demo
+from utils.PUMA_helpers import sheet_name, year_range, acs_years
 
 
 # from aggregate.PUMS.count_PUMS_demographics import PUMSCountDemographics
@@ -78,32 +79,24 @@ def initialize_dataframe_geo_index(geography, columns=[]):
 """this is specifically to use for housing security and quality March 4th POP data"""
 
 
-def load_clean_housing_security_pop_data(name_mapper: dict) -> pd.DataFrame:
+def load_clean_housing_security_pop_data(name_mapper: dict, start_year=acs_years[0], end_year=acs_years[-1]) -> pd.DataFrame:
     """Function to merge the two files for the QOL outputs and do some standard renaming. Because
     these are QOL indicators they remain in the same csv output with columns indicating year"""
 
     ind_name_regex = "|".join([k for k in name_mapper.keys()])
 
-    read_excel_arg = {
-        "0812": {
-            "io": "./resources/ACS_PUMS/EDDT_ACS2008-2012.xlsx",
-            "sheet_name": "ACS08-12",
+    def read_excel_arg(year):
+        return {
+            "io": f"./resources/ACS_PUMS/EDDT_ACS{year_range(year)}.xlsx",
+            "sheet_name": f"ACS{sheet_name(year)}",
             "usecols": "A:LO",
             "dtype": {"Geog": str},
-        },
-        "1519": {
-            "io": "./resources/ACS_PUMS/EDDT_ACS2015-2019.xlsx",
-            "sheet_name": "ACS15-19",
-            "usecols": "A:LO",
-            "dtype": {"Geog": str},
-        },
-    }
+        }
+    
+    df_oldest = pd.read_excel(**read_excel_arg[start_year])
+    df_latest= pd.read_excel(**read_excel_arg[end_year])
 
-    df_0812 = pd.read_excel(**read_excel_arg["0812"])
-
-    df_1519 = pd.read_excel(**read_excel_arg["1519"])
-
-    df = pd.merge(df_0812, df_1519, on="Geog", how="left")
+    df = pd.merge(df_oldest, df_latest, on="Geog", how="left")
 
     df = df.filter(regex=ind_name_regex + "|Geog")
 
@@ -111,30 +104,23 @@ def load_clean_housing_security_pop_data(name_mapper: dict) -> pd.DataFrame:
 
     return df
 
-def load_clean_pop_demographics(end_year: str, year: str) -> pd.DataFrame:
+def load_clean_pop_demographics(year: str) -> pd.DataFrame:
     """Function to merge the two files for the QOL outputs and do some standard renaming. Because
     these are QOL indicators they remain in the same csv output with columns indicating year"""
 
-    read_excel_arg = {
-        "0812": {
-            "io": "./resources/ACS_PUMS/EDDT_Dem_ACS2008-2012.xlsx",
-            "sheet_name": "Dem08-12",
+    def read_excel_arg(year):
+        return {
+            "io": f"./resources/ACS_PUMS/EDDT_Dem_ACS{year_range(year)}.xlsx",
+            "sheet_name": f"Dem{sheet_name(year)}",
             "usecols": "A:HR",
             "dtype": {"Geog": str},
-        },
-        "1519": {
-            "io": "./resources/ACS_PUMS/EDDT_Dem_ACS2015-2019.xlsx",
-            "sheet_name": "Dem15-19",
-            "usecols": "A:HR",
-            "dtype": {"Geog": str},
-        },
-    }
+        }
 
-    df = pd.read_excel(**read_excel_arg[year])
+    df = pd.read_excel(**read_excel_arg(year))
 
     df.loc[df["Geog"] == "NYC", "Geog"] = "citywide"
 
-    clean_data = rename_columns_demo(df, end_year, year)
+    clean_data = rename_columns_demo(df, year[2:])
 
     clean_data.rename(columns={"geog": "Geog"}, inplace=True)
 

@@ -2,7 +2,8 @@ import pandas as pd
 from aggregate.aggregation_helpers import order_aggregated_columns
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs, get_all_boroughs
-from pums_2000_economics import pums_2000_economics
+from aggregate.PUMS.pums_2000_economics import pums_2000_economics
+from utils.PUMA_helpers import acs_years, sheet_name, year_range
 from utils.dcp_population_excel_helpers import (
     race_suffix_mapper_global,
     count_suffix_mapper_global,
@@ -43,13 +44,9 @@ suffix_mappers = {
 }
 
 def load_clean_source_data(year: str):
-
-    year_range = f"20{year[:2]}-20{year[2:]}"
-    sheetname = f"{year[:2]}-{year[2:]}"
-
     source = pd.read_excel(
-        f"resources/ACS_PUMS/EDDT_HHEconSec_ACS{year_range}.xlsx",
-        sheet_name=f"EconSec_{sheetname}",
+        f"resources/ACS_PUMS/EDDT_HHEconSec_ACS{year_range(year)}.xlsx",
+        sheet_name=f"EconSec_{sheet_name(year)}",
     )
     source["Geog"].replace(borough_name_mapper, inplace=True)
     source["Geog"].replace({"NYC": "citywide"}, inplace=True)
@@ -129,10 +126,11 @@ def economics_median_cols_order():
     return rv
 
 
-def acs_pums_economics(geography, year: str, write_to_internal_review=False):
+def acs_pums_economics(geography, year: str=acs_years[-1], write_to_internal_review=False):
     """Main accessor"""
-    if year == "2000": return pums_2000_economics(geography, write_to_internal_review=write_to_internal_review)
+    assert year in acs_years
     assert geography in ["puma", "borough", "citywide"]
+    if year == "2000": return pums_2000_economics(geography, write_to_internal_review=write_to_internal_review)
 
     source = load_clean_source_data(year)
 

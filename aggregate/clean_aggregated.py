@@ -1,6 +1,7 @@
 from curses import COLOR_RED
 from typing import List
 import pandas as pd
+import re
 
 races = ["anh", "bnh", "hsp", "wnh"]
 
@@ -14,18 +15,12 @@ demo_suffix = {
 }
 
 
-reorder_year_race_mapper = {
-    "_anh_0812": "_0812_anh",
-    "_anh_1519": "_1519_anh",
-    "_bnh_0812": "_0812_bnh",
-    "_bnh_1519": "_1519_bnh",
-    "_hsp_0812": "_0812_hsp",
-    "_hsp_1519": "_1519_hsp",
-    "_wnh_0812": "_0812_wnh",
-    "_wnh_1519": "_1519_wnh",
-}
-
-endyear_mapper = {12: "0812", 19: "1519"}
+def reorder_year_race(col):
+    match = re.search(f"\_({'|'.join(races)})\_(\d{{4}})$", col)
+    if match:
+        return col.replace(match.group(0), f"_{match.group(2)}_{match.group(1)}")
+    else: 
+        return col
 
 
 def sort_columns(df: pd.DataFrame):
@@ -76,7 +71,7 @@ def rename_col_housing_security(
     df: pd.DataFrame,
     name_mapper: dict,
     race_mapper: dict,
-    year_mapper: dict,
+    years: list[str],
     suffix_mapper: dict,
 ):
     """Rename the columns to follow conventions laid out in the wiki and issue #59"""
@@ -86,8 +81,8 @@ def rename_col_housing_security(
         cols = [col.replace(code, race) for col in cols]
 
     # Recode year
-    for code, year in year_mapper.items():
-        cols = [col.replace(code, year) for col in cols]
+    for year in years:
+        cols = [col.replace(year[2:], year) for col in cols]
 
     # Recode standard stat suffix for 2008 - 2012
     for code, suffix in suffix_mapper.items():
@@ -96,16 +91,15 @@ def rename_col_housing_security(
     for k, ind_name in name_mapper.items():
         cols = [col.replace(k.lower(), ind_name) for col in cols]
 
-    # Reorder the columns to follow wiki conventions - TODO: this could be redone
-    for code, reorder in reorder_year_race_mapper.items():
-        cols = [col.replace(code, reorder) for col in cols]
+    # Rename the columns to follow wiki conventions - TODO: this could be redone
+    cols = [reorder_year_race(col) for col in cols]
 
     df.columns = cols
 
     return df
 
 
-def rename_columns_demo(df: pd.DataFrame, end_year: int, year: str):
+def rename_columns_demo(df: pd.DataFrame, end_year: str):
     cols = map(str.lower, df.columns)
     for code, race in demo_suffix.items():
         cols = [col.replace(code, race) for col in cols]

@@ -4,25 +4,24 @@ from aggregate.clean_aggregated import (
     order_PUMS_QOL_multiple_years,
 )
 from utils.dcp_population_excel_helpers import race_suffix_mapper, stat_suffix_mapper_md
+from utils.PUMA_helpers import acs_years
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_housing_security_pop_data
 from aggregate.aggregation_helpers import get_geography_pop_data
 
-year_mapper = {"12": "0812", "19": "1519"}
 
-
-def homevalue_median(geography: str, write_to_internal_review=False) -> pd.DataFrame:
+def homevalue_median(geography: str, start_year=acs_years[0], end_year=acs_years[-1], write_to_internal_review=False) -> pd.DataFrame:
 
     name_mapper = {"MdVl": "homevalue_median"}
 
-    clean_data = load_clean_housing_security_pop_data(name_mapper)
+    clean_data = load_clean_housing_security_pop_data(name_mapper, start_year, end_year)
 
     final = get_geography_pop_data(
         clean_data=clean_data, geography=geography
     )
 
     final = rename_col_housing_security(
-        final, name_mapper, race_suffix_mapper, year_mapper, stat_suffix_mapper_md
+        final, name_mapper, race_suffix_mapper, acs_years, stat_suffix_mapper_md
     )
 
     final.dropna(axis=1, how="all", inplace=True)
@@ -30,7 +29,7 @@ def homevalue_median(geography: str, write_to_internal_review=False) -> pd.DataF
     col_order = order_PUMS_QOL_multiple_years(
         categories=["homevalue_median"],
         measures=["_median", "_median_moe", "_median_cv"],
-        years=["_0812", "_1519"],
+        years=[f"_{start_year}", f"_{end_year}"],
     )
 
     final = final.reindex(columns=col_order)

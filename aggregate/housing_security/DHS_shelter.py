@@ -38,4 +38,9 @@ def DHS_shelter_single_year(geography, year, write_to_internal_review=False):
     single_year.rename(
         columns={"individuals": f"dhs_shelter_{year}_count"}, inplace=True
     )
+    if write_to_internal_review:
+        set_internal_review_files(
+            [(single_year, f"DHS_shelter_single_year_{year}.csv", geography)],
+            "housing_security",
+        )
     return single_year

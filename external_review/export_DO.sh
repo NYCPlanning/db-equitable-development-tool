@@ -21,8 +21,8 @@ function export_DO_census {
     filename="${category}_${year}_${geography}.csv"
     local branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
     SPACES="spaces/edm-publishing/db-eddt/${branchname}"
-    mc cp .staging/$category/$filename $SPACES/$DATE/$filename
-    mc cp .staging/$category/$filename $SPACES/latest$filename
+    mc cp .staging/$category/$filename $SPACES/$DATE/$category/$filename
+    mc cp .staging/$category/$filename $SPACES/latest/$category/$filename
 
 }
 

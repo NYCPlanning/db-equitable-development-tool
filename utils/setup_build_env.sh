@@ -13,7 +13,7 @@ python3 -m pip install --upgrade pip
 python3 -m pip install --requirement requirements.txt
 
 # Install required R package
-Rscript "install.packages('survey')"
+Rscript -e "install.packages('survey')"
 
 # Install and configure mc
 curl -O https://dl.min.io/client/mc/release/linux-amd64/mc

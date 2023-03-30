@@ -17,9 +17,12 @@ function export_DO_census {
     category=$1
     geography=$2
     year=$3
+    DATE=$(date "+%Y-%m-%d")
     filename="${category}_${year}_${geography}.csv"
-    SPACES="spaces/edm-publishing/db-eddt/${category}"
-    mc cp .staging/$category/$filename $SPACES/$filename
+    local branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
+    SPACES="spaces/edm-publishing/db-eddt/${branchname}"
+    mc cp .staging/$category/$filename $SPACES/$DATE/$filename
+    mc cp .staging/$category/$filename $SPACES/latest$filename
 
 }
 

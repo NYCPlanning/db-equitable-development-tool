@@ -1,17 +1,16 @@
-name: Test Indicators  
+name: Test Housing Production
 
 on:
   workflow_dispatch:
-  pull_request:
-  # we might want this back if testing is somewhat arduous. But I figure worth 
+  #pull_request:
   #  paths:
-  #    - "ingest/**.py"
-  #    - "aggregate/**.py"
-  #    - "tests/**.py"
+  #    - "aggregate/PUMS/**.py"
+  #    - "aggregate/housing_production/**.py"
+  #    - "tests/housing_production/**.py"
   #    - "external_review/**.py"
-  #    - "resources/**"
   #    - "utils/**.py"
-  #    - ".github/workflows/test_indicators.yml"
+  #    - "resources/**"
+  #    - ".github/workflows/test_housing_production.yml"
 
 jobs:
   test:

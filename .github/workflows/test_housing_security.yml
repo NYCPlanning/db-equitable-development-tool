@@ -1,17 +1,16 @@
-name: Test Indicators  
+name: Test Housing Securyt
 
 on:
   workflow_dispatch:
-  pull_request:
-  # we might want this back if testing is somewhat arduous. But I figure worth 
+  #pull_request:
   #  paths:
-  #    - "ingest/**.py"
-  #    - "aggregate/**.py"
-  #    - "tests/**.py"
+  #    - "aggregate/PUMS/**.py"
+  #    - "aggregate/housing_security/**.py"
+  #    - "tests/housing_security/**.py"
   #    - "external_review/**.py"
-  #    - "resources/**"
   #    - "utils/**.py"
-  #    - ".github/workflows/test_indicators.yml"
+  #    - "resources/**"
+  #    - ".github/workflows/test_housing_security.yml"
 
 jobs:
   test:
@@ -45,4 +44,4 @@ jobs:
       - name: Pytest
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          python3 -m pytest -v tests/general_indicator_tests
+          python3 -m pytest -v tests/housing_security

@@ -5,8 +5,8 @@ set -e
 
 apt-get update
 
-# # Install R
-# apt-get -y install r-base
+# Install R
+apt-get -y install r-base
 
 # Install python packages
 python3 -m pip install --upgrade pip

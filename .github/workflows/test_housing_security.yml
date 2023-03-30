@@ -2,7 +2,7 @@ name: Test Housing Securyt
 
 on:
   workflow_dispatch:
-  #pull_request:
+  pull_request:
   #  paths:
   #    - "aggregate/PUMS/**.py"
   #    - "aggregate/housing_security/**.py"

@@ -1,4 +1,4 @@
-name: Test Housing Securyt
+name: Test Housing Security
 
 on:
   workflow_dispatch:
@@ -38,6 +38,11 @@ jobs:
         run: |
           python3 -m pip install --requirement requirements.txt
       
+      - name: R package install
+        run: |
+          install.packages('survey')
+        shell: Rscript {0}
+
       - name: dataloading
         run: ./ingest/data_library/dataloading.sh
 

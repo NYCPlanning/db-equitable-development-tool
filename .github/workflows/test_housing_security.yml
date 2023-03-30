@@ -53,4 +53,5 @@ jobs:
       - name: Pytest
         run: |
           export PATH=$PATH:$HOME/.local/bin
+          mkdir data
           python3 -m pytest -v tests/housing_security

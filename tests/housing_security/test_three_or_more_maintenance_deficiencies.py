@@ -1,5 +1,4 @@
 import pytest
-import unittest
 from ingest.HVS.HVS_ingestion import create_HVS
 from aggregate.housing_security.three_or_more_maintenance_deficiencies import (
     count_units_three_or_more_deficiencies,

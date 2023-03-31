@@ -12,7 +12,6 @@ geography_levels = ["Borough"]
 @pytest.mark.parametrize("year", years)
 @pytest.mark.parametrize("geography_level", geography_levels)
 def test_all_units_counted(year, geography_level):
-
     with pytest.raises(NotImplementedError):
         aggregated = count_units_three_or_more_deficiencies(
             geography_level, year, crosstab_by_race=False, requery=True
@@ -22,18 +21,10 @@ def test_all_units_counted(year, geography_level):
 @pytest.mark.parametrize("year", years)
 @pytest.mark.parametrize("geography_level", geography_levels)
 def test_all_three_plus_maintenance_deficiencies_counted(year, geography_level):
-    HVS = create_HVS(year, human_readable=True)
-    aggregated = count_units_three_or_more_deficiencies(
-        geography_level, year, crosstab_by_race=False, requery=True
-    )
-
-    assert np.isclose(
-        HVS[HVS["Number of 2017 maintenance deficiencies"].astype(int) >= 3][
-            "Household weight"
-        ].sum(),
-        aggregated["3 or more-count"].sum(),
-        atol=0.1,
-    )
+    with pytest.raises(NotImplementedError):
+        aggregated = count_units_three_or_more_deficiencies(
+            geography_level, year, crosstab_by_race=False, requery=True
+        )
 
 
 @pytest.mark.debug

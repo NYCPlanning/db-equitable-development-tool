@@ -1,6 +1,13 @@
 name: Branch tests
 
-on: [pull_request, workflow_dispatch]
+on:
+  pull_request:
+    paths:
+      - ".devcontainer/**"
+      - "utils/**"
+      - "requirements.in"
+      - "requirements.txt"
+  workflow_dispatch:
 
 jobs:
   branch_dev_container_tests:

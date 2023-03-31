@@ -1,8 +1,8 @@
-# See here for image contents: https://github.com/NYCPlanning/docker-geosupport
+# See here for base image contents: https://github.com/devcontainers/images/tree/main/src/python
+ARG VARIANT="3.9"
+FROM mcr.microsoft.com/devcontainers/python:0-${VARIANT}
 
-# [Choice] Geosupport version
-# ARG VARIANT="latest"
-FROM nycplanning/docker-geosupport:latest
+RUN export DEBIAN_FRONTEND=noninteractive
 
 # [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
 ARG NODE_VERSION="none"

@@ -1,0 +1,22 @@
+name: Branch tests
+
+on:
+  pull_request:
+    paths:
+      - ".devcontainer/**"
+      - "utils/**"
+      - "requirements.in"
+      - "requirements.txt"
+  workflow_dispatch:
+
+jobs:
+  branch_dev_container_tests:
+    name: Dev container tests
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "CI environment variable is $CI"
+      - name: Build and run dev container task
+        uses: devcontainers/ci@v0.3
+        with:
+          runCmd: pip list

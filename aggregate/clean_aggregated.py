@@ -2,21 +2,11 @@ from curses import COLOR_RED
 from typing import List
 import pandas as pd
 import re
-
-races = ["anh", "bnh", "hsp", "wnh"]
-
-demo_suffix = {
-    ## Rename the demographic race columns with wiki conventions
-    "_a": "_anh_",
-    "_b": "_bnh_",
-    "_h": "_hsp_",
-    #   "o00": "00_onh", No other non hispanic in excel file
-    "_w": "_wnh_",
-}
-
+from utils.dcp_population_excel_helpers import map_stat_suffix, race_suffix_mapper, race_suffix_mapper_global
+from utils.PUMA_helpers import acs_years
 
 def reorder_year_race(col):
-    match = re.search(f"\\_({'|'.join(races)})\\_(\\d{{4}})$", col)
+    match = re.search(f"\\_({'|'.join(race_suffix_mapper_global.values())})\\_(\\d{{4}})", col)
     if match:
         return col.replace(match.group(0), f"_{match.group(2)}_{match.group(1)}")
     else: 
@@ -36,7 +26,7 @@ def order_PUMS_QOL(categories, measures) -> List:
         for m in measures:
             rv.append(f"{c}{m}")
     for c in categories:
-        for r in races:
+        for r in race_suffix_mapper_global.values():
             for m in measures:
                 rv.append(f"{c}_{r}{m}")
 
@@ -50,7 +40,7 @@ def order_PUMS_QOL_multiple_years(categories, measures, years):
             for m in measures:
                 rv.append(f"{c}{y}{m}")
         for c in categories:
-            for r in races:
+            for r in race_suffix_mapper_global.values():
                 for m in measures:
                     rv.append(f"{c}{y}_{r}{m}")
 
@@ -62,7 +52,7 @@ def order_affordable(measures, income) -> List:
     rv = []
     for i in income:
         for m in measures:
-            rv.append(f"units_affordable_{i}{m}")
+            rv.append(f"units_affordable_{i}_{m}")
 
     return rv
 
@@ -71,8 +61,7 @@ def rename_col_housing_security(
     df: pd.DataFrame,
     name_mapper: dict,
     race_mapper: dict,
-    years: list[str],
-    suffix_mapper: dict,
+    suffix_mode: str,
 ):
     """Rename the columns to follow conventions laid out in the wiki and issue #59"""
     cols = map(str.lower, df.columns)
@@ -81,17 +70,17 @@ def rename_col_housing_security(
         cols = [col.replace(code, race) for col in cols]
 
     # Recode year
-    for year in years:
+    for year in acs_years:
         cols = [col.replace(year[2:], year) for col in cols]
 
-    # Recode standard stat suffix for 2008 - 2012
-    for code, suffix in suffix_mapper.items():
-        cols = [col.replace(code, suffix) for col in cols]
+    # Recode standard stat suffix
+    cols = [map_stat_suffix(col, suffix_mode, True) for col in cols]
+
     # Rename data points
     for k, ind_name in name_mapper.items():
         cols = [col.replace(k.lower(), ind_name) for col in cols]
 
-    # Rename the columns to follow wiki conventions - TODO: this could be redone
+    # Rename the columns to follow wiki conventions
     cols = [reorder_year_race(col) for col in cols]
 
     df.columns = cols
@@ -101,7 +90,7 @@ def rename_col_housing_security(
 
 def rename_columns_demo(df: pd.DataFrame, end_year: str):
     cols = map(str.lower, df.columns)
-    for code, race in demo_suffix.items():
+    for code, race in race_suffix_mapper.items():
         cols = [col.replace(code, race) for col in cols]
 
     # cols = [col.replace(f"_{end_year}e", f"_{year}_count") for col in cols]

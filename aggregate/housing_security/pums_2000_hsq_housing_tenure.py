@@ -1,7 +1,7 @@
 import pandas as pd
 from utils.dcp_population_excel_helpers import (
     race_suffix_mapper,
-    stat_suffix_mapper,
+    map_stat_suffix,
     load_2000_census_pums_all_data,
 )
 from utils.PUMA_helpers import clean_PUMAs, dcp_pop_races
@@ -29,8 +29,7 @@ def rename_cols(df):
     for code, race in race_suffix_mapper.items():
         cols = [col.replace(code, race) for col in cols]
     # Replace dcp pop stat suffix code with dcp DE codes
-    for code, suffix in stat_suffix_mapper.items():
-        cols = [col.replace(code, suffix) for col in cols]
+    cols = [map_stat_suffix(col, "count", False) for col in cols]
     # replace data point names
     for code, name in housing_tenure_name_mapper.items():
         cols = [col.replace(code, name) for col in cols]

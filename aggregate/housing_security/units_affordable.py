@@ -88,6 +88,4 @@ def load_source_clean_data(year) -> pd.DataFrame:
     df.columns = cols
 
     return df
-
-if __name__ == "__main__":
-    units_affordable('citywide', sys.argv[1], True)
+    

@@ -2,6 +2,7 @@ name: Export census (demographics and economics)
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   export:

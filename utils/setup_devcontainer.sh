@@ -4,8 +4,7 @@
 set -e
 
 # Skip when called in a github action workflow
-if [[ !$CI == "true" ]]; then
-    # Add id_rsa so that we can push to github from the dev container
-    # ssh-add $HOME/.ssh/id_rsa
-    ssh-add
+if [[ ${CI} != "true" ]]; then
+	# Add local SSH private keys in order to push to github from the dev container
+	ssh-add
 fi

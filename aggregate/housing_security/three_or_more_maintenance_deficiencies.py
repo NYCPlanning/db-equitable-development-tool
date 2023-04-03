@@ -31,6 +31,9 @@ def count_units_three_or_more_deficiencies(
         )
     HVS = load_HVS(requery=requery, year=year, human_readable=True)
     HVS["three_plus_deficiencies"] = (
+        ## commenting just to log - this functionality is no longer used but in case we ever return, this logic is wrong
+        ## per https://www2.census.gov/programs-surveys/nychvs/technical-documentation/record-layouts/2017/occupied-units-17.pdf
+        ## this should be >= 4
         HVS["Number of 2017 maintenance deficiencies"] >= 3
     ).replace({True: "3 or more", False: "Less than 3"})
     if crosstab_by_race:

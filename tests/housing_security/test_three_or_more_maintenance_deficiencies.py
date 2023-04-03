@@ -33,6 +33,9 @@ def test_all_three_plus_maintenance_deficiencies_counted(year, geography_level):
         )
         HVS = create_HVS(year, human_readable=True)
         assert np.isclose(
+            ## commenting just to log - this functionality is no longer used but in case we ever return, this logic is wrong
+            ## per https://www2.census.gov/programs-surveys/nychvs/technical-documentation/record-layouts/2017/occupied-units-17.pdf
+            ## this should be >= 4
             HVS[HVS["Number of 2017 maintenance deficiencies"].astype(int) >= 3][
                 "Household weight"
             ].sum(),

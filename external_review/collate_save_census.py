@@ -58,11 +58,11 @@ class CensusAccessors:
         return [acs_pums_economics]
 
 def main(
+    year: Optional[str] = typer.Argument(None),
     eddt_category: Optional[str] = typer.Argument(None),
     geography: Optional[str] = typer.Argument(None),
-    year: Optional[str] = typer.Argument(None)
 ):
-    def assert_opt(arg, list): assert((arg is None) or (arg == 'all') or (arg in list))
+    def assert_opt(arg, list): assert((arg is None) or (arg in list))
     categories = ['economics', 'demographics']
     geographies = ['citywide', 'borough', 'puma']
     years = acs_years

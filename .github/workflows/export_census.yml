@@ -15,18 +15,11 @@ jobs:
       
     strategy:
       matrix:
-        category:
-          - demographics
-          - economics
-        geography:
-          - puma
-          - borough
-          - citywide
         year:
-          - 2000
-          - 0812
-          - 1519
-          - 1721
+          - "2000"
+          - "0812"
+          - "1519"
+          - "1721"
  
     steps:
       - uses: actions/checkout@v2
@@ -59,7 +52,7 @@ jobs:
 
       - name: build
         run: |
-          python3 -m external_review.collate_save_census ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
+          python3 -m external_review.collate_save_census ${{matrix.year}}
 
       - name: export
         run: |

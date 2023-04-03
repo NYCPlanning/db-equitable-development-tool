@@ -18,6 +18,15 @@ jobs:
         category:
           - demographics
           - economics
+        geography:
+          - puma
+          - borough
+          - citywide
+        year:
+          - 2000
+          - 0812
+          - 1519
+          - 1721
  
     steps:
       - uses: actions/checkout@v2
@@ -48,10 +57,10 @@ jobs:
           install.packages('survey')
         shell: Rscript {0}
 
+      - name: build
+        run: |
+          python3 -m external_review.collate_save_census ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
+
       - name: export
         run: |
-          python3 -m external_review.collate_save_census 
           ./external_review/export_DO.sh export_census
-
-
-

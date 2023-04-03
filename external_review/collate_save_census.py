@@ -62,18 +62,18 @@ def main(
     eddt_category: Optional[str] = typer.Argument(None),
     geography: Optional[str] = typer.Argument(None),
 ):
-    def assert_opt(arg, list): assert((arg is None) or (arg in list))
+    def assert_opt(arg, list): assert((arg is None) or (arg == 'all') or (arg in list))
     categories = ['economics', 'demographics']
     geographies = ['citywide', 'borough', 'puma']
     years = acs_years
     years.append('2000')
+    assert_opt(year, years)
     assert_opt(eddt_category, categories)
     assert_opt(geography, geographies)
-    assert_opt(year, years)
 
-    if (eddt_category is not None) or (eddt_category == 'all'): categories = [eddt_category]
-    if geography is not None: geographies = [geography]
-    if year is not None: years = [year]
+    if year is not None and year != 'all': years = [year]
+    if eddt_category is not None and eddt_category != 'all': categories = [eddt_category]
+    if geography is not None and geography != 'all': geographies = [geography]
     for c in categories:
         for g in geographies:
             for y in years:

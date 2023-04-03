@@ -45,7 +45,7 @@ def main(
     assert_opt(geography, geographies)
 
     if eddt_category is not None and eddt_category != 'all': categories = [eddt_category]
-    if geography is not None: geographies = [geography]
+    if geography is not None and geography != 'all': geographies = [geography]
     for c in categories:
         for g in geographies:
             collate(g, c)

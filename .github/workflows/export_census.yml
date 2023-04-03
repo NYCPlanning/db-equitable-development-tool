@@ -2,17 +2,6 @@ name: Export census (demographics and economics)
 
 on:
   workflow_dispatch:
-    inputs:
-      category:
-        description: 'Year to export'
-        required: true
-        type: choice
-        options:
-        - 2000
-        - 0812
-        - 1519
-        - 1721
-
 
 jobs:
   export:
@@ -25,10 +14,6 @@ jobs:
       
     strategy:
       matrix:
-        geography:
-          - puma
-          - borough
-          - citywide
         category:
           - demographics
           - economics
@@ -64,8 +49,8 @@ jobs:
 
       - name: export
         run: |
-          python3 -m external_review.collate_save_census ${{matrix.category}} ${{matrix.geography}} ${{github.event.inputs.year}}
-          ./external_review/export_DO.sh export_census ${{matrix.category}} ${{matrix.geography}} ${{github.event.inputs.year}}
+          python3 -m external_review.collate_save_census 
+          ./external_review/export_DO.sh export_census ${{matrix.category}}
 
 
 

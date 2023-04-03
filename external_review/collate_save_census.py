@@ -68,7 +68,7 @@ def main(
     assert(geography in geographies)
     assert(year in years)
 
-    if eddt_category is not None: categories = [eddt_category]
+    if (eddt_category is not None) or (eddt_category == 'all'): categories = [eddt_category]
     if geography is not None: geographies = [geography]
     if year is not None: years = [year]
     for c in categories:

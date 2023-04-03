@@ -1,4 +1,6 @@
 import pandas as pd
+import sys
+import re
 from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.clean_aggregated import order_affordable
@@ -21,13 +23,19 @@ income_mapper = {
 }
 
 suffix_mapper = {
-    "_19E": "_count",
-    "_19M": "_count_moe",
-    "_19C": "_count_cv",
-    "_19P": "_pct",
-    "_19Z": "_pct_moe",
+    "E": "count",
+    "M": "count_moe",
+    "C": "count_cv",
+    "P": "pct",
+    "Z": "pct_moe"
 }
 
+def map_suffix(col):
+    match = re.search("\_\d{2}(E|M|C|P|Z)$", col)
+    if match:
+        return col.replace(match.group(0), f"_{suffix_mapper[match.group(1)]}")
+    else: 
+        return col
 
 def units_affordable(geography: str, year:str=acs_years[-1], write_to_internal_review=False) -> pd.DataFrame:
     assert geography in ["citywide", "borough", "puma"]
@@ -76,8 +84,10 @@ def load_source_clean_data(year) -> pd.DataFrame:
         cols = [col.replace(code, il) for col in cols]
     for code, name in ind_mapper.items():
         cols = [col.replace(code, name) for col in cols]
-    for code, suffix in suffix_mapper.items():
-        cols = [col.replace(code, suffix) for col in cols]
+    cols = [map_suffix(col) for col in cols]
     df.columns = cols
 
     return df
+
+if __name__ == "__main__":
+    units_affordable('citywide', sys.argv[1], True)

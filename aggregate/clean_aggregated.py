@@ -62,7 +62,7 @@ def order_affordable(measures, income) -> List:
     rv = []
     for i in income:
         for m in measures:
-            rv.append(f"units_affordable_{i}{m}")
+            rv.append(f"units_affordable_{i}_{m}")
 
     return rv
 

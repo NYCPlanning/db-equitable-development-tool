@@ -13,7 +13,7 @@ from aggregate.aggregation_helpers import order_aggregated_columns, get_category
 from utils.dcp_population_excel_helpers import (
     load_2000_census_pums_all_data,
     race_suffix_mapper,
-    stat_suffix_mapper,
+    map_stat_suffix,
     remove_duplicate_cols,
 )
 
@@ -52,8 +52,7 @@ def rename_cols(df):
     cols = map(str.lower, df.columns)
     for code, race in race_suffix_mapper.items():
         cols = [col.replace(code, race) for col in cols]
-    for code, stat in stat_suffix_mapper.items():
-        cols = [col.replace(code, stat) for col in cols]
+    cols = [map_stat_suffix(col, "count", False) for col in cols]
     for code, name in name_mapper.items():
         cols = [col.replace(code, name) for col in cols]
     for code, med in median_mapper.items():

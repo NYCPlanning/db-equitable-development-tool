@@ -4,7 +4,7 @@ from aggregate.clean_aggregated import (
     rename_col_housing_security,
     order_PUMS_QOL_multiple_years,
 )
-from utils.dcp_population_excel_helpers import race_suffix_mapper, stat_suffix_mapper_md, stat_suffix_mapper_ty
+from utils.dcp_population_excel_helpers import race_suffix_mapper
 from utils.PUMA_helpers import acs_years
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_housing_security_pop_data
@@ -31,8 +31,7 @@ def rent_median(geography: str, start_year=acs_years[0], end_year=acs_years[-1],
         df=final_md, 
         name_mapper=name_mapper_md, 
         race_mapper=race_suffix_mapper,
-        years=acs_years,
-        suffix_mapper=stat_suffix_mapper_md
+        suffix_mode="median"
     )
     final_md = final_md.reindex(
         columns=order_PUMS_QOL_multiple_years(
@@ -48,8 +47,7 @@ def rent_median(geography: str, start_year=acs_years[0], end_year=acs_years[-1],
         df=final_hh, 
         name_mapper=name_mapper_hh, 
         race_mapper=race_suffix_mapper,
-        years=acs_years,
-        suffix_mapper=stat_suffix_mapper_ty
+        suffix_mode="median"
     )
 
     final_hh = final_hh.reindex(

@@ -51,7 +51,7 @@ jobs:
       - name: export
         run: |
           python3 -m external_review.collate_save_census 
-          ./external_review/export_DO.sh export_census ${{matrix.category}}
+          ./external_review/export_DO.sh export_census
 
 
 

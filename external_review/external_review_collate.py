@@ -38,13 +38,13 @@ def main(
     eddt_category: Optional[str] = typer.Argument(None),
     geography: Optional[str] = typer.Argument(None)
 ):
-    def assert_opt(arg, list): assert((arg is None) or (arg in list))
+    def assert_opt(arg, list): assert((arg is None) or (arg == 'all') or (arg in list))
     categories = ['housing_security', 'housing_production', 'quality_of_life']
     geographies = ['citywide', 'borough', 'puma']
     assert_opt(eddt_category, categories)
     assert_opt(geography, geographies)
 
-    if eddt_category is not None: categories = [eddt_category]
+    if eddt_category is not None and eddt_category != 'all': categories = [eddt_category]
     if geography is not None: geographies = [geography]
     for c in categories:
         for g in geographies:

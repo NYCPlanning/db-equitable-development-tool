@@ -48,6 +48,6 @@ jobs:
       - name: export
         run: |
           python3 -m external_review.external_review_collate ${{github.event.inputs.category}}  
-          ./external_review/export_DO.sh ${{github.event.inputs.category}}
+          ./external_review/export_DO.sh
 
 

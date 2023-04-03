@@ -62,7 +62,7 @@ def main(
     geography: Optional[str] = typer.Argument(None),
     year: Optional[str] = typer.Argument(None)
 ):
-    def assert_opt(arg, list): assert((arg is None) or (arg in list))
+    def assert_opt(arg, list): assert((arg is None) or (arg == 'all') or (arg in list))
     categories = ['economics', 'demographics']
     geographies = ['citywide', 'borough', 'puma']
     years = acs_years

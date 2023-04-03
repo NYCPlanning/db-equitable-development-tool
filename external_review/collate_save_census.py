@@ -4,6 +4,7 @@ write a new file but this step can be DRY'd out and brought down to a simplier f
 
 from os import path, makedirs
 import typer
+from typing import Optional
 from aggregate.decennial_census.decennial_census_001020 import decennial_census_001020
 from aggregate.PUMS.pums_2000_demographics import pums_2000_demographics
 from aggregate.PUMS.pums_2000_economics import pums_2000_economics
@@ -61,12 +62,14 @@ def main(
     geography: Optional[str] = typer.Argument(None),
     year: Optional[str] = typer.Argument(None)
 ):
-    categories = ['economic', 'demographic']
+    def assert_opt(arg, list): assert((arg is None) or (arg in list))
+    categories = ['economics', 'demographics']
     geographies = ['citywide', 'borough', 'puma']
-    years = acs_years.append('2000')
-    assert(eddt_category in categories)
-    assert(geography in geographies)
-    assert(year in years)
+    years = acs_years
+    years.append('2000')
+    assert_opt(eddt_category, categories)
+    assert_opt(geography, geographies)
+    assert_opt(year, years)
 
     if (eddt_category is not None) or (eddt_category == 'all'): categories = [eddt_category]
     if geography is not None: geographies = [geography]

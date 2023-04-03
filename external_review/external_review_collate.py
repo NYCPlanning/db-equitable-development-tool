@@ -2,6 +2,7 @@
 from os import makedirs, path
 import pandas as pd
 import typer
+from typing import Optional
 
 from aggregate.all_accessors import Accessors
 
@@ -37,16 +38,17 @@ def main(
     eddt_category: Optional[str] = typer.Argument(None),
     geography: Optional[str] = typer.Argument(None)
 ):
-    categories = ['economic', 'demographic']
+    def assert_opt(arg, list): assert((arg is None) or (arg in list))
+    categories = ['housing_security', 'housing_production', 'quality_of_life']
     geographies = ['citywide', 'borough', 'puma']
-    assert(eddt_category in categories)
-    assert(geography in geographies)
+    assert_opt(eddt_category, categories)
+    assert_opt(geography, geographies)
 
     if eddt_category is not None: categories = [eddt_category]
     if geography is not None: geographies = [geography]
     for c in categories:
         for g in geographies:
-            collate(c, g)
+            collate(g, c)
 
 if __name__ == "__main__":
     typer.run(main)

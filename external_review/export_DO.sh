@@ -1,25 +1,25 @@
 #!/bin/bash
-branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
-SPACES="spaces/edm-publishing/db-eddt/${branchname}"
 
-fucntion export_all {
+function export_all {
     DATE=$(date "+%Y-%m-%d")
+    branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
     SPACES="spaces/edm-publishing/db-eddt/${branchname}"
-    mc cp .staging/* $SPACES/$DATE/
-    mc cp .staging/* $SPACES/latest/
+    mc cp -r .staging/* $SPACES/$DATE/
+    mc cp -r .staging/* $SPACES/latest/
 }
 
 function export_category {
     DATE=$(date "+%Y-%m-%d")
+    branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
+    SPACES="spaces/edm-publishing/db-eddt/${branchname}"
     local filename="${category}_${geography_level}.csv"
-    mc cp .staging/$category/* $SPACES/$DATE/$1/
-    mc cp .staging/$category/* $SPACES/latest/$1/
+    mc cp -r .staging/$category/* $SPACES/$DATE/$1/
+    mc cp -r .staging/$category/* $SPACES/latest/$1/
 }
 
-if [ $# -eq 0 ]
+if [ $# -eq 0 ] || [ $1 == 'all' ]
     then
         export_all
-fi
 else
     export_category $1
-esac
+fi

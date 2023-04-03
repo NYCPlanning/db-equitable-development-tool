@@ -56,4 +56,4 @@ jobs:
 
       - name: export
         run: |
-          ./external_review/export_DO.sh export_census
+          ./external_review/export_DO.sh

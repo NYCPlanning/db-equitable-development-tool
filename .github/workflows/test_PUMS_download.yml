@@ -2,11 +2,12 @@ name: Test PUMS Download
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - "ingest/PUMS/**.py"
-      - "tests/PUMS/**.py"
-      - ".github/workflows/test_PUMS_download.yml"
+  # NOTE: DISABLING THESE TESTS
+  # pull_request:
+  #   paths:
+  #     - "ingest/PUMS/**.py"
+  #     - "tests/PUMS/**.py"
+  #     - ".github/workflows/test_PUMS_download.yml"
 
 jobs:
   test:

@@ -6,8 +6,6 @@ import typer
 from aggregate.all_accessors import Accessors
 
 accessors = Accessors()
-app = typer.Typer()
-
 
 def collate(geography_level, category):
     """Collate indicators together"""
@@ -35,6 +33,20 @@ def collate(geography_level, category):
     final_df.to_csv(f".staging/{category}/{category}_{geography_level}.csv")
     return final_df
 
+def main(
+    eddt_category: Optional[str] = typer.Argument(None),
+    geography: Optional[str] = typer.Argument(None)
+):
+    categories = ['economic', 'demographic']
+    geographies = ['citywide', 'borough', 'puma']
+    assert(eddt_category in categories)
+    assert(geography in geographies)
+
+    if eddt_category is not None: categories = [eddt_category]
+    if geography is not None: geographies = [geography]
+    for c in categories:
+        for g in geographies:
+            collate(c, g)
 
 if __name__ == "__main__":
-    typer.run(collate)
+    typer.run(main)

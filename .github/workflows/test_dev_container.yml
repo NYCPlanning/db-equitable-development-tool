@@ -1,12 +1,13 @@
-name: Branch tests
+name: Dev Container tests
 
 on:
   pull_request:
     paths:
-      - ".devcontainer/**"
-      - "utils/**"
-      - "requirements.in"
-      - "requirements.txt"
+      - .devcontainer/**
+      - utils/setup_devcontainer.sh
+      - utils/setup_build_env.sh
+      - requirements.in
+      - requirements.txt
   workflow_dispatch:
 
 jobs:

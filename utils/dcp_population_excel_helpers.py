@@ -42,6 +42,13 @@ def map_stat_suffix(col, mode, keep_year):
     else: 
         return col
 
+def reorder_year_race(col):
+    match = re.search(f"\\_({'|'.join(race_suffix_mapper_global.values())})\\_(\\d{{4}})", col)
+    if match:
+        return col.replace(match.group(0), f"_{match.group(2)}_{match.group(1)}")
+    else: 
+        return col
+
 ### Create base load function that reads dcp population xlsx for 2000 census pums
 def load_2000_census_pums_all_data() -> pd.DataFrame:
     df = pd.read_excel(

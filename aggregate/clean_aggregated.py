@@ -1,16 +1,13 @@
 from curses import COLOR_RED
 from typing import List
 import pandas as pd
-import re
-from utils.dcp_population_excel_helpers import map_stat_suffix, race_suffix_mapper, race_suffix_mapper_global
+from utils.dcp_population_excel_helpers import (
+    map_stat_suffix, 
+    race_suffix_mapper, 
+    race_suffix_mapper_global,
+    reorder_year_race
+)
 from utils.PUMA_helpers import acs_years
-
-def reorder_year_race(col):
-    match = re.search(f"\\_({'|'.join(race_suffix_mapper_global.values())})\\_(\\d{{4}})", col)
-    if match:
-        return col.replace(match.group(0), f"_{match.group(2)}_{match.group(1)}")
-    else: 
-        return col
 
 
 def sort_columns(df: pd.DataFrame):
@@ -28,7 +25,7 @@ def order_PUMS_QOL(categories, measures) -> List:
     for c in categories:
         for r in race_suffix_mapper_global.values():
             for m in measures:
-                rv.append(f"{c}_{r}{m}")
+                rv.append(f"{c}_{r}_{m}")
 
     return rv
 
@@ -38,11 +35,11 @@ def order_PUMS_QOL_multiple_years(categories, measures, years):
     for y in years:
         for c in categories:
             for m in measures:
-                rv.append(f"{c}{y}{m}")
+                rv.append(f"{c}_{y}_{m}")
         for c in categories:
             for r in race_suffix_mapper_global.values():
                 for m in measures:
-                    rv.append(f"{c}{y}_{r}{m}")
+                    rv.append(f"{c}_{y}_{r}_{m}")
 
     return rv
 

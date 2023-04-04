@@ -2,21 +2,13 @@ import pandas as pd
 from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper
 from aggregate.clean_aggregated import order_PUMS_QOL
 from internal_review.set_internal_review_file import set_internal_review_files
-from utils.dcp_population_excel_helpers import race_suffix_mapper
+from utils.dcp_population_excel_helpers import race_suffix_mapper, count_suffix_mapper_global, map_stat_suffix
 
 
 ind_mapper = {
     "hhlds": "access_households",
     "comp": "access_computer",
     "bbint": "access_broadband",
-}
-
-suffix_mapper = {
-    "_19e": "_count",
-    "_19m": "_count_moe",
-    "_19c": "_count_cv",
-    "_19p": "_pct",
-    "_19z": "_pct_moe",
 }
 
 
@@ -39,7 +31,7 @@ def access_to_broadband(geography: str, write_to_internal_review=False):
 
     col_order = order_PUMS_QOL(
         categories=[i for _, i in ind_mapper.items()],
-        measures=[i for _, i in suffix_mapper.items()],
+        measures=count_suffix_mapper_global.values(),
     )
     final = final.reindex(columns=col_order)
 
@@ -70,8 +62,7 @@ def load_clean_source_data(geography: str) -> pd.DataFrame:
         cols = [col.replace(code, race) for col in cols]
     for code, name in ind_mapper.items():
         cols = [col.replace(code, name) for col in cols]
-    for code, suffix in suffix_mapper.items():
-        cols = [col.replace(code, suffix) for col in cols]
+    cols = [map_suffix(col, "count", False) for col in cols]
     df.columns = cols
 
     return df

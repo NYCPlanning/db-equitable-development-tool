@@ -28,8 +28,8 @@ def homevalue_median(geography: str, start_year=acs_years[0], end_year=acs_years
 
     col_order = order_PUMS_QOL_multiple_years(
         categories=["homevalue_median"],
-        measures=["_median", "_median_moe", "_median_cv"],
-        years=[f"_{start_year}", f"_{end_year}"],
+        measures=["median", "median_moe", "median_cv"],
+        years=[start_year, end_year],
     )
 
     final = final.reindex(columns=col_order)

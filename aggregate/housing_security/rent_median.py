@@ -4,7 +4,7 @@ from aggregate.clean_aggregated import (
     rename_col_housing_security,
     order_PUMS_QOL_multiple_years,
 )
-from utils.dcp_population_excel_helpers import race_suffix_mapper
+from utils.dcp_population_excel_helpers import race_suffix_mapper, count_suffix_mapper_global
 from utils.PUMA_helpers import acs_years
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.load_aggregated import load_clean_housing_security_pop_data
@@ -36,8 +36,8 @@ def rent_median(geography: str, start_year=acs_years[0], end_year=acs_years[-1],
     final_md = final_md.reindex(
         columns=order_PUMS_QOL_multiple_years(
             categories=["rent_median"],
-            measures=["_median", "_median_moe", "_median_cv"],
-            years=[f"_{start_year}", f"_{end_year}"],
+            measures=["median", "median_moe", "median_cv"],
+            years=[start_year, end_year],
         )
     )
     final_hh = get_geography_pop_data(
@@ -53,8 +53,8 @@ def rent_median(geography: str, start_year=acs_years[0], end_year=acs_years[-1],
     final_hh = final_hh.reindex(
         columns=order_PUMS_QOL_multiple_years(
             categories=["units_payingrent"],
-            measures=["_count", "_count_moe", "_count_cv", "_pct", "_pct_moe"],
-            years=[f"_{start_year}", f"_{end_year}"],
+            measures=count_suffix_mapper_global.values(),
+            years=[start_year, end_year],
         )
     )
 

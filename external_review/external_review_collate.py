@@ -2,12 +2,11 @@
 from os import makedirs, path
 import pandas as pd
 import typer
+from typing import Optional
 
 from aggregate.all_accessors import Accessors
 
 accessors = Accessors()
-app = typer.Typer()
-
 
 def collate(geography_level, category):
     """Collate indicators together"""
@@ -35,6 +34,21 @@ def collate(geography_level, category):
     final_df.to_csv(f".staging/{category}/{category}_{geography_level}.csv")
     return final_df
 
+def main(
+    eddt_category: Optional[str] = typer.Argument(None),
+    geography: Optional[str] = typer.Argument(None)
+):
+    def assert_opt(arg, list): assert((arg is None) or (arg == 'all') or (arg in list))
+    categories = ['housing_security', 'housing_production', 'quality_of_life']
+    geographies = ['citywide', 'borough', 'puma']
+    assert_opt(eddt_category, categories)
+    assert_opt(geography, geographies)
+
+    if eddt_category is not None and eddt_category != 'all': categories = [eddt_category]
+    if geography is not None and geography != 'all': geographies = [geography]
+    for c in categories:
+        for g in geographies:
+            collate(g, c)
 
 if __name__ == "__main__":
-    typer.run(collate)
+    typer.run(main)

@@ -32,7 +32,7 @@ def map_stat_suffix(col, mode, keep_year):
     if mode == "count": suffix_mapper = count_suffix_mapper_global
     elif mode == "median": suffix_mapper = median_suffix_mapper_global
     else: raise Exception("Function map_stat_suffix expects argument 'mode' to be either 'count' or 'median'")
-    match = re.search("\_(\d{2}|\d{4})(E|M|C|P|Z|e|m|c|p|z)$", col)
+    match = re.search("\\_(\d{2}|\d{4})(E|M|C|P|Z|e|m|c|p|z)$", col)
     if match:
         if keep_year:
             new_suffix = f"_{match.group(1)}_{suffix_mapper[match.group(2).lower()]}"

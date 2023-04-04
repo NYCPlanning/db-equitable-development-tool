@@ -1,10 +1,8 @@
 name: Export census (demographics and economics) 
 
 on:
+  workflow_dispatch:
   push:
-   paths:
-      - ".github/workflows/export_census.yml"
-
 
 jobs:
   export:
@@ -17,17 +15,11 @@ jobs:
       
     strategy:
       matrix:
-        geography:
-          - puma
-          - borough
-          - citywide
-        category:
-          - demographics
-         # - economics
         year:
           - "2000"
-         # - "0812"
-         # - "1519"
+          - "0812"
+          - "1519"
+          - "1721"
  
     steps:
       - uses: actions/checkout@v2
@@ -58,10 +50,10 @@ jobs:
           install.packages('survey')
         shell: Rscript {0}
 
+      - name: build
+        run: |
+          python3 -m external_review.collate_save_census ${{matrix.year}}
+
       - name: export
         run: |
-          python3 -m external_review.collate_save_census ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
-          ./external_review/export_DO.sh export_census ${{matrix.category}} ${{matrix.geography}} ${{matrix.year}}
-
-
-
+          ./external_review/export_DO.sh

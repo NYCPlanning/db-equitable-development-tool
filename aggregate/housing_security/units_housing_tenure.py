@@ -34,7 +34,7 @@ def units_housing_tenure(geography: str, start_year=acs_years[0], end_year=acs_y
     col_order = order_PUMS_QOL_multiple_years(
         categories=["units_occupied_owner", "units_occupied_renter", "units_occupied"],
         measures=count_suffix_mapper_global.values(),
-        years=[f"_{start_year}", f"_{end_year}"],
+            years=[start_year, end_year],
     )
     final = final.reindex(columns=col_order)
     for col in final.columns:

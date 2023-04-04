@@ -21,7 +21,7 @@ def order_PUMS_QOL(categories, measures) -> List:
     rv = []
     for c in categories:
         for m in measures:
-            rv.append(f"{c}{m}")
+            rv.append(f"{c}_{m}")
     for c in categories:
         for r in race_suffix_mapper_global.values():
             for m in measures:

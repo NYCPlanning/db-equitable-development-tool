@@ -27,7 +27,7 @@ borough_name_mapper = {
 }
 
 def shorten_year_range(col):
-    match = re.search("\\_(\d{2})\\_(\d{2})")
+    match = re.search("\\_(\\d{2})\\_(\\d{2})", col)
     if match:
         return col.replace(match.group(0), f"_{match.group(1)}{match.group(2)}")
     else:

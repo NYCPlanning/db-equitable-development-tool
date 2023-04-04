@@ -91,7 +91,7 @@ def load_clean_source_data(geography: str, indicator: str):
         df.drop_duplicates(subset=["puma"], keep="first", inplace=True)
     elif geography == "borough":
         df = df[df["Borough"] == "NYC"]
-        df["borough"] = df["Borough"].str.strip().map(borough_name_mapper)
+        df["borough"] = df["Name"].str.strip().map(borough_name_mapper)
     else:
         df = df[df["Borough"] == "City"]
         df["citywide"] = "citywide"

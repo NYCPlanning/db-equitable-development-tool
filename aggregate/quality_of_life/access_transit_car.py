@@ -2,9 +2,7 @@ import pandas as pd
 from aggregate.clean_aggregated import order_PUMS_QOL, order_PUMS_QOL_multiple_years
 from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper, acs_years, year_range, sheet_name
 from internal_review.set_internal_review_file import set_internal_review_files
-from utils.dcp_population_excel_helpers import race_suffix_mapper, map_stat_suffix, reorder_year_race
-
-map_year = lambda year: str(int(year) - 4) + year
+from utils.dcp_population_excel_helpers import race_suffix_mapper, map_stat_suffix, reorder_year_race, count_suffix_mapper_global
 
 
 def load_acs_access_to_car(start_year, end_year) -> pd.DataFrame:
@@ -15,12 +13,13 @@ def load_acs_access_to_car(start_year, end_year) -> pd.DataFrame:
         return {
             "io": f"./resources/ACS_PUMS/EDDT_ACS{year_range(year)}.xlsx",
             "sheet_name": f"ACS{sheet_name(year)}",
-            "usecols": "A:LO",
             "dtype": {"Geog": str},
         }
     
     df_oldest = pd.read_excel(**read_excel_arg(start_year))
     df_latest= pd.read_excel(**read_excel_arg(end_year))
+
+    df = pd.merge(df_oldest, df_latest, on="Geog", how="left")
 
     df = df.filter(regex="Geog|Wk16p|CWCar")
 
@@ -41,7 +40,7 @@ def load_acs_access_to_car(start_year, end_year) -> pd.DataFrame:
     return df
 
 
-def rename_cols(df):
+def rename_cols(df, years):
     """Rename the columns to follow conventions laid out in the wiki and issue #59"""
     cols = map(str.lower, df.columns)
     # Recode race id
@@ -49,6 +48,7 @@ def rename_cols(df):
         cols = [col.replace(code, race) for col in cols]
 
     # Recode year
+    year_mapper = {year[2:]: year for year in years}
     for code, year in year_mapper.items():
         cols = [col.replace(code, year) for col in cols]
 
@@ -71,7 +71,7 @@ def access_transit_car(geography: str, start_year: str=acs_years[0], end_year:st
 
     df = load_acs_access_to_car(start_year, end_year)
 
-    final = rename_cols(df)
+    final = rename_cols(df, [start_year, end_year])
 
     if geography == "citywide":
         final = df.loc[["citywide"]].reset_index().rename(columns={"Geog": "citywide"})

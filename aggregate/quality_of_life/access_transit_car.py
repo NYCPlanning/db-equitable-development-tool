@@ -1,6 +1,6 @@
 import pandas as pd
 from aggregate.clean_aggregated import order_PUMS_QOL, order_PUMS_QOL_multiple_years
-from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper, acs_years
+from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper, acs_years, year_range
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.dcp_population_excel_helpers import race_suffix_mapper, map_stat_suffix, reorder_year_race
 

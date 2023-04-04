@@ -62,7 +62,7 @@ def load_clean_source_data(geography: str) -> pd.DataFrame:
         cols = [col.replace(code, race) for col in cols]
     for code, name in ind_mapper.items():
         cols = [col.replace(code, name) for col in cols]
-    cols = [map_suffix(col, "count", False) for col in cols]
+    cols = [map_stat_suffix(col, "count", False) for col in cols]
     df.columns = cols
 
     return df

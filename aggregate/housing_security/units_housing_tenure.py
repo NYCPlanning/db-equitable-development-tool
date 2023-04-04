@@ -23,22 +23,18 @@ def units_housing_tenure(geography: str, start_year=acs_years[0], end_year=acs_y
     final = get_geography_pop_data(
         clean_data=clean_data, geography=geography
     )
-    for col in final.columns:
-        print(final[col])
+
     final = rename_col_housing_security(
         final, name_mapper, race_suffix_mapper, "count"
     )
     
-    for col in final.columns:
-        print(final[col])
     col_order = order_PUMS_QOL_multiple_years(
         categories=["units_occupied_owner", "units_occupied_renter", "units_occupied"],
         measures=count_suffix_mapper_global.values(),
             years=[start_year, end_year],
     )
     final = final.reindex(columns=col_order)
-    for col in final.columns:
-        print(final[col])
+    
     if write_to_internal_review:
         set_internal_review_files(
             [(final, "units_housing_tenure.csv", geography)],

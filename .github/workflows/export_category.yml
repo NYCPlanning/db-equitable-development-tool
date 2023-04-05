@@ -1,6 +1,8 @@
 name: Export Category 
 
 on:
+  push:
+    branches: main
   workflow_dispatch:
     inputs:
       category:

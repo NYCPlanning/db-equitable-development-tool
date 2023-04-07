@@ -7,8 +7,8 @@ from utils.geocode import from_eviction_address
 
 acs_years = ["0812", "1519", "1721"]
 
-year_range = lambda y: f"20{y[:2]}-20{y[2:]}"
-sheet_name = lambda y: f"{y[:2]}-{y[2:]}"
+year_range = lambda acs_year: f"20{acs_year[:2]}-20{acs_year[2:]}"
+sheet_name = lambda acs_year: f"{acs_year[:2]}-{acs_year[2:]}"
 
 geocode_functions = {"from_eviction_address": from_eviction_address}
 

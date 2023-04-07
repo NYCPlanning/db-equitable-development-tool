@@ -2,6 +2,8 @@ import pandas as pd
 from aggregate.aggregation_helpers import order_aggregated_columns
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.PUMA_helpers import borough_name_mapper, clean_PUMAs, get_all_boroughs
+from aggregate.PUMS.pums_2000_economics import pums_2000_economics
+from utils.PUMA_helpers import acs_years, sheet_name, year_range
 from utils.dcp_population_excel_helpers import (
     race_suffix_mapper_global,
     count_suffix_mapper_global,
@@ -41,17 +43,10 @@ suffix_mappers = {
     "median": median_suffix_mapper_global,
 }
 
-year_mapper = {"12": "0812", "19": "1519"}
-
-
 def load_clean_source_data(year: str):
-
-    fn_mapper = {"0812": "2008-2012", "1519": "2015-2019"}
-    sheetname_mapper = {"0812": "08-12", "1519": "15-19"}
-
     source = pd.read_excel(
-        f"resources/ACS_PUMS/EDDT_HHEconSec_ACS{fn_mapper[year]}.xlsx",
-        sheet_name=f"EconSec_{sheetname_mapper[year]}",
+        f"resources/ACS_PUMS/EDDT_HHEconSec_ACS{year_range(year)}.xlsx",
+        sheet_name=f"EconSec_{sheet_name(year)}",
     )
     source["Geog"].replace(borough_name_mapper, inplace=True)
     source["Geog"].replace({"NYC": "citywide"}, inplace=True)
@@ -87,10 +82,10 @@ def order_economics(source_data, year):
         ("income band",),
         ("misc",),
     ]
-    if year == "1519":
-        reorder_categories["income band"] = income_band_categories
-    else:
+    if year == "0812":
         reorder_categories["income band"] = []
+    else:
+        reorder_categories["income band"] = income_band_categories
     count_cols = order_aggregated_columns(
         df=None,
         indicators_denom=indicators_denom,
@@ -131,10 +126,11 @@ def economics_median_cols_order():
     return rv
 
 
-def acs_pums_economics(geography, year: str = "0812", write_to_internal_review=False):
+def acs_pums_economics(geography, year: str=acs_years[-1], write_to_internal_review=False):
     """Main accessor"""
+    assert year in acs_years
     assert geography in ["puma", "borough", "citywide"]
-    assert year in ["0812", "1519"]
+    if year == "2000": return pums_2000_economics(geography, write_to_internal_review=write_to_internal_review)
 
     source = load_clean_source_data(year)
 
@@ -175,7 +171,6 @@ def convert_col_label(col_label: str):
     else:
         subgroup = "_" + race_suffix_mapper_global[tokens[0].lower()]
         tokens = tokens[1:]
-    year_token = year_mapper[tokens[:2]]
     tokens = tokens[2:]
     measure_token = suffix_mappers[measure][tokens[0].lower()]
     return f"{indicator_label}{subgroup}_{measure_token}"

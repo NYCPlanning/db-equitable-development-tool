@@ -18,10 +18,10 @@ allowed_HVS_cache_types = [".csv", ".pkl"]
 
 
 def load_PUMS(
+    year: int,
     variable_types: List = ["demographics"],
     include_rw: bool = True,
     limited_PUMA: bool = False,
-    year: int = 2019,
     household: bool = False,
     return_ingestor=False,
     requery: bool = False,
@@ -58,8 +58,8 @@ def load_PUMS(
 
 
 def load_HVS(
+    year:int,
     requery: bool = False,
-    year=2017,
     human_readable: bool = False,
     output_type: str = ".csv",
 ) -> pd.DataFrame:

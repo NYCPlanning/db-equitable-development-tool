@@ -11,10 +11,10 @@ class PUMSMedians(PUMSAggregator):
 
     def __init__(
         self,
+        year:int,
         variable_types,
         geo_col,
         limited_PUMA=False,
-        year=2019,
         requery=False,
         add_MOE=True,
         keep_SE=False,
@@ -24,9 +24,9 @@ class PUMSMedians(PUMSAggregator):
         self.calculation_type = "medians"
         PUMSAggregator.__init__(
             self,
+            year=year,
             variable_types=variable_types,
             limited_PUMA=limited_PUMA,
-            year=year,
             requery=requery,
             geo_col=geo_col,
             order_columns=False,

@@ -5,6 +5,10 @@ from numpy import nan
 import requests
 from utils.geocode import from_eviction_address
 
+acs_years = ["0812", "1519", "1721"]
+
+year_range = lambda acs_year: f"20{acs_year[:2]}-20{acs_year[2:]}"
+sheet_name = lambda acs_year: f"{acs_year[:2]}-{acs_year[2:]}"
 
 geocode_functions = {"from_eviction_address": from_eviction_address}
 
@@ -71,7 +75,7 @@ PUMAs = NYC_PUMA_geographies()
 def assign_PUMA_col(df: pd.DataFrame, lat_col, long_col, geocode_process=None):
     df.rename(columns={lat_col: "latitude", long_col: "longitude"}, inplace=True)
     df["puma"] = df.apply(assign_PUMA, axis=1, args=(geocode_process,))
-    print(f"got {df.shape[0]} evictions to assign PUMAs to ")
+    print(f"got {df.shape[0]} addresses to assign PUMAs to ")
     print(f"assigned PUMAs to {df['puma'].notnull().sum()}")
     return df
 
@@ -85,7 +89,6 @@ def assign_PUMA(record: gp.GeoDataFrame, geocode_process):
 
 def PUMA_from_coord(record):
     """Don't think I need to make a geodata frame here, shapely object would do"""
-
     record_loc = Point(record.longitude, record.latitude)
     matched_PUMA = PUMAs[PUMAs.geometry.contains(record_loc)]
     if matched_PUMA.empty:

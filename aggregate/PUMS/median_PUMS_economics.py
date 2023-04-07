@@ -31,17 +31,17 @@ class PUMSMedianEconomics(PUMSAggregator):
 
     def __init__(
         self,
+        year,
         limited_PUMA=False,
-        year=2019,
         requery=False,
         add_MOE=True,
         keep_SE=False,
         geo_col="puma",
     ):
         self.PUMS: pd.DataFrame = load_PUMS(
+            year=year,
             variable_types=["demographics", "economics"],
             limited_PUMA=limited_PUMA,
-            year=year,
             requery=requery,
         )
         self.add_MOE = add_MOE

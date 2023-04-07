@@ -3,7 +3,8 @@ import pandas as pd
 from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
 
-year_map = {"2000": "00", "0812": "10", "1519": "20"}
+# Map ACS year (or in general, input year for many functions) to decennial census year
+year_map = {"2000": "00", "0812": "10", "1519": "20", "1721": "20"}
 
 
 def load_decennial_census_001020() -> pd.DataFrame:
@@ -125,7 +126,7 @@ def decennial_census_001020(
     geography: str, year: str = "2000", write_to_internal_review=False
 ) -> pd.DataFrame:
     assert geography in ["citywide", "borough", "puma"]
-    assert year in ["2000", "0812", "1519"]
+    assert year in year_map
 
     df = load_decennial_census_001020()
 

@@ -17,7 +17,7 @@ from ingest.PUMS.PUMS_cleaner import PUMSCleaner
 
 class PUMSData:
     """This class encapsulates url used to fetch PUMS data, variables the data includes,
-    data itself, and the code to clean it"""
+    data itself, and the code to clean it. Currently somewhat deprecated"""
 
     def __init__(
         self,

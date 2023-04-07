@@ -3,8 +3,12 @@
 import pytest
 from tests.PUMS.local_loader import LocalLoader
 
-local_loader_2019 = LocalLoader()
-local_loader_2012 = LocalLoader()
+#years = [2012, 2019, 2021]
+#local_loaders = [LocalLoader(year=year) for year in years]
+local_loader_2021 = LocalLoader(year=2021)
+local_loader_2019 = LocalLoader(year=2019)
+local_loader_2012 = LocalLoader(year=2012)
+local_loaders = [local_loader_2012, local_loader_2019, local_loader_2021]
 
 EXPECTED_COLS_VALUES_CATEGORICAL = [
     (
@@ -28,15 +32,10 @@ EXPECTED_COLS_VALUES_CATEGORICAL = [
 def test_local_loader(all_data):
     """This code to take all_data arg from command line and get the corresponding data has to be put in test because of how pytest works.
     This test exists for the sake of passing all_data arg from command line to local loader, it DOESN'T test anything"""
-    local_loader_2019.load_by_person(
-        all_data, include_rw=False, variable_set="economics", year=2019
-    )
-    local_loader_2012.load_by_person(
-        all_data, include_rw=False, variable_set="economics", year=2012
-    )
-
-
-local_loaders = [local_loader_2019, local_loader_2012]
+    for loader in local_loaders:
+        loader.load_by_person(
+            all_data, include_rw=False, variable_set="economics"
+        )
 
 
 @pytest.mark.parametrize("local_loader", local_loaders)
@@ -81,3 +80,16 @@ def test_categorical_range_variables_have_expected_values(column, old_val, new_v
     ].index
 
     sum(local_loader_2019.by_person.loc[ids][column] == new_val) == len(ids)
+
+
+@pytest.mark.test_download
+@pytest.mark.parametrize(
+    "column, old_val, new_val", EXPECTED_COLS_VALUES_RANGE_CATEGORICAL
+)
+def test_categorical_range_variables_have_expected_values_2021(column, old_val, new_val):
+    """See how this goes for 2021"""
+    ids = local_loader_2021.by_person_raw[
+        local_loader_2021.by_person_raw[column] == old_val
+    ].index
+
+    sum(local_loader_2021.by_person.loc[ids][column] == new_val) == len(ids)

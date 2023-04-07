@@ -1,19 +1,21 @@
 """This file will have three accessors for three indicators that all rely on the same source data"""
 import pandas as pd
 import numpy as np
+import re
 
 from utils.PUMA_helpers import clean_PUMAs
 from internal_review.set_internal_review_file import set_internal_review_files
 from aggregate.clean_aggregated import order_PUMS_QOL_multiple_years
+
+# Latest header in "resources/quality_of_life/health_mortality/DOHMH_death rate and overdose.xlsx"
+LATEST_YEAR = "1620"
 
 ind_name_mapper = {
     "infant_mortality_per1000": "infantmortality",
     "overdose_mortality_per100000": "overdosemortality",
     "premature_mortality_per100000": "prematuremortality",
 }
-year_mapper = {
-    "puma": {"_15_19": "_1519", "_10_14": "_1014", "_00_04": "_0004"},
-}
+
 race_mapper = {"_A": "_anh", "_B": "_bnh", "_H": "_hsp", "_W": "_wnh"}
 
 borough_name_mapper = {
@@ -24,8 +26,15 @@ borough_name_mapper = {
     "Staten Island": "SI",
 }
 
+def shorten_year_range(col):
+    match = re.search("\\_(\\d{2})\\_(\\d{2})", col)
+    if match:
+        return col.replace(match.group(0), f"_{match.group(1)}{match.group(2)}")
+    else:
+        return col
 
-def infant_mortality(geography=str, write_to_internal_review=False):
+
+def infant_mortality(geography:str, year=LATEST_YEAR, write_to_internal_review=False):
     ind_name = "infant_mortality_per1000"
     clean_data = load_clean_source_data(geography=geography)
 
@@ -35,7 +44,7 @@ def infant_mortality(geography=str, write_to_internal_review=False):
         c for c in cols if ind_name in c
     ]  # only clean columns for the indicator performed
     final = rename_reorder_columns(
-        clean_data[ind_cols], ind_name=ind_name, geography=geography
+        clean_data[ind_cols], ind_name=ind_name, geography=geography, year=year
     )
 
     final.replace(to_replace="*", value=np.nan, inplace=True)
@@ -48,14 +57,14 @@ def infant_mortality(geography=str, write_to_internal_review=False):
     return final
 
 
-def overdose_mortality(geography=str, write_to_internal_review=False):
+def overdose_mortality(geography:str, year=LATEST_YEAR, write_to_internal_review=False):
     ind_name = "overdose_mortality_per100000"
     clean_data = load_clean_source_data(geography=geography)
 
     cols = clean_data.columns
     ind_cols = [c for c in cols if ind_name in c]
     final = rename_reorder_columns(
-        clean_data[ind_cols], ind_name=ind_name, geography=geography
+        clean_data[ind_cols], ind_name=ind_name, geography=geography, year=year
     )
 
     final.replace(to_replace="*", value=np.nan, inplace=True)
@@ -69,14 +78,14 @@ def overdose_mortality(geography=str, write_to_internal_review=False):
     return final
 
 
-def premature_mortality(geography=str, write_to_internal_review=False):
+def premature_mortality(geography:str, year=LATEST_YEAR, write_to_internal_review=False):
     ind_name = "premature_mortality_per100000"
     clean_data = load_clean_source_data(geography=geography)
 
     cols = clean_data.columns
     ind_cols = [c for c in cols if ind_name in c]
     final = rename_reorder_columns(
-        clean_data[ind_cols], ind_name=ind_name, geography=geography
+        clean_data[ind_cols], ind_name=ind_name, geography=geography, year=year
     )
 
     final.replace(to_replace="*", value=np.nan, inplace=True)
@@ -88,25 +97,23 @@ def premature_mortality(geography=str, write_to_internal_review=False):
         )
     return final
 
-
-def rename_reorder_columns(df: pd.DataFrame, ind_name: str, geography: str):
+def rename_reorder_columns(df: pd.DataFrame, ind_name: str, geography: str, year: str): 
     if geography == "puma":
-        years = ["_0004", "_1014", "_1519"]
+        years = ["0004", "1014"] + [year]
     else:
-        years = ["_2000", "_2010", "_2019"]
+        years = ["2000", "2010"] + ["20" + year[2:]]
 
     cols = df.columns
     cols = [c.replace(ind_name, ind_name_mapper[ind_name]) for c in cols]
     for letter, race in race_mapper.items():
         cols = [c.replace(letter, race) for c in cols]
     if geography == "puma":
-        for year_range, end_year in year_mapper[geography].items():
-            cols = [c.replace(year_range, end_year) for c in cols]
+        cols = [shorten_year_range(c) for c in cols]
     df.columns = ["health_" + col + "_rate" for col in cols]
     # reorder items to standard
     col_order = order_PUMS_QOL_multiple_years(
         categories=["health_" + ind_name_mapper[ind_name]],
-        measures=["_rate"],
+        measures=["rate"],
         years=years,
     )
 

@@ -17,8 +17,8 @@ class PUMSCountDemographics(PUMSCount):
 
     def __init__(
         self,
+        year:int,
         limited_PUMA=False,
-        year=2019,
         requery=False,
         include_counts=True,
         include_fractions=True,
@@ -45,9 +45,9 @@ class PUMSCountDemographics(PUMSCount):
         self.EDDT_category = "demographics"
         PUMSCount.__init__(
             self,
+            year=year,
             variable_types=["demographics"],
             limited_PUMA=limited_PUMA,
-            year=year,
             requery=requery,
             geo_col=geo_col,
             household=False,

@@ -2,10 +2,8 @@ from aggregate.decennial_census.decennial_census_001020 import decennial_census_
 from aggregate.aggregation_helpers import order_aggregated_columns
 import pandas as pd
 from internal_review.set_internal_review_file import set_internal_review_files
-from utils.PUMA_helpers import clean_PUMAs, puma_to_borough
-
-
-dcp_pop_races = ["anh", "bnh", "hsp", "onh", "wnh"]
+from utils.PUMA_helpers import clean_PUMAs, puma_to_borough, acs_years
+from utils.dcp_population_excel_helpers import race_suffix_mapper_global
 
 
 race_labels = ["", "_wnh", "_bnh", "_hsp", "_anh", "_onh"]
@@ -13,12 +11,12 @@ race_labels = ["", "_wnh", "_bnh", "_hsp", "_anh", "_onh"]
 pop_labels = ["Total Population", "White", "Black", "Hispanic", "Asian", "Other"]
 
 
-def nycha_tenants(geography: str, write_to_internal_review=False):
+def nycha_tenants(geography: str, year: str=acs_years[-1], write_to_internal_review=False):
     assert geography in ["citywide", "borough", "puma"]
 
     clean_data = load_clean_nycha_data()
     census20 = decennial_census_001020(
-        geography=geography, year="1519"
+        geography=geography, year=year
     )  # this is in fact pulling 2020 census but design has it mapped from 1519 to 2020
 
     if geography == "puma":
@@ -41,7 +39,7 @@ def nycha_tenants(geography: str, write_to_internal_review=False):
         categories={
             "pop": ["pop"],
             "nycha_tenants": ["nycha_tenants"],
-            "race": dcp_pop_races,
+            "race": race_suffix_mapper_global.values(),
         },
         return_col_order=True,
         exclude_denom=True,

@@ -10,6 +10,10 @@ on:
       - requirements.txt
   workflow_dispatch:
 
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }} 
+  cancel-in-progress: true
+
 jobs:
   branch_dev_container_tests:
     name: Dev container tests

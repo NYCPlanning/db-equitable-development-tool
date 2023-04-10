@@ -16,8 +16,12 @@ function export_category {
 }
 
 # a little junky, but only leaving here as option when exporting all as this is only used in github workflow
-if [ $1 == '--github_ref' ]; then
-    branchname=$2
+if [ $CI ]; then
+    if [ $GITHUB_EVENT_NAME == 'pull_request' ]; then
+        branchname=$GITHUB_HEAD_REF
+    else
+        branchname=$GITHUB_REF_NAME
+    fi
 else 
     branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
 fi

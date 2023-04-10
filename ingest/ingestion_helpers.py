@@ -48,12 +48,13 @@ def read_from_excel(
     category: str,
     sheet_name: str = None,
     columns: str = None,
+    **kwargs
 ) -> pd.DataFrame:
     read_excel_args = {
         "io": file_path,
         "sheet_name": sheet_name,
         "usecols": columns,
-    }
+    } | kwargs
     df = pd.read_excel(**read_excel_args)
 
     add_version(dataset=f"{file_path}/{sheet_name}", version="FILE_IN_REPO")

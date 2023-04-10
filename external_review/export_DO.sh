@@ -22,7 +22,7 @@ else
     branchname=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)
 fi
 
-if [ $# -eq 0 ] || [ $1 == 'all' ]; then
+if [ $# -eq 0 ] || [ $1 == 'all' ] || [ $1 == '--github_ref' ]; then
     export_all
 else
     export_category $1

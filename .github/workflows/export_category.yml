@@ -3,6 +3,7 @@ name: Export Category
 on:
   push:
     branches: main
+  pull_request:
   workflow_dispatch:
     inputs:
       category:

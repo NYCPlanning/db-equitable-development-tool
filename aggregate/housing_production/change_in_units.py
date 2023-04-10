@@ -4,7 +4,7 @@ import pandas as pd
 import geopandas as gpd
 import requests
 from internal_review.set_internal_review_file import set_internal_review_files
-from utils.PUMA_helpers import clean_PUMAs
+from utils.PUMA_helpers import clean_PUMAs, PUMAs
 
 from ingest.ingestion_helpers import read_from_S3
 
@@ -125,13 +125,6 @@ def pivot_and_flatten_index(df, geography):
     return df_pivot
 
 
-def NYC_PUMA_geographies():
-    res = requests.get(
-        "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
-    )
-    return gpd.GeoDataFrame.from_features(res.json()["features"])
-
-
 def clean_jobs(df):
     # DROP INACTIVATE JOBS ACCRODING TO SAM
     df = df.loc[df.job_inactive.isnull()]
@@ -155,13 +148,11 @@ def clean_jobs(df):
 
     df["citywide"] = "citywide"
     df.rename(columns={"boro": "borough"}, inplace=True)
-    puma = NYC_PUMA_geographies()
-    puma = puma[["PUMA", "geometry"]]
+    puma = PUMAs
+    puma = puma[["puma", "geometry"]]
     gdf = gpd.GeoDataFrame(
-        df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
+        df, geometry=gpd.points_from_xy(df.longitude, df.latitude), crs="EPSG:4326")
     df = gdf.sjoin(puma, how="left", predicate="within")
-    df.rename(columns={"PUMA": "puma"}, inplace=True)
-    df["puma"] = df["puma"].apply(func=clean_PUMAs)
     df.borough = df.borough.astype(str)
     df.borough = df.borough.map(
         {"1": "MN", "2": "BX", "3": "BK", "4": "QN", "5": "SI"})

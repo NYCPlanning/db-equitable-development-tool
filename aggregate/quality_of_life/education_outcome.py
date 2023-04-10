@@ -1,8 +1,9 @@
 import pandas as pd
+from ingest.ingestion_helpers import read_from_excel
 from internal_review.set_internal_review_file import set_internal_review_files
 
 SOURCE_DATA_PATH_EDU_OUTCOME = (
-    "resources/quality_of_life/education_outcome/education_outcome_processed_2023.xlsx"
+    "resources/quality_of_life/education_outcome/NTA_data_prepared_for_ArcMap_wCodebook.xlsx"
 )
 SOURCE_DATA_URL_PUMA_CROSS = "https://www1.nyc.gov/assets/planning/download/office/data-maps/nyc-population/census2010/nyc2010census_tabulation_equiv.xlsx"
 
@@ -14,7 +15,7 @@ RACIAL_GROUPS = [
     "ASN",
     "BLK",
     "HIS",
-    # "OTH",
+    "OTH",
     "WHT",
 ]
 
@@ -49,7 +50,7 @@ def rename_fields(df: pd.DataFrame, geography: str):
         "ASN": "anh_",
         "BLK": "bnh_",
         "HIS": "hsp_",
-        # "OTH": "onh_",
+        "OTH": "onh_",
         "WHT": "wnh_",
     }
 
@@ -83,10 +84,11 @@ def get_education_outcome(
     puma_cross["PUMACode"] = puma_cross["PUMACode"].apply(lambda x: "0" + x)
 
     # Read in source and do some cleanning and merging with puma cross walk
-    raw_edu_outcome = pd.read_excel(
+    raw_edu_outcome = read_from_excel(
         SOURCE_DATA_PATH_EDU_OUTCOME,
+        category='quality_of_life',
         sheet_name="5_StudentPerformance",
-        header=1,
+        header=1
     )
 
     raw_edu_outcome.fillna(value=0, inplace=True)

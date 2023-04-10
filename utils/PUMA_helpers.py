@@ -59,11 +59,7 @@ def clean_PUMAs(puma) -> pd.DataFrame:
 
 
 def NYC_PUMA_geographies() -> gp.GeoDataFrame:
-    res = requests.get(
-        "https://services5.arcgis.com/GfwWNkhOj9bNBqoJ/arcgis/rest/services/NYC_Public_Use_Microdata_Areas_PUMAs_2010/FeatureServer/0/query?where=1=1&outFields=*&outSR=4326&f=pgeojson"
-    )
-    gdf = gp.GeoDataFrame.from_features(res.json()["features"])
-    gdf = gdf.set_crs(res.json()["crs"]["properties"]["name"])
+    gdf = gp.GeoDataFrame.from_file("./resources/puma_boundaries.json")
     gdf.rename(columns={"PUMA": "puma"}, inplace=True)
     gdf["puma"] = gdf["puma"].apply(clean_PUMAs)
     return gdf

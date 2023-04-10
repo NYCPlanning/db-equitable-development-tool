@@ -58,4 +58,4 @@ jobs:
 
       - name: export
         run: |
-          ./external_review/export_DO.sh
+          ./external_review/export_DO.sh --github_ref ${GITHUB_REF##*/}

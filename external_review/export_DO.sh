@@ -15,7 +15,6 @@ function export_category {
     mc cp -r .staging/$1/* $SPACES/latest/$1/
 }
 
-# a little junky, but only leaving here as option when exporting all as this is only used in github workflow
 if [ $CI ]; then
     if [ $GITHUB_EVENT_NAME == 'pull_request' ]; then
         branchname=$GITHUB_HEAD_REF

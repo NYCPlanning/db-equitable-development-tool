@@ -52,6 +52,11 @@ jobs:
           install.packages('survey')
         shell: Rscript {0}
 
+      - name: Find branch name
+        run: |
+          echo ${GITHUB_HEAD_REF}
+          echo ${GITHUB_REF}
+
       - name: build
         run: |
           python3 -m external_review.collate_save_census ${{matrix.year}}

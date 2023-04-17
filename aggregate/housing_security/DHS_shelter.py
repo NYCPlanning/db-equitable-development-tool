@@ -10,7 +10,7 @@ from utils.PUMA_helpers import borough_name_mapper
 
 def DHS_shelter(geography, write_to_internal_review=False):
     final = initialize_dataframe_geo_index(geography)
-    for year in [2018, 2020]:
+    for year in [2020, 2022]:
         single_year = DHS_shelter_single_year(geography, year)
         final = final.merge(single_year, left_index=True, right_index=True)
     if write_to_internal_review:

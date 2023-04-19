@@ -47,7 +47,7 @@ def rent_median(geography: str, start_year=acs_years[0], end_year=acs_years[-1],
         df=final_hh, 
         name_mapper=name_mapper_hh, 
         race_mapper=race_suffix_mapper,
-        suffix_mode="median"
+        suffix_mode="count"
     )
 
     final_hh = final_hh.reindex(
@@ -63,6 +63,7 @@ def rent_median(geography: str, start_year=acs_years[0], end_year=acs_years[-1],
     final[f"units_payingrent_{end_year}_pct"] = 100
     final[f"units_payingrent_{end_year}_pct_moe"] = 1
 
+    # TODO this currently drops most pct_moe columns. However, its super dangerous - simply removes columns in case of error
     final.dropna(how="all", axis=1, inplace=True)
 
     final[f"units_payingrent_{end_year}_pct_moe"] = np.nan

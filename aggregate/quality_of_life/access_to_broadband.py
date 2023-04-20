@@ -1,5 +1,5 @@
 import pandas as pd
-from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper
+from utils.PUMA_helpers import clean_PUMAs, borough_name_mapper, acs_years, year_range, sheet_name
 from aggregate.clean_aggregated import order_PUMS_QOL
 from internal_review.set_internal_review_file import set_internal_review_files
 from utils.dcp_population_excel_helpers import race_suffix_mapper, count_suffix_mapper_global, map_stat_suffix
@@ -12,9 +12,9 @@ ind_mapper = {
 }
 
 
-def access_to_broadband(geography: str, write_to_internal_review=False):
+def access_to_broadband(geography: str, year:str=acs_years[-1], write_to_internal_review=False):
 
-    clean_df = load_clean_source_data(geography)
+    clean_df = load_clean_source_data(geography, year)
 
     if geography == "puma":
         final = clean_df.loc[clean_df.geog.str[0].isna()].copy()
@@ -44,12 +44,12 @@ def access_to_broadband(geography: str, write_to_internal_review=False):
     return final
 
 
-def load_clean_source_data(geography: str) -> pd.DataFrame:
+def load_clean_source_data(geography: str, year:str) -> pd.DataFrame:
     assert geography in ["citywide", "borough", "puma"]
 
     read_excel_arg = {
-        "io": "resources/quality_of_life/EDDT_ACS2015-2019.xlsx",
-        "sheet_name": "ACS15-19",
+        "io": f"./resources/ACS_PUMS/EDDT_ACS{year_range(year)}.xlsx",
+        "sheet_name": f"ACS{sheet_name(year)}",
         "usecols": "A, NM:QI",
         "header": 0,
         "nrows": 63,

@@ -15,11 +15,11 @@ python3 -m pip install --requirement requirements.txt
 # Install required R package
 Rscript -e "install.packages('survey')"
 
-if [ $CI ]; then
+if ! [ $CI ]; then
     export $(cat .env | sed 's/#.*//g' | xargs)
-fi
 
-curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
-chmod +x mc
-mv ./mc /usr/bin
-mc config host add spaces $AWS_S3_ENDPOINT $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --api S3v4
+    curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
+    chmod +x mc
+    mv ./mc /usr/bin
+    mc config host add spaces $AWS_S3_ENDPOINT $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY --api S3v4
+fi

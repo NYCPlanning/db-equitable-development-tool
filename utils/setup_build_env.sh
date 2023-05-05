@@ -15,7 +15,9 @@ python3 -m pip install --requirement requirements.txt
 # Install required R package
 Rscript -e "install.packages('survey')"
 
-export $(cat .env | sed 's/#.*//g' | xargs)
+if [ $CI ]; then
+    export $(cat .env | sed 's/#.*//g' | xargs)
+fi
 
 curl -O https://dl.min.io/client/mc/release/linux-amd64/mc
 chmod +x mc

@@ -29,7 +29,7 @@ jobs:
           touch .env
           echo AWS_S3_ENDPOINT=${{ secrets.DO_S3_ENDPOINT }} >> .env
           echo AWS_ACCESS_KEY_ID=${{ secrets.DO_ACCESS_KEY_ID }} >> .env
-          echo AWS_SECRET_ACCESS_KEY: ${{ secrets.DO_SECRET_ACCESS_KEY }} >> .env
+          echo AWS_SECRET_ACCESS_KEY=${{ secrets.DO_SECRET_ACCESS_KEY }} >> .env
           cat .env
       - name: Build and run dev container task
         uses: devcontainers/ci@v0.3

@@ -10,5 +10,5 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 
 # Run environment setup script
 COPY utils/ utils/
-COPY requirements.txt .
+COPY requirements.txt .env* .
 RUN utils/setup_build_env.sh
